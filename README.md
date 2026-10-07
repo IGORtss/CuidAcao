@@ -53,9 +53,31 @@ Diretrizes:
 
 ## Estado atual
 
-**Preparação do projeto.** O repositório está na etapa inicial de documentação; ainda não há uma aplicação disponível para execução.
+**Primeira fatia implementada:** mapa → visualizar ocorrência → abrir detalhes. Inclui lista, filtros, navegação por URL e dados fictícios. Cadastro, criação, participação e administração serão implementados nas próximas fatias.
 
-A stack, a estrutura técnica e os comandos de instalação serão documentados quando forem definidos e implementados.
+Stack inicial: JavaScript com módulos ES, Vite e Leaflet. Requer Node.js 22.12+ ou 24 LTS e npm.
+
+## Executar localmente
+
+```bash
+git clone https://github.com/IGORtss/CuidAcao.git
+cd CuidAcao
+npm ci
+npm run dev
+```
+
+Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O fundo cartográfico exige internet; se falhar, use a lista. O repositório é privado: o clone exige autenticação de uma conta com acesso.
+
+## Verificar
+
+```bash
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+`npm run preview` permite testar o build local. Os testes de navegador bloqueiam os tiles externos para verificar a alternativa pela lista de forma reproduzível.
 
 ## Próximos passos
 
@@ -67,8 +89,17 @@ A stack, a estrutura técnica e os comandos de instalação serão documentados 
 6. Organizar etapas e critérios de verificação em `docs/PLAN.md`.
 7. Implementar a primeira fatia funcional: **mapa → visualizar ocorrência → abrir detalhes**.
 
-Os caminhos acima representam a estrutura planejada; os documentos ainda serão criados.
+Os sete passos acima foram executados nesta entrega. Consulte [o plano](docs/PLAN.md) para as próximas fatias e [as instruções aos agentes](AGENTS.md) antes de editar.
+
+## Documentação
+
+- [Produto](docs/PRODUCT.md)
+- [Domínio](docs/DOMAIN.md)
+- [Interface](docs/UX.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Plano e verificação](docs/PLAN.md)
 
 ---
 
 **CuidAção — cuidado com o território, participação da comunidade e acompanhamento dos problemas ambientais.**
+
