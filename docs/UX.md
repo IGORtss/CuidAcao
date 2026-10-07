@@ -1,18 +1,24 @@
-# Interface e fluxos
+# Interface e fluxos — versão 1.0
 
-## Direção
-Português brasileiro, linguagem comunitária e visual sóbrio: papel claro, verde profundo e diferenciação discreta de resíduos/água. O território e a informação são o centro. Evitar slogans excessivos, dashboards decorativos, números inventados de impacto e ações sem implementação.
+## Direção e estado atual
+Português brasileiro, linguagem comunitária, papel claro, verde profundo e distinção textual de Resíduos/Água. Território e informação são o centro. Evitar números inventados de impacto, slogans excessivos e ações sem implementação. Atualmente há consulta com mapa, lista, filtros e dialog; os demais fluxos abaixo são contratos futuros.
 
-## Consulta (implementada)
-Cabeçalho CuidAção/Perequê; aviso de simulação persistente; introdução curta; categoria e estado; painel cartográfico e lista equivalente. Marcadores abrem um resumo com botão Ver detalhes. Cartões da lista abrem o mesmo detalhe. Botão Ver todas restaura enquadramento dos pontos visíveis.
+## Consulta
+Aviso de simulação persistente; categoria e estado; mapa e lista equivalentes. Marcador abre resumo com Ver detalhes; cartão abre mesmo detalhe. Ver todas enquadra pontos filtrados. Dialog exibe id, título, categoria, estado, relato, local, data, evidências e histórico. Escape/Fechar devolve foco ao controle de origem. Hash #ocorrencia=id suporta link direto, recarregar, Voltar/Avançar; retornar não perde filtros. Se filtros forem alterados e excluírem a seleção, limpar seleção. Zero resultados oferece Limpar filtros. Oculto/inexistente mostra indisponibilidade sem corpo. Duplicata mostra seu registro, rótulo e link principal; não criar nela nova participação.
 
-Detalhes em dialog nativo: título, identificador, estado, descrição, localização/coordenadas, categoria, data, evidências de exemplo e histórico simulado. Fechar ou Escape retorna foco ao controle de origem. Hash #ocorrencia=id permite link direto, recarregar e navegação Voltar/Avançar. Erro de id inválido usa mensagem visível e ação para retornar.
+## Cadastro e sessão
+Entrar e Criar conta aparecem só na etapa funcional. Pedir nome de usuário fictício, senha e confirmação local da senha; explicar que não se deve usar dados pessoais nem senha real. Cadastro bem-sucedido encaminha para entrada com username preenchido. Erro indica campos sem apagar username; nunca recuperar senha via API. Conta atual e Sair visíveis; admin tem acesso ao painel. Sessão expirada pede login e preserva texto do formulário apenas na memória da página, sem reenviar automaticamente.
 
-## Estados
-Zero resultados: mensagem com botão Limpar filtros. Erro de tiles: aviso de fundo indisponível e lista utilizável. Sem JavaScript: informar requisito. Marcador, resumo e detalhe sempre exibem contexto de simulação. Não exibir botões Registrar, Entrar ou Validar até seus fluxos existirem.
+## Criação e edição
+Formulário: categoria, descrição, título opcional, referência local opcional e ponto selecionado no mapa; latitude/longitude editáveis por teclado como alternativa. Mostrar área aproximada e aviso de que não é limite oficial. Antes de criar, oferecer consulta à lista para evitar duplicatas, sem bloqueio automático por proximidade. Exibir erros junto aos campos e resumo focável. Sucesso abre registro received; anexos são enviados depois, separadamente, e falha não reverte criação. Não mostrar estado “publicado” antes de resposta do servidor. Edição pelo autor mostra prazo/estado permitidos; após isso, oferecer complemento quando permitido.
 
-## Acessibilidade e celular
-Lista oferece alternativa ao mapa, marcadores têm título/alt identificáveis, labels explícitos, foco visível e contagem em região aria-live. No celular mapa vem antes da lista; filtros empilham quando necessário. Detalhes têm rolagem interna, largura limitada e fechamento por teclado. Categorias e estados aparecem em texto, não só cor.
+## Participação
+Separar abas/seções Relato, Contribuições e Histórico. Comentário é discussão; complemento é observação/resolução com imagens opcionais. Apoiar/Contestar exige justificativa e mostra manifestação própria, opção de alteração/retirada quando permitido. Autor não recebe controle de autovalidação. Mostrar contagens como manifestações, sem porcentagem de veracidade. Closed/discarded permite Pedir reabertura, não comentário comum. Evidências têm legenda/texto alternativo e origem simulada. Retirada/ocultação usa marcador; nunca reproduzir texto oculto no histórico público.
 
-## Fluxos futuros
-Cadastro/login → criar ocorrência (categoria, descrição, localização, evidência opcional) → leitura → complementos/participação → revisão administrativa → acompanhamento → encerramento com histórico. Perfil administrativo terá revisão, duplicatas e moderação. Formulários futuros precisam tratamento de envio, sucesso, erro e permissão verificada no servidor.
+## Administração
+Filas para recebidas, verificação, denúncias pendentes e pedidos de reabertura. Filtros de estado existentes servem para acompanhamento. Cada decisão abre formulário com motivo e referências exigidos por D03; confirmar enumera todas as contestações ativas para parecer. Ações indisponíveis explicam condição faltante. Impedir decisão própria também no servidor. Encerramento usa complemento de resolução; descarte exige razão distinta. Duplicatas/relacionadas usam busca/seleção por id e mostram as duas ocorrências antes do vínculo. Ocultar/restaurar mostra efeito na consulta e exige motivo. Aviso de revisão quando suporte de decisão deixa de estar disponível.
+
+## Estados de rede e acessibilidade
+Cada fluxo tem inicial, carregando, vazio, sucesso e erro; envio pendente desabilita submissão repetida. Em 409, preservar rascunho em memória, informar mudança e exigir recarregar/revisar antes de reenviar; nunca substituir silenciosamente versão. Em 401, pedir entrada; 403 explica falta de permissão; 404 indisponibilidade; 413/415 informam limite/tipo. Falha de API não substitui dados por fixtures.
+
+Fundo cartográfico indisponível mantém lista e entrada manual. Sem JS, informar requisito. Labels explícitos, HTML semântico, foco visível, mensagens aria-live, dialog rolável e foco restaurado. Funcionar a 360px sem rolagem horizontal na página, a 200% de zoom e por teclado. Cor não é informação única; marcadores têm título/alt identificáveis. No celular mapa precede lista e filtros empilham. Não adicionar Registrar/Entrar/Validar antes da etapa correspondente.

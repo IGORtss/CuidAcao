@@ -1,20 +1,30 @@
 # Produto — CuidAção
-Versão 0.1 • 07/10/2026
+Versão normativa 1.0 • 07/10/2026
 
-## Problema, público e objetivo
-Moradores do Perequê, Guarujá (SP), precisam visualizar registros ambientais por localização e acompanhar um problema com suas contribuições reunidas. O CuidAção organiza mapa, ocorrência, evidências, participação e histórico. É uma simulação funcional para apresentação acadêmica, não um serviço público lançado.
+## Objetivo e contexto
+Organizar registros ambientais localizados, contribuições e acompanhamento de problemas do Perequê, Guarujá, para moradores interessados na situação do bairro. O produto é uma simulação funcional para apresentação de TCC, sem lançamento como serviço público. Todas as contas, ocorrências e evidências usadas na demonstração devem ser fictícias e identificadas como tais.
 
-## Escopo confirmado
-Leitura pública; cadastro para participar; qualquer morador com conta pode registrar. Ocorrências recebem comentários, complementos e verificação comunitária. Administradores moderam, revisam, vinculam duplicatas e encerram com justificativa. O território é Perequê; o tema é ambiental. Demonstração inicial concentra resíduos e água, sem restringir permanentemente a essas categorias.
+## Escopo obrigatório da versão de apresentação
+- Consulta pública por mapa e lista, filtros por categoria/estado, detalhes e link direto.
+- Cadastro funcional por nome de usuário e senha, entrada e saída; contas demonstrativas adicionais para roteiro reproduzível.
+- Criação persistente com localização, edição limitada pelo autor e correção administrativa auditada.
+- Comentários, complementos, imagens de exemplo, apoio e contestação.
+- Revisão administrativa, confirmação observacional, acompanhamento, encerramento e reabertura.
+- Denúncia de conteúdo inadequado, ocultação/restauração, vínculo de duplicatas e de ocorrências relacionadas.
+- Histórico desde a primeira escrita, permissões verificadas no servidor e restauração local da demonstração.
 
-## Primeira entrega
-Mapa geográfico com navegação e marcadores, lista equivalente, seleção e detalhes, filtros por categoria/estado, ligação direta aos detalhes. Dados locais fictícios e sinalizados. Sem login, criação ou alterações nesta fatia de leitura.
+Categorias fechadas para esta versão: Resíduos e Água. A escolha cobre os dois problemas centrais do TCC e preserva o código existente. Novas categorias exigem revisão explícita de domínio; não são necessárias para concluir a apresentação. Abrangência conceitual: Perequê. Abrangência técnica demonstrativa: área aproximada definida em DOMAIN, sem valor cartográfico oficial.
 
-## Limites
-Não incluir diagnóstico médico, certificação de balneabilidade, emergência, promessa de ação oficial, IA no produto, recompensas, rede social genérica ou coleta de dados reais. Participação comunitária é informação observacional, não prova técnica. Uso de agentes no desenvolvimento não exige IA na interface.
+## Fora desta versão
+IA dentro do produto, chatbots, rankings, recompensas, contato com autoridades, promessa de atendimento oficial, diagnóstico médico, laudos, medição de balneabilidade, notificações externas, recuperação de senha por e-mail, coleta de dados reais, aplicação móvel nativa e deploy público. Não há prova de residência nem validação de identidade real.
 
-## Critérios de sucesso
-Pessoa visitante encontra uma ocorrência pelo mapa ou lista, vê descrição/categoria/estado/localização e retorna à visão geral. O mesmo fluxo funciona no celular e por teclado. A demonstração explicita que seus registros são simulados. Falha no fundo cartográfico mantém a consulta pela lista.
+## Entrega atual e alvo
+Implementado: leitura com quatro registros estáticos, mapa, lista, filtros e detalhes. A especificação 1.0 define o restante; não o declara implementado. Estado por etapa em PLAN e cenários de aprovação em ACCEPTANCE.
 
-## Proveniência
-Consolidado das conversas do TCC e recomendações aceitas em 06/10/2026; nome CuidAção e autorização de implementação em 07/10/2026. Detalhes não recuperados são identificados em DOMAIN como propostas ou pendências, sem inventar consenso.
+## Sucesso da versão completa
+Uma demonstração deve mostrar cadastro, criação, persistência após reinício, contribuição de outra conta, revisão por administrador, acompanhamento, encerramento e histórico. Também deve mostrar uma duplicata, uma contestação, moderação e negação de uma ação sem permissão. Consulta e formulários essenciais devem funcionar em viewport móvel e por teclado. Falha dos tiles não impede consulta ou entrada manual de coordenadas. O roteiro deve ser restaurável sem apagar bases alheias.
+
+## Autoridade e proveniência
+As decisões gerais vêm das conversas do projeto; nome CuidAção e primeiro protótipo foram estabelecidos em 07/10/2026. Regras operacionais, limites numéricos e escolhas técnicas da versão 1.0 foram definidos nesta revisão, autorizada pelo usuário após a auditoria. São decisões novas para implementação, não uma alegação de consenso anterior.
+
+DOMAIN governa comportamento; DATA_MODEL e API o operacionalizam; UX define apresentação; ARCHITECTURE define implementação; ACCEPTANCE define evidência de conclusão; PLAN separa trabalho entregue e futuro. Em conflito, corrigir os documentos antes de implementar a parte conflitante.

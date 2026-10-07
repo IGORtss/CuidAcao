@@ -36,7 +36,7 @@ Dados fictícios utilizados na demonstração deverão ser identificados como si
 - Administração e moderação das ocorrências.
 - Histórico de alterações e encerramento dos registros.
 
-Esta lista apresenta o escopo geral. Regras detalhadas de estados, validação, permissões e resolução serão registradas na documentação de domínio antes da implementação dessas funcionalidades.
+Esta lista apresenta o escopo geral. Regras de estados, validação, permissões e resolução estão definidas na especificação 1.0 em docs/DOMAIN.md. A implementação continua dividida em etapas; documentação pronta não significa funcionalidade pronta.
 
 ## Desenvolvimento com agentes de IA
 
@@ -81,23 +81,26 @@ npm run test:e2e
 
 ## Próximos passos
 
-1. Criar `AGENTS.md` com as instruções de trabalho para os agentes.
-2. Consolidar objetivo, público, escopo e limites em `docs/PRODUCT.md`.
-3. Registrar as regras de ocorrências e participação em `docs/DOMAIN.md`.
-4. Documentar páginas e fluxos em `docs/UX.md`.
-5. Formalizar a arquitetura e a stack em `docs/ARCHITECTURE.md`.
-6. Organizar etapas e critérios de verificação em `docs/PLAN.md`.
-7. Implementar a primeira fatia funcional: **mapa → visualizar ocorrência → abrir detalhes**.
+1. Completar os cenários de navegação pendentes.
+2. Implementar API, banco, cadastro, sessão e criação com histórico transacional.
+3. Implementar participação e evidências.
+4. Implementar administração, transições, duplicatas e moderação.
+5. Verificar o roteiro completo e preparar a apresentação.
 
-Os sete passos acima foram executados nesta entrega. Consulte [o plano](docs/PLAN.md) para as próximas fatias e [as instruções aos agentes](AGENTS.md) antes de editar.
+A especificação 1.0 fecha as regras da versão demonstrativa. Backend planejado: Node 24, Fastify e SQLite; ainda não instalado. Categorias desta versão: Resíduos e Água. Área cartográfica aproximada, explicitamente simulada. Consulte [o plano](docs/PLAN.md) para distinguir entregas e pendências.
 
-## Documentação
+## Documentação normativa 1.0
 
-- [Produto](docs/PRODUCT.md)
-- [Domínio](docs/DOMAIN.md)
-- [Interface](docs/UX.md)
+- [Produto e escopo](docs/PRODUCT.md)
+- [Regras e permissões](docs/DOMAIN.md)
+- [Interface e fluxos](docs/UX.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
+- [Modelo de dados](docs/DATA_MODEL.md)
+- [Contrato da API](docs/API.md)
+- [Critérios de aceitação](docs/ACCEPTANCE.md)
 - [Plano e verificação](docs/PLAN.md)
+- [Decisões desta revisão](docs/DECISIONS.md)
+- [Instruções aos agentes](AGENTS.md)
 
 ---
 
