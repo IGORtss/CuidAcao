@@ -7,6 +7,23 @@
 - [x] Instruções aos agentes e registro de decisões desta revisão.
 - [x] Três testes Node, build e oito execuções E2E da consulta existente.
 
+## Trilha transversal — direção visual e redesenho de interface 1.1 (08/10/2026)
+
+Esta trilha não substitui as etapas de domínio; implementar incrementalmente, preservando AC01–AC30 e a stack. [Contrato de frontend](FRONTEND_DESIGN.md).
+
+- [x] Seleção e aprovação da direção visual **V6** (entrada cartográfica abstrata e assimétrica, sem CTA redundante).
+- [x] Criação dos quadros estáticos de transição 02/03 e exploração 04, componentes e tokens no Figma; **estudos visuais**, não produto funcional.
+- [x] Registro das decisões de interface e distinção entre ilustração, dados simulados e mapa Leaflet real.
+- [ ] Corrigir textos sobrepostos nos painéis Figma 03/04 e retirar “Vegetação”, categoria fora de escopo.
+- [ ] Completar no Figma detalhe expandido, experiência de discussão/histórico e adaptação móvel.
+- [ ] Implementar tokens e hero V6 no frontend atual **sem alterar lógica existente**; nenhum botão “Explorar o mapa” na área central.
+- [ ] Implementar transição pela rolagem normal com alternativa para `prefers-reduced-motion`, acesso por teclado e links diretos.
+- [ ] Ajustar mapa/lista, painel comunitário adaptativo, ordenação explicável dos destaques e filtros **Resíduos/Água + estado**.
+- [ ] Adaptar detalhe em camadas preservando hash, foco, Escape, filtros e permissões; não adicionar threading/feed global sem alteração normativa do domínio.
+- [ ] Validar FE01–FE10 com testes, build, E2E, viewport 360px, zoom 200%, falha de tiles e de API.
+
+**Dependências:** aproveitar funcionalidades já implementadas no repositório/ramo de trabalho escolhido. As telas Figma não são dados geográficos nem evidência de conclusão de FE; os testes anteriores da Etapa 1 não validam o novo frontend.
+
 ## Etapa 1 — completar contrato de leitura
 - [ ] Cobrir Voltar/Avançar, filtro que invalida seleção e foco vindo do mapa.
 - [ ] Resolver divergências encontradas por esses cenários sem alterar regras de domínio.
