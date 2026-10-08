@@ -38,6 +38,16 @@ Dados fictícios utilizados na demonstração deverão ser identificados como si
 
 Esta lista apresenta o escopo geral. Regras de estados, validação, permissões e resolução estão definidas na especificação 1.0 em docs/DOMAIN.md. A implementação continua dividida em etapas; documentação pronta não significa funcionalidade pronta.
 
+## Nova direção visual do frontend (08/10/2026)
+
+A entrada do CuidAção terá **cartografia artística abstrata** como protagonista, tipografia editorial e composição assimétrica. A **V6 foi aprovada como referência visual**; o botão “Explorar o mapa” foi retirado porque a rolagem natural da página fará a passagem à exploração.
+
+A experiência planejada usa transição da ilustração para o **mapa Leaflet real**, um painel comunitário compacto/expansível com registros em destaque, detalhes que preservam contexto cartográfico e navegação móvel acessível. Nada disso transforma cartografia ilustrativa ou registros de exemplo em informação geográfica validada. **O código neste repositório ainda precisa implementar o redesenho.**
+
+- [Especificação detalhada do frontend](docs/FRONTEND_DESIGN.md) — decisões aprovadas, telas em estudo, restrições técnicas e critérios FE.
+- [Figma editável](https://www.figma.com/design/I2Qk0iFboOAnJ5oENX5DNu) — apresentação V6 e estudos estáticos da transição/mapa.
+- [Plano por etapas](docs/PLAN.md) — separa documentação, protótipo no Figma e implementação futura.
+
 ## Desenvolvimento com agentes de IA
 
 Agentes como o Codex apoiarão a documentação, implementação e revisão do projeto. O desenvolvimento seguirá etapas pequenas e verificáveis, com regras explícitas para reduzir inconsistências e funcionalidades sem relação com o objetivo do TCC.
@@ -66,7 +76,7 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O fundo cartográfico exige internet; se falhar, use a lista. O repositório é privado: o clone exige autenticação de uma conta com acesso.
+Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O fundo cartográfico exige internet; se falhar, use a lista. O repositório é público no GitHub; não são necessárias credenciais para clonar.
 
 ## Verificar
 
@@ -94,6 +104,7 @@ A especificação 1.0 fecha as regras da versão demonstrativa. Backend planejad
 - [Produto e escopo](docs/PRODUCT.md)
 - [Regras e permissões](docs/DOMAIN.md)
 - [Interface e fluxos](docs/UX.md)
+- [Direção visual do frontend 1.1](docs/FRONTEND_DESIGN.md)
 - [Arquitetura](docs/ARCHITECTURE.md)
 - [Modelo de dados](docs/DATA_MODEL.md)
 - [Contrato da API](docs/API.md)
