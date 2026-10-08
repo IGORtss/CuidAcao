@@ -1,5 +1,5 @@
 # Arquitetura — versão 1.0
-07/10/2026 • decisões para implementação, sem backend entregue nesta revisão.
+07/10/2026 • arquitetura alvo; persistência e consulta pública implementadas em código, com validação local pelo usuário registrada em PLAN.
 
 ## Escolhas
 | Camada | Decisão | Motivo |
@@ -11,7 +11,7 @@
 | Arquivos | Diretório privado local, @fastify/multipart e sharp | Upload limitado, decodificação e remoção de metadados |
 | Testes | node:test, Fastify inject, Playwright | Domínio, API real com banco temporário e fluxos de interface |
 
-Não adicionar framework de frontend, ORM, microsserviços ou serviços pagos nesta versão. Versões exatas novas devem ser fixadas no lockfile na etapa de instalação e compatibilidade comprovada no Node 24; escolhas acima não afirmam que dependências futuras já foram instaladas. Pacote atual mantém compatibilidade de leitura com Node 22.12+; atualizar engines para Node 24 na etapa de backend.
+Não adicionar framework de frontend, ORM, microsserviços ou serviços pagos nesta versão. Versões exatas novas devem ser fixadas no lockfile na etapa de instalação e compatibilidade comprovada no Node 24; escolhas acima não afirmam que dependências futuras já foram instaladas. O pacote exige Node 24.x; instalação e execução foram validadas pelo usuário com Node 24.21.0, conforme PLAN.
 
 ## Estrutura alvo
 src/domain/: regras puras e rótulos; src/services/: cliente API; src/ui/: fluxos; src/map.js: mapa. server/app.js: cria Fastify sem escutar; server/start.js: processo; server/routes/: HTTP; server/services/: autorização e casos de uso; server/repositories/: SQL; server/db/migrations/: esquema. tests/domain/, tests/api/, tests/e2e/. Não mover arquivos existentes apenas por estética; migrar com cada fluxo.
@@ -33,8 +33,8 @@ Para métodos de escrita exigir Origin da origem configurada, inclusive autentic
 ## Cartografia
 Leaflet empacotado; tiles https://tile.openstreetmap.org/{z}/{x}/{y}.png e atribuição OpenStreetMap. Sem download em lote/cache offline personalizado. Falha mantém marcadores e lista; criação tem latitude/longitude manuais. Caixa D02 é aproximação de demonstração, não fonte oficial. Não é necessário contratar geocodificação.
 
-## Instalação e restauração — a implementar
-Scripts futuros: npm run db:migrate; npm run db:seed; npm run start; npm run demo:reset -- --confirm-demo-reset. README só os apresentará como executáveis quando existirem. Seed funciona apenas em base vazia, cria três usuários e dois administradores fictícios, dados em diferentes estados com histórico válido; credenciais são geradas e mostradas localmente, nunca commitadas. Novas contas continuam possíveis via cadastro.
+## Instalação e restauração
+Scripts implementados: npm run db:migrate, npm run db:seed e npm run start (somente API local). Instalação reproduzível por npm ci validada pelo usuário no terminal local, conforme PLAN. Script futuro: npm run demo:reset -- --confirm-demo-reset; reset/backup/restauração ainda não foram implementados. Seed funciona apenas em base vazia, cria três usuários e dois administradores fictícios, dados em diferentes estados com histórico válido; credenciais são geradas e mostradas localmente, nunca commitadas. Novas contas continuam possíveis via cadastro.
 
 Reset só aceita ambiente demo e caminho do diretório data dedicado, com aplicação parada; nunca aceita caminho arbitrário para apagar. Antes de remover, cria backup datado do banco e uploads; erro de backup cancela reset. Recria esquema/seed, invalida todas as sessões. Reset não é rota HTTP. Testar restauração do backup em diretório separado. Sem limpeza destrutiva automática no boot. Documentar localmente data/ e backups/ no .gitignore quando criados.
 

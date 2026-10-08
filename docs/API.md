@@ -1,5 +1,5 @@
 # Contrato HTTP — versão 1.0
-Alvo da implementação futura; nenhuma rota abaixo existe na entrega de leitura estática.
+Contrato da versão 1.0. As três rotas públicas de ocorrência/listagem/histórico são implementadas na fatia de API local; demais rotas continuam futuras. O frontend consome essas rotas com adaptador explícito e sem fallback para fixtures.
 
 ## Convenções
 Prefixo /api/v1, JSON UTF-8, datas UTC ISO 8601, nomes camelCase e códigos de DOMAIN. Sucesso: {data: objeto}; listas: {data: [], page, pageSize, total}. Paginação começa em 1, pageSize padrão 20, máximo 100; ordenação ocorrências createdAt DESC,id DESC, filhos/histórico ASC. Filtros categoria e estado são combinados com E; valor desconhecido retorna 422. Strings/limites em DOMAIN; campos desconhecidos rejeitados. Resposta nunca contém campos de senha/sessão.
@@ -11,6 +11,15 @@ Toda escrita vinculada a ocorrência exige expectedVersion no corpo; multipart u
 Leituras públicas aplicam D08; admin usa as mesmas rotas com includeHidden=true, nunca disponível ao usuário comum (403). Sem includeHidden, admin recebe projeção pública. Autenticação e mutações validam Origin conforme ARCHITECTURE. Não aceitar authorId/role/status/simulated em criação/edição comum.
 
 ## Rotas e corpos
+
+### Projeções da consulta pública
+Detalhamento técnico dos campos já exigidos pelo contrato (sem ampliar funcionalidades):
+- Listagem retorna os campos persistidos públicos `id,authorId,title,description,category,latitude,longitude,locationLabel,status,simulated,version,duplicateOfId,closureReason,discardReason,createdAt,updatedAt`. Campos opcionais ausentes no banco retornam null; simulated é booleano. Não retorna visibility nem dados da conta/sessão.
+- Detalhe retorna os mesmos campos e `counts:{support,contest}` (manifestações da própria ocorrência, visíveis e ativas), `flags:{referencesUnavailable,referencesChanged,relationsRemoved,duplicateTargetUnavailable}`. Flags são derivadas dos snapshots das referências de decisões e do estado atual do banco; não constituem outro estado de ocorrência. Retirada/inativação/ocultação/pai oculto tornam referência indisponível; alteração do conteúdo desde snapshot sinaliza mudança; relação inexistente sinaliza remoção. Sem decisão referenciada, flags de referência são false. duplicateOfId continua preservado, mas o destino oculto/inexistente sinaliza duplicateTargetUnavailable.
+- Histórico público retorna somente `id,action,createdAt,username,reason`. username é o identificador fictício do ator humano ou null para system. Eventos de entidade report (criação ou decisão de denúncia) são privados e ficam fora de data e total; moderação resultante deve ter evento separado no alvo. Motivos públicos não incluem texto anterior/posterior ou dados de denúncia. Não são retornados snapshots, referências, ids do denunciante ou campos de arquivo.
+- IDs de entrada são identificadores CA com três dígitos legados ou seis ou mais dígitos sequenciais. IDs malformados retornam 422; válidos inexistentes/ocultos retornam 404. Query aceita apenas campos listados para cada rota. page/pageSize são inteiros decimais positivos; page aceita até 13 dígitos para manter o offset inteiro exato no JavaScript, e valores repetidos são inválidos. includeHidden/includeDuplicates aceitam somente true/false. includeHidden=true retorna 403 nesta entrega sem autenticação.
+- Erro interno usa `{error:{code:"INTERNAL_ERROR",message:"Não foi possível concluir a consulta.",requestId}}`; o identificador é gerado no servidor, sem confiar em header fornecido pelo cliente.
+
 | Método e caminho | Acesso | Corpo/parâmetros e efeito |
 | --- | --- | --- |
 | POST /auth/register | Público | {username,password}; cria user, retorna {id,username,role}; não inicia sessão |

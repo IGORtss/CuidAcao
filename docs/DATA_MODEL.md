@@ -1,5 +1,5 @@
 # Modelo de dados — versão 1.0
-Contrato alvo; tabelas/migrações ainda não implementadas. DOMAIN prevalece sobre detalhes de armazenamento.
+Contrato alvo; esquema, migrações e código da consulta pública implementados. API de escrita e demais casos de uso ainda pendentes; limitações da verificação estão em PLAN. DOMAIN prevalece sobre detalhes de armazenamento.
 
 ## Convenções
 IDs TEXT UUID gerados pelo servidor, exceto occurrence.id público sequencial CA-000001 (sequência transacional, sem MAX+1 fora de transação). Datas TEXT ISO UTC; booleanos INTEGER 0/1; códigos de domínio persistidos em inglês. FKs com exclusão RESTRICT. Toda entidade tem createdAt; mutáveis têm updatedAt. Texto validado pela aplicação e invariantes estruturais por CHECK/UNIQUE/FK. Não persistir segredos em eventos.
@@ -27,4 +27,9 @@ Projeção pública expõe ação, data, nome de usuário fictício quando aprop
 Índices: occurrences(status,category,createdAt,id), occurrences(duplicateOfId), contributions(occurrenceId,createdAt,id), events(occurrenceId,createdAt,id), reports(status,createdAt), sessions(expiresAt). Categoria CHECK residuos/agua. Conversão de rótulos pertence ao adaptador/UI.
 
 ## Migração de fixtures
-Quatro fixtures atuais são exemplos estáticos e permanecem até a API de leitura estar pronta. Na troca, construir seed com contas fictícias, descrições, coordenadas e histórico coerente com D03; não importar cegamente “Estado demonstrativo” como prova de transição. IDs CA-001 antigos podem ser preservados no seed para links existentes; sequência nova inicia em CA-000005. Não oferecer fallback silencioso para fixtures quando a API falhar: mostrar erro e tentar novamente.
+Quatro fixtures históricas são exemplos estáticos preservados para testes antigos; o frontend consulta somente a API. Na troca, construir seed com contas fictícias, descrições, coordenadas e histórico coerente com D03; não importar cegamente “Estado demonstrativo” como prova de transição. IDs CA-001 antigos podem ser preservados no seed para links existentes; sequência nova inicia em CA-000005. Não oferecer fallback silencioso para fixtures quando a API falhar: mostrar erro e tentar novamente.
+
+## Detalhes de armazenamento da base implementada
+Migração 001 usa tabelas STRICT. `occurrence_sequence(singleton=1,nextValue)` controla a numeração, acessível somente em transação pela primitiva de IDs; inicia em 1 numa base sem seed e passa a 5 junto do seed que reserva CA-001–CA-004. Rollback devolve o número reservado. `events.actorId=NULL` representa system; atores humanos mantêm FK para users. O seed usa atores humanos fictícios, sem criar conta system. Anexos têm FK composta para garantir que contribuição e ocorrência correspondam. A relação tem chave composta, sem id artificial ou updatedAt, e é removida/recriada por futuros serviços auditados. Eventos não admitem UPDATE/DELETE.
+
+Regras de permissão de escrita, transições e alvos polimórficos continuam responsabilidade dos futuros serviços; o esquema e a primitiva transacional não os substituem. A consulta pública tem projeção própria, definida em API, sem snapshots ou eventos de entidade report. O seed prepara uma linha do tempo fechada, não expõe transições ao usuário. Nenhuma credencial integra seus eventos.

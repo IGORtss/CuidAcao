@@ -16,10 +16,10 @@ export function createMap(element, onSelect, onTileError) {
       const label = document.createElement('small'); label.textContent = 'Registro simulado';
       const heading = document.createElement('strong'); heading.textContent = item.title;
       const state = document.createElement('p'); state.textContent = item.status;
-      const button = document.createElement('button'); button.textContent = 'Ver detalhes'; button.addEventListener('click', () => onSelect(item.id));
+      const button = document.createElement('button'); button.textContent = 'Ver detalhes'; button.addEventListener('click', () => onSelect(item.id,{kind: 'map', element: button}));
       popup.append(label, heading, state, button); marker.bindPopup(popup).addTo(group); markers.set(item.id, marker);
     }
   }
   function fit() { if (group.getLayers().length) map.fitBounds(group.getBounds().pad(.25), {maxZoom: 16}); }
-  return {show,fit,focus(id) { const marker = markers.get(id); if (marker) {map.panTo(marker.getLatLng()); marker.openPopup();} }};
+  return {show,fit,getFocusTarget(id) {return markers.get(id)?.getElement();},focus(id) { const marker = markers.get(id); if (marker) {map.panTo(marker.getLatLng()); marker.openPopup();} }};
 }
