@@ -23,3 +23,22 @@ A 0.1 deixava categorias e cartografia oficial abertas; a 1.0 fecha duas categor
 
 ## Limitações externas
 Sem fonte cartográfica oficial incorporada; sem alegação de precisão territorial. Sem revisão de normas específicas da instituição de ensino, pois não foram fornecidas. Sem avaliação de operação pública/produção. Nenhuma dessas limitações impede os critérios funcionais definidos para o TCC demonstrativo.
+
+
+## Direção de frontend aprovada em 08/10/2026 — V6
+
+**Fonte:** iterações de composição e aprovação explícita do usuário após a V6. [Especificação detalhada](FRONTEND_DESIGN.md) e [Figma editável](https://www.figma.com/design/I2Qk0iFboOAnJ5oENX5DNu). Esta seção complementa a consolidação 1.0; não modifica o domínio.
+
+| Tema | Decisão | Consequência |
+| --- | --- | --- |
+| Protagonismo | **Mapa artístico abstrato** em tela inteira, assimetria editorial, texto integrado à cartografia | Evitar hero padronizado em duas colunas e fotografia genérica |
+| Direção visual | Atmosfera azul-petróleo/grafite/tons terrosos, superfície de leitura clara só quando necessária, mapa relativamente minimalista | Substitui a antiga referência genérica de papel claro/verde da UX |
+| Hero | Sem CTA “Explorar o mapa” | A rolagem normal revela a exploração; navegação pode oferecer salto acessível |
+| Passagem | Transição suave da ilustração para **Leaflet/OSM real** | Arte não representa limite/ruas reais; movimento reduzido deve ter caminho direto |
+| Exploração | Mapa dominante, filtros legítimos e painel comunitário adaptativo | Desktop compacto/expansível; móvel bottom sheet, com lista alternativa |
+| Painel | Destaques de problemas em acompanhamento, não painel de números genéricos ou feed de comentários | Seleção transparente por registros/atualização, sem gravidade ou validação deduzida |
+| Detalhes | Prévia contextual → leitura ampla, preservando contexto do mapa; ações Acompanhar → Discutir → Contribuir | Não equivale a serviço de assinatura ou notificações; respeitar DOMAIN D05 |
+| Discussão e histórico | Conversa visualmente própria, histórico de alterações separado | Threading real e feed global requerem mudanças futuras de API/modelo; não inventar |
+| Integridade visual | Fotos só quando houver evidência vinculada; senão recorte do mapa funcional ou texto | Proibir mapa/registro fabricados para representar situação real |
+
+**Estado:** V6 aprovada como **identidade**; quadros 02–04 do Figma são **estudos** e ainda têm pequenos problemas de composição, texto e um filtro “Vegetação” inválido para a versão 1.0. Não considerar imagens, animação, responsividade ou funcionalidades do mockup como já implementadas.
