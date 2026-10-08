@@ -1,7 +1,23 @@
-# Interface e fluxos — versão 1.0
+# Interface e fluxos — versão 1.0 (domínio) + direção visual 1.1
 
 ## Direção e estado atual
-Português brasileiro, linguagem comunitária, papel claro, verde profundo e distinção textual de Resíduos/Água. Território e informação são o centro. Evitar números inventados de impacto, slogans excessivos e ações sem implementação. Atualmente há consulta com mapa, lista, filtros e dialog; os demais fluxos abaixo são contratos futuros.
+Português brasileiro, linguagem comunitária e informação territorial no centro. **A direção visual aprovada em 08/10/2026 substitui a antiga recomendação de “papel claro e verde profundo” como referência geral de interface.** Passamos a uma cartografia artística abstrata integrada à apresentação, com azul-petróleo, grafite quente, areia e acentos terrosos, mantendo superfícies claras pontuais de leitura e contraste. Detalhes normativos, Figma, limites, responsividade e critérios FE estão em [FRONTEND_DESIGN.md](FRONTEND_DESIGN.md).
+
+A **apresentação V6** foi aprovada visualmente. As telas de transição e exploração no Figma são estudos editáveis, não estado funcional nem aprovação pixel-perfect. O código atual do repositório conserva consulta com mapa, lista, filtros e dialog; os demais fluxos abaixo são contratos futuros. Evitar números inventados de impacto, slogans excessivos, rankings de gravidade e ações sem implementação.
+
+### Entrada e passagem para o mapa
+- Cartografia abstrata ocupa a apresentação inteira, com composição assimétrica, marca, título “Um território em cuidado coletivo.” e texto curto integrado à imagem.
+- **Não criar botão “Explorar o mapa” no hero**: a rolagem natural conduz à exploração. Link de navegação superior pode saltar diretamente ao mapa.
+- Em rolagem normal, camadas gráficas desaparecem gradualmente e o mapa Leaflet real se torna a superfície funcional. Não transformar litoral imaginário em geografia supostamente real; garantir atribuição e aviso de área aproximada.
+- Sem bloqueio obrigatório de rolagem. Respeitar `prefers-reduced-motion`, teclado, links diretos e fallback de lista; o movimento não é requisito para consultar ocorrências.
+
+### Composição de exploração
+- Mapa visualmente dominante; painel comunitário opcional compacto/expansível em desktop e bottom sheet em móvel; controles de categoria e estado permanecem utilizáveis.
+- Vista inicial do painel: **“O que merece atenção”** com ocorrências públicas ativas e ordenação transparente por atualização; não deduzir gravidade, confirmação ou importância de quantidade de votos.
+- Prioridade de leitura/ação: **Acompanhar → Discutir → Contribuir**; “Acompanhar” significa consultar evolução, não assinar notificações. Ações são condicionadas por D05.
+- Detalhe desejado: prévia no contexto do mapa e expansão confortável com Relato, Discussão/Contribuições e Histórico **separados**. Preservar `#ocorrencia=id`, foco, Escape e filtros durante migração do dialog existente.
+- O layout de conversa semelhante a fórum e o histórico comunitário global dependem de contratos de domínio/API ainda inexistentes; não criar aninhamento nem feed artificial.
+- Não incorporar filtro Vegetação visto em mockup: apenas **Resíduos e Água**. As posições do desenho Figma são ilustrativas e não equivalem a dados OSM ou coordenadas reais.
 
 ## Consulta
 Aviso de simulação persistente; categoria e estado; mapa e lista equivalentes. Marcador abre resumo com Ver detalhes; cartão abre mesmo detalhe. Ver todas enquadra pontos filtrados. Dialog exibe id, título, categoria, estado, relato, local, data, evidências e histórico. Escape/Fechar devolve foco ao controle de origem. Hash #ocorrencia=id suporta link direto, recarregar, Voltar/Avançar; retornar não perde filtros. Se filtros forem alterados e excluírem a seleção, limpar seleção. Zero resultados oferece Limpar filtros. Oculto/inexistente mostra indisponibilidade sem corpo. Duplicata mostra seu registro, rótulo e link principal; não criar nela nova participação.
