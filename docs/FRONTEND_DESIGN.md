@@ -41,18 +41,18 @@ Tokens de referência presentes na biblioteca do Figma (valores iniciais sujeito
 
 | Papel | Hex |
 | --- | --- |
-| fundo principal | \`#102A2D\` |
-| oceano/área escura | \`#1D4247\` |
-| terra | \`#40574D\` |
-| contornos | \`#8B977E\` |
-| areia | \`#A6987C\` |
-| superfície escura | \`#182F31\` |
-| painel claro | \`#E7E2D4\` |
-| texto claro | \`#F0EBDD\` |
-| texto escuro | \`#243333\` |
-| texto secundário | \`#B9C4BA\` |
-| destaque | \`#C99D76\` |
-| borda | \`#65766C\` |
+| fundo principal | `#102A2D` |
+| oceano/área escura | `#1D4247` |
+| terra | `#40574D` |
+| contornos | `#8B977E` |
+| areia | `#A6987C` |
+| superfície escura | `#182F31` |
+| painel claro | `#E7E2D4` |
+| texto claro | `#F0EBDD` |
+| texto escuro | `#243333` |
+| texto secundário | `#B9C4BA` |
+| destaque | `#C99D76` |
+| borda | `#65766C` |
 
 Tipografia editorial: **Noto Serif** no estudo Figma; fallback serif apropriado. Interface e rótulos: **Inter** com fallback de sistema. A escolha final de carregamento de fontes deve preservar desempenho, caracteres portugueses, contraste e legibilidade. Nunca usar caixa alta excessiva nos textos de leitura; pequenas legendas territoriais podem ser em caixa alta.
 
@@ -77,9 +77,9 @@ Controles com raios moderados, bordas discretas e foco bem visível. O destaque 
 2. Uma seção de progressão controlada por rolagem utiliza camadas sobrepostas: arte ilustrativa, tipografia da introdução e mapa Leaflet. A arte diminui opacidade, a introdução perde destaque, os rótulos/controles do mapa se revelam; evitar transição de costa fictícia como se fosse costa real.
 3. Preferir revelar o **mapa real por baixo da camada artística**, em vez de simular uma “transformação geográfica” inventada. O momento exato de ocultar a ilustração deve evitar saltos visuais e mostrar atribuição OpenStreetMap.
 4. A progressão da seção deve ser limitada e reversível pela rolagem: entrar e voltar preserva mapa, filtros, seleção e posição quando possível. Não recriar instâncias Leaflet a cada frame; manter a alternativa de lista disponível.
-5. O mapa recebe interação normal quando visível e utilizável. A rolagem sobre ele não deve ser capturada inesperadamente pelo zoom; preservar ou rever conscientemente o \`scrollWheelZoom: false\` existente para não disputar o scroll da página.
-6. Deep links \`#ocorrencia=id\`, navegação pelo teclado e acesso direto ao mapa não dependem de completar a animação. Quando necessário, ir diretamente ao estado funcional.
-7. Com \`prefers-reduced-motion: reduce\`, dispensar efeitos de movimento/fade prolongados e apresentar o estado funcional imediatamente. Se JS ou tiles falharem, manter uma via sem animação e a lista legível.
+5. O mapa recebe interação normal quando visível e utilizável. A rolagem sobre ele não deve ser capturada inesperadamente pelo zoom; preservar ou rever conscientemente o `scrollWheelZoom: false` existente para não disputar o scroll da página.
+6. Deep links `#ocorrencia=id`, navegação pelo teclado e acesso direto ao mapa não dependem de completar a animação. Quando necessário, ir diretamente ao estado funcional.
+7. Com `prefers-reduced-motion: reduce`, dispensar efeitos de movimento/fade prolongados e apresentar o estado funcional imediatamente. Se JS ou tiles falharem, manter uma via sem animação e a lista legível.
 
 Os valores exatos de duração/deslocamento e easing são detalhes de implementação a aferir em desktop/móvel; não fixar números arbitrários sem teste real. Não usar bibliotecas pesadas de animação sem justificar; CSS/IntersectionObserver e JS leve são preferíveis inicialmente.
 
@@ -100,10 +100,10 @@ A interface prevê um painel **opcional**, inicialmente compacto/flutuante, que 
 A vista inicial responde **“O que merece atenção”**, com um destaque editorial e uma lista curta de outros problemas. **Não** repetir contadores de resumo do mapa nem despejar eventos/comentários recentes no painel. O foco são ocorrências contextualizadas.
 
 Para dados reais da demonstração, a seleção editorial automática deve ser **explicável e não inferir gravidade**:
-- considerar só ocorrências públicas e visíveis, sem \`duplicateOfId\`, nas categorias aprovadas e com estado não terminal (received, community_review, confirmed, monitoring);
-- ordenar por \`updatedAt\` descendente e id como desempate estável; limitar a três na apresentação inicial;
+- considerar só ocorrências públicas e visíveis, sem `duplicateOfId`, nas categorias aprovadas e com estado não terminal (received, community_review, confirmed, monitoring);
+- ordenar por `updatedAt` descendente e id como desempate estável; limitar a três na apresentação inicial;
 - descrever como “registros ativos atualizados recentemente” quando necessário, **sem** rótulos como “mais grave”, “urgente” ou “mais validado”; número de apoios não é pontuação de verdade;
-- no protótipo estático, não inventar \`updatedAt\`; se indisponível, usar \`createdAt\` e rotular como seleção demonstrativa;
+- no protótipo estático, não inventar `updatedAt`; se indisponível, usar `createdAt` e rotular como seleção demonstrativa;
 - se não houver elegíveis, mostrar estado vazio e acesso à lista; nada fictício é inserido como substituto de dado faltante.
 
 Esses critérios são uma **regra de ordenação de interface**, não validação comunitária, ranking público ou mudança do estado da ocorrência. Priorizar API/DOMÍNIO existente caso exponha ordenação diferente; documentar ajustes antes de implementá-los.
@@ -119,13 +119,13 @@ A transição desejada é **mapa → prévia contextual → leitura expandida**.
 
 Organização prevista: **Relato**, **Discussão/Contribuições**, **Histórico** em seções distinguíveis. Eventos de domínio continuam fora do fluxo de mensagens de discussão. O histórico é imutável, cronológico e filtrado por visibilidade; nunca exibir dados ocultos.
 
-O detalhe existente usa \`<dialog>\` e hash \`#ocorrencia=id\`. O redesenho deve **preservar AC01/AC02** (link direto, reload, Voltar/Avançar, foco restaurado, filtros), não substituir por uma camada que perca acessibilidade ou semântica modal. Na versão expandida, manter Escape/Fechar, foco, rolagem interna e retorno coerente ao mapa.
+O detalhe existente usa `<dialog>` e hash `#ocorrencia=id`. O redesenho deve **preservar AC01/AC02** (link direto, reload, Voltar/Avançar, foco restaurado, filtros), não substituir por uma camada que perca acessibilidade ou semântica modal. Na versão expandida, manter Escape/Fechar, foco, rolagem interna e retorno coerente ao mapa.
 
-**Lacunas de contrato:** mensagens realmente **aninhadas** em tópicos/respostas exigem \`parentId\` e regras de persistência ainda inexistentes em DOMAIN/DATA_MODEL/API. A direção visual tipo fórum está aceita como intenção, mas não se deve implementar encadeamento falso ou novo endpoint sem revisão normativa. Um **histórico global da comunidade** é diferente do histórico por ocorrência; também depende de contrato/API próprios e permanece proposta futura, não função implementada.
+**Lacunas de contrato:** mensagens realmente **aninhadas** em tópicos/respostas exigem `parentId` e regras de persistência ainda inexistentes em DOMAIN/DATA_MODEL/API. A direção visual tipo fórum está aceita como intenção, mas não se deve implementar encadeamento falso ou novo endpoint sem revisão normativa. Um **histórico global da comunidade** é diferente do histórico por ocorrência; também depende de contrato/API próprios e permanece proposta futura, não função implementada.
 
 ## 9. Estados, conteúdo e integridade
 
-Todos os textos e registros da demonstração são **fictícios**, com identificação visível. Exemplo “possível alteração da água” não pode ser convertido em “água contaminada” sem laudo; encerrar um registro não prova saneamento. Exibir rótulos de estados do DOMAIN, sem renomear \`received\` etc. nas APIs.
+Todos os textos e registros da demonstração são **fictícios**, com identificação visível. Exemplo “possível alteração da água” não pode ser convertido em “água contaminada” sem laudo; encerrar um registro não prova saneamento. Exibir rótulos de estados do DOMAIN, sem renomear `received` etc. nas APIs.
 
 Prever carregamento, vazio, erro e sucesso de controles; API indisponível não faz fallback silencioso para fixtures; duplicata redireciona leitura à principal sem duplicar participação; conteúdo oculto/inexistente mostra indisponibilidade sem vazar dados. Não derivar urgência, validação, confirmação ou estado automaticamente de votos/cores/estética.
 
@@ -136,9 +136,9 @@ Não criar botão Entrar antes de haver rota funcional; não exibir filtros e bu
 - Referências: desktop 1440×900 e móvel a partir de 360px; apoiar teclado, 200% zoom e redução de movimento. Não obrigar o usuário a atravessar tela artística para consultar a lista.
 - Desktop: mapa expansivo, painel compacto e expansível; leitura ampla sem destruir estado da consulta.
 - Móvel: hero reduzido, mapa antes da lista, filtros empilhados/recolhíveis, painel comunitário em bottom sheet com alternativa de lista simples.
-- Texto com contraste suficiente, foco visível, labels nos filtros e busca, mensagens \`aria-live\` onde fizer sentido; não depender exclusivamente de cor, hover, movimento ou toque preciso em marcador.
+- Texto com contraste suficiente, foco visível, labels nos filtros e busca, mensagens `aria-live` onde fizer sentido; não depender exclusivamente de cor, hover, movimento ou toque preciso em marcador.
 - O layout artístico não pode reduzir alvo de toque, ocultar navegação, quebrar hash ou prejudicar a leitura com sobreposição de textos.
-- Não inicializar múltiplas instâncias de Leaflet durante transição; limitar trabalho em scroll, animar \`opacity\`/\`transform\` quando possível, pausar trabalho fora da viewport, não usar grandes imagens raster de UI.
+- Não inicializar múltiplas instâncias de Leaflet durante transição; limitar trabalho em scroll, animar `opacity`/`transform` quando possível, pausar trabalho fora da viewport, não usar grandes imagens raster de UI.
 - Tratar conteúdo externo como texto (textContent) e respeitar autorização de servidor; nenhuma decisão visual muda isso.
 
 ## 11. Plano de implementação recomendado para agentes
@@ -151,7 +151,7 @@ A documentação é **contrato de direção**, não ordem para sobrescrever o fr
 4. **Experiência de exploração**: mapa com filtros categoria/estado e lista sempre acessível; marcadores reais do conjunto simulado; painel compacto/expandido com a ordenação documentada.
 5. **Detalhe em camadas**: adaptar dialog/painéis preservando links e foco; fluxo de leitura, discussão e contribuição **condicionado** às etapas de domínio efetivamente implementadas.
 6. **Móvel e estados de erro**: bottom sheet, zoom, 360px, carregamento, indisponibilidade, empty state e tiles bloqueados.
-7. **Verificar** \`npm test\`, \`npm run build\`, \`npm run test:e2e\` após alterar código; adicionar testes E2E de rolagem reduzida, hash, filtros, foco e telas móveis. Documentar comandos realmente executados.
+7. **Verificar** `npm test`, `npm run build`, `npm run test:e2e` após alterar código; adicionar testes E2E de rolagem reduzida, hash, filtros, foco e telas móveis. Documentar comandos realmente executados.
 
 **Não** trocar Vite/Leaflet por framework novo, mudar tabelas ou endpoints ou implementar cadastro, botões administrativos, push, geocodificação e tópicos aninhados só para parecer com o Figma.
 
