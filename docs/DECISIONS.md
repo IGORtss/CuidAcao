@@ -42,3 +42,9 @@ Sem fonte cartográfica oficial incorporada; sem alegação de precisão territo
 | Integridade visual | Fotos só quando houver evidência vinculada; senão recorte do mapa funcional ou texto | Proibir mapa/registro fabricados para representar situação real |
 
 **Estado:** V6 aprovada como **identidade**; quadros 02–04 do Figma são **estudos** e ainda têm pequenos problemas de composição, texto e um filtro “Vegetação” inválido para a versão 1.0. Não considerar imagens, animação, responsividade ou funcionalidades do mockup como já implementadas.
+
+
+## Retomada do desenvolvimento funcional — 09/10/2026
+O usuário pediu continuar a sequência funcional do TCC e interrompeu novas tarefas de frontend. Entrega desta etapa concentra persistência, identidade e criação (itens 3–5 da sequência). Histórico é antecipado ao item 11 porque D09 exige auditoria desde a primeira escrita. Controles mínimos de formulário integram o backend, sem nova direção visual.
+
+A branch remota consultada continha somente leitura estática. Esta entrega parte desse estado e não afirma incorporar o frontend local mais recente do usuário. Integração futura deve preservar as alterações locais e resolver diferenças conscientemente.

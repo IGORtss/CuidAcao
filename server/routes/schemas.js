@@ -1,0 +1,14 @@
+export const object = (properties,required=[]) => ({type:'object',additionalProperties:false,properties,required});
+const text = (minLength,maxLength) => ({type:'string',minLength,maxLength});
+export const credentials=object({username:text(3,30),password:text(12,128)},['username','password']);
+export const occurrenceFields={category:{type:'string',enum:['residuos','agua']},description:text(20,3000),title:text(5,100),locationLabel:text(0,120),latitude:{type:'number',minimum:-23.95,maximum:-23.925},longitude:{type:'number',minimum:-46.195,maximum:-46.165}};
+export const creation=object(occurrenceFields,['category','description','latitude','longitude']);
+export const editing=object({expectedVersion:{type:'integer',minimum:1},changes:{...object(occurrenceFields),minProperties:1}},['expectedVersion','changes']);
+export const pagination={page:{type:'string',pattern:'^[1-9][0-9]*$',maxLength:7},pageSize:{type:'string',pattern:'^(?:[1-9]|[1-9][0-9]|100)$'},includeHidden:{type:'string',enum:['true','false']}};
+export const reading=object({...pagination,includeDuplicates:{type:'string',enum:['true','false']},category:{type:'string',enum:['residuos','agua']},status:{type:'string',enum:['received','community_review','confirmed','monitoring','closed','discarded']}});
+export const idParams=object({id:{type:'string',pattern:'^CA-[0-9]{3,6}$'}},['id']);
+export const user=object({id:{type:'string'},username:{type:'string'},role:{type:'string',enum:['user','admin']}},['id','username','role']);
+export const occurrence=object({id:{type:'string'},authorId:{type:'string'},author:{type:'string'},title:{type:'string'},description:{type:'string'},category:{type:'string'},latitude:{type:'number'},longitude:{type:'number'},locationLabel:{type:'string'},status:{type:'string'},simulated:{type:'boolean'},visibility:{type:'string'},version:{type:'integer'},duplicateOfId:{type:['string','null']},closureReason:{type:['string','null']},discardReason:{type:['string','null']},createdAt:{type:'string'},updatedAt:{type:'string'}});
+export const envelope = item => object({data:item},['data']);
+export const listResponse = item => object({data:{type:'array',items:item},page:{type:'integer'},pageSize:{type:'integer'},total:{type:'integer'}},['data','page','pageSize','total']);
+export const historyEvent=object({id:{type:'string'},occurrenceId:{type:'string'},entityType:{type:'string'},entityId:{type:'string'},actor:{type:'string'},action:{type:'string'},reason:{type:['string','null']},createdAt:{type:'string'},before:{},after:{},references:{type:'array',items:{}}});

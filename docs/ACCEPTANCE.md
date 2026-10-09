@@ -34,5 +34,10 @@ Cada cenário deve virar teste automatizado quando sua etapa for implementada; t
 | AC29 | 5 | Consulta e formulários a 360px, 200% zoom e teclado; foco e erros verificáveis; imagens com legenda (revisão manual + E2E) |
 | AC30 | 5 | Instalação limpa documentada, build e suíte aprovados; falha da API mostra erro sem fixtures; simulação visível em todos os fluxos |
 
-## Cobertura atual real
-Há 3 testes Node sobre fixtures/filtros/seleção e 4 cenários Playwright executados em desktop e mobile (8 execuções). Cobrem partes de AC01/AC02; não cobrem integralmente Avançar nem todo comportamento de seleção/filtro. Build validado. AC03–AC30 ainda pendentes; não marcar como prontos com base na documentação. Não usar a contagem de 8 execuções como oito funcionalidades de domínio.
+## Cobertura atual real — etapa de persistência, 09/10/2026
+
+`npm test`: **18 testes Node aprovados**, incluindo subtestes com banco real, duas contas independentes e reinício da aplicação. Cobertura de AC03–AC11: migração idempotente/seed recusado, cadastro e campos indevidos, sessão/logout/expiração, origem e limites, criação persistente com evento, validação territorial, edição/autoria/prazo, concorrência e rollback por falha de auditoria. Seed cria cinco contas (dois admins), quatro ocorrências e referências coerentes nas decisões; novo seed não altera base existente.
+
+`npm run build`: aprovado. `CUIDACAO_CHROMIUM_PATH=/tmp/chromium npm run test:e2e`: **12 execuções aprovadas**, seis cenários em desktop e mobile, incluindo cadastro/login/criação/edição/reinício/logout e falha da API sem fixtures. Tiles bloqueados. Download padrão do Chromium veio corrompido neste ambiente; utilizado Chromium 153 extraído de pacote temporário fora do repositório, sem dependência adicional do produto.
+
+A regressão de consulta verifica partes de AC01/AC02; ainda falta cobertura explícita completa de Avançar e seleção invalidada por filtro. AC12–AC30 seguem pendentes: existência de contribuições/decisões no seed não comprova endpoints de participação/administração. E2E móvel não certifica todos os critérios de 200% zoom e revisão manual de acessibilidade previstos em AC29. Nenhum deploy realizado.

@@ -1,5 +1,5 @@
 # Modelo de dados — versão 1.0
-Contrato alvo; tabelas/migrações ainda não implementadas. DOMAIN prevalece sobre detalhes de armazenamento.
+Contrato completo alvo. Migração 001-core implementa users, sessions, occurrences, contributions (para seed), events, schema_migrations e sequência de IDs. Stances, attachments, relations e reports serão adicionados em migrações posteriores. DOMAIN prevalece sobre detalhes de armazenamento.
 
 ## Convenções
 IDs TEXT UUID gerados pelo servidor, exceto occurrence.id público sequencial CA-000001 (sequência transacional, sem MAX+1 fora de transação). Datas TEXT ISO UTC; booleanos INTEGER 0/1; códigos de domínio persistidos em inglês. FKs com exclusão RESTRICT. Toda entidade tem createdAt; mutáveis têm updatedAt. Texto validado pela aplicação e invariantes estruturais por CHECK/UNIQUE/FK. Não persistir segredos em eventos.
@@ -27,4 +27,4 @@ Projeção pública expõe ação, data, nome de usuário fictício quando aprop
 Índices: occurrences(status,category,createdAt,id), occurrences(duplicateOfId), contributions(occurrenceId,createdAt,id), events(occurrenceId,createdAt,id), reports(status,createdAt), sessions(expiresAt). Categoria CHECK residuos/agua. Conversão de rótulos pertence ao adaptador/UI.
 
 ## Migração de fixtures
-Quatro fixtures atuais são exemplos estáticos e permanecem até a API de leitura estar pronta. Na troca, construir seed com contas fictícias, descrições, coordenadas e histórico coerente com D03; não importar cegamente “Estado demonstrativo” como prova de transição. IDs CA-001 antigos podem ser preservados no seed para links existentes; sequência nova inicia em CA-000005. Não oferecer fallback silencioso para fixtures quando a API falhar: mostrar erro e tentar novamente.
+As quatro fixtures agora servem de referência para o seed; a interface consulta a API e não importa as fixtures. Na troca, construir seed com contas fictícias, descrições, coordenadas e histórico coerente com D03; não importar cegamente “Estado demonstrativo” como prova de transição. IDs CA-001 antigos podem ser preservados no seed para links existentes; sequência nova inicia em CA-000005. Não oferecer fallback silencioso para fixtures quando a API falhar: mostrar erro e tentar novamente.

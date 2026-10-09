@@ -8,4 +8,4 @@ export function selectedId(hash) {
   return match?.[1] ?? null;
 }
 export function findOccurrence(items, id) { return items.find(item => item.id === id) ?? null; }
-export function formatDate(value) { return new Intl.DateTimeFormat('pt-BR', {timeZone: 'UTC'}).format(new Date(value)); }
+export function formatDate(value) { return new Intl.DateTimeFormat('pt-BR', {timeZone: 'America/Sao_Paulo'}).format(new Date(value)); }

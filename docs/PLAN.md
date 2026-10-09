@@ -30,11 +30,11 @@ Esta trilha não substitui as etapas de domínio; implementar incrementalmente, 
 Aceite: AC01–AC02 completos. Preservar testes já aprovados.
 
 ## Etapa 2 — persistência, identidade e criação auditada
-- [ ] Instalar Node 24/backend escolhido, criar migrações e seed; adicionar exclusões de dados/backup ao Git.
-- [ ] API de consulta substitui fixtures, com adaptador de códigos/rótulos e datas; não usar fallback silencioso.
-- [ ] Cadastro, login, logout, sessões, proteção de origem, permissões e limites de tentativas.
-- [ ] Criação e edição do autor, validação territorial demonstrativa e persistência.
-- [ ] Histórico transacional e versionamento desde a primeira mutação, com projeção pública/privada.
+- [x] Instalar Node 24/backend escolhido, criar migrações e seed; adicionar exclusões de dados/backup ao Git.
+- [x] API de consulta substitui fixtures, com adaptador de códigos/rótulos e datas; não usar fallback silencioso.
+- [x] Cadastro, login, logout, sessões, proteção de origem, permissões e limites de tentativas.
+- [x] Criação e edição do autor, validação territorial demonstrativa e persistência.
+- [x] Histórico transacional e versionamento desde a primeira mutação, com projeção pública/privada.
 Aceite: AC03–AC11; documentação de execução real atualizada. Esquema final pode ser criado nesta etapa, rotas posteriores permanecem ausentes. Recebidas reais ainda não transitam; seed fornece exemplos para testar participação na etapa seguinte.
 
 ## Etapa 3 — participação e imagens
@@ -61,3 +61,11 @@ Executar etapas pequenas; implementar uma capacidade com testes de falhas/permis
 
 ## Verificação da revisão de documentação
 A revisão anterior em 07/10/2026 aprovou 3 testes Node, build e 8 execuções Playwright. Chromium padrão ausente no ambiente; usar CUIDACAO_CHROMIUM_PATH=/tmp/chromium localmente quando disponível. CI continua instalando Chromium pelo Playwright. Tiles foram bloqueados; disponibilidade externa não foi certificada. Esta revisão só altera documentação e não implementa backend ou novas regras. Reexecução desta entrega: 3 testes Node aprovados, build aprovado e 8 execuções Playwright aprovadas com Chromium alternativo. Links relativos dos 11 documentos e identificadores AC01–AC30 verificados. Sem alteração de código executável ou dependências.
+
+
+## Retomada funcional — 09/10/2026
+A pedido do usuário, retomada a sequência de implementação sem novo trabalho de design. Etapa 2 implementada em branch própria: banco, API, contas, sessões, consulta, criação/edição e histórico. Controles/formulários mínimos conectam a interface existente. Acrescentado teste de cadastro/criação/edição/reinício/logout em desktop e mobile. Seed reconstrói o histórico, contribuições e referências das decisões; não importa cegamente os textos “Estado demonstrativo”.
+
+Etapa 3 é o próximo marco: comentários, complementos, manifestações e imagens. Sem implementação de rotas administrativas ou reset/backup nesta entrega.
+
+Verificação desta entrega: 18 testes Node aprovados, build aprovado e 12 execuções E2E aprovadas (desktop/mobile). Testes de persistência reabrem o banco após encerrar a aplicação; E2E reinicia o servidor e recarrega a página. Nenhum banco de usuário é utilizado pelos testes. O Chromium padrão não baixou corretamente; usado executável temporário documentado em ACCEPTANCE. AC03–AC11 cobertos; AC12–AC30 continuam futuros. Pendências anteriores de design não foram retomadas.

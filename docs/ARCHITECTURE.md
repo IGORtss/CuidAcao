@@ -1,5 +1,5 @@
 # Arquitetura — versão 1.0
-07/10/2026 • decisões para implementação, sem backend entregue nesta revisão.
+07/10/2026 • decisões normativas; backend de identidade e criação entregue na etapa de persistência.
 
 ## Escolhas
 | Camada | Decisão | Motivo |
@@ -11,7 +11,7 @@
 | Arquivos | Diretório privado local, @fastify/multipart e sharp | Upload limitado, decodificação e remoção de metadados |
 | Testes | node:test, Fastify inject, Playwright | Domínio, API real com banco temporário e fluxos de interface |
 
-Não adicionar framework de frontend, ORM, microsserviços ou serviços pagos nesta versão. Versões exatas novas devem ser fixadas no lockfile na etapa de instalação e compatibilidade comprovada no Node 24; escolhas acima não afirmam que dependências futuras já foram instaladas. Pacote atual mantém compatibilidade de leitura com Node 22.12+; atualizar engines para Node 24 na etapa de backend.
+Não adicionar framework de frontend, ORM, microsserviços ou serviços pagos nesta versão. Versões exatas novas devem ser fixadas no lockfile na etapa de instalação e compatibilidade comprovada no Node 24; escolhas acima não afirmam que dependências futuras já foram instaladas. Pacote atual mantém compatibilidade de leitura com Node 22.12+; engines atualizado para Node 24 na etapa de backend.
 
 ## Estrutura alvo
 src/domain/: regras puras e rótulos; src/services/: cliente API; src/ui/: fluxos; src/map.js: mapa. server/app.js: cria Fastify sem escutar; server/start.js: processo; server/routes/: HTTP; server/services/: autorização e casos de uso; server/repositories/: SQL; server/db/migrations/: esquema. tests/domain/, tests/api/, tests/e2e/. Não mover arquivos existentes apenas por estética; migrar com cada fluxo.
@@ -33,8 +33,8 @@ Para métodos de escrita exigir Origin da origem configurada, inclusive autentic
 ## Cartografia
 Leaflet empacotado; tiles https://tile.openstreetmap.org/{z}/{x}/{y}.png e atribuição OpenStreetMap. Sem download em lote/cache offline personalizado. Falha mantém marcadores e lista; criação tem latitude/longitude manuais. Caixa D02 é aproximação de demonstração, não fonte oficial. Não é necessário contratar geocodificação.
 
-## Instalação e restauração — a implementar
-Scripts futuros: npm run db:migrate; npm run db:seed; npm run start; npm run demo:reset -- --confirm-demo-reset. README só os apresentará como executáveis quando existirem. Seed funciona apenas em base vazia, cria três usuários e dois administradores fictícios, dados em diferentes estados com histórico válido; credenciais são geradas e mostradas localmente, nunca commitadas. Novas contas continuam possíveis via cadastro.
+## Instalação e restauração — estado por capacidade
+Scripts implementados: npm run db:migrate, npm run db:seed e npm start. Reset/backup/restauração permanecem futuros; npm run demo:reset ainda não existe. Seed funciona apenas em base vazia, cria três usuários e dois administradores fictícios, dados em diferentes estados com histórico válido; credenciais são geradas e mostradas localmente, nunca commitadas. Novas contas continuam possíveis via cadastro.
 
 Reset só aceita ambiente demo e caminho do diretório data dedicado, com aplicação parada; nunca aceita caminho arbitrário para apagar. Antes de remover, cria backup datado do banco e uploads; erro de backup cancela reset. Recria esquema/seed, invalida todas as sessões. Reset não é rota HTTP. Testar restauração do backup em diretório separado. Sem limpeza destrutiva automática no boot. Documentar localmente data/ e backups/ no .gitignore quando criados.
 
@@ -45,3 +45,11 @@ Reset só aceita ambiente demo e caminho do diretório data dedicado, com aplica
 - Node 24: https://nodejs.org/docs/latest-v24.x/api/crypto.html — scrypt e geração criptográfica.
 - Cartografia: https://operations.osmfoundation.org/policies/tiles/ (referência da primeira entrega; não auditada novamente nesta revisão).
 Os limites e parâmetros deste projeto são decisões locais, não exigências dessas fontes.
+
+
+## Entrega de persistência — 09/10/2026
+Fastify 5.12.5, better-sqlite3 13.0.3, @fastify/cookie 11.1.3 e @fastify/static 10.1.5 fixados no lockfile, executados com Node 24.19.0. Sem uploads nesta etapa; multipart/sharp continuam futuros. Consultadas novamente as documentações oficiais de validação Fastify, better-sqlite3, Node crypto e plugins cookie/static em 09/10/2026.
+
+Implementados: migração 001-core, seed atômico em base vazia, sessões de oito horas com hash do token, scrypt com no máximo duas derivações simultâneas, limites de login/cadastro, origem exata, JSON estrito, criação/edição com evento na mesma transação e comparação de versão. Erros internos não retornam SQL, caminhos ou stack. Schemas de resposta projetam apenas campos permitidos. Histórico público não retorna snapshots de conteúdo; auditoria com includeHidden exige administrador.
+
+A base possui apenas as tabelas necessárias à etapa e contribuições utilizadas pelo seed. Administração/participação de escrita não são implementadas por existir dado de exemplo. Histórico global, uploads e reset não foram antecipados.

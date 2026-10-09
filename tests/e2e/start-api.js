@@ -1,0 +1,10 @@
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createApp} from '../../server/app.js';
+import {seed} from '../../server/db/seed.js';
+const folder=mkdtempSync(join(tmpdir(),'cuidacao-e2e-'));
+const app=await createApp({dbPath:join(folder,'demo.sqlite'),origin:'http://127.0.0.1:5173'});
+await seed(app.db);
+await app.listen({host:'127.0.0.1',port:3000});
+for(const signal of ['SIGINT','SIGTERM'])process.once(signal,async()=>{await app.close();rmSync(folder,{recursive:true,force:true});process.exit(0);});
