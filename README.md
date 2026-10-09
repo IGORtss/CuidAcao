@@ -61,22 +61,49 @@ Diretrizes:
 - Verificar o comportamento entregue em cada etapa.
 - Manter uma interface clara, adequada ao território e ao público do projeto.
 
-## Estado atual
+## Estado atual — etapa de persistência
 
-**Primeira fatia implementada:** mapa → visualizar ocorrência → abrir detalhes. Inclui lista, filtros, navegação por URL e dados fictícios. Cadastro, criação, participação e administração serão implementados nas próximas fatias.
+Consulta conectada à API, cadastro/login/logout, criação e edição do autor, sessões persistentes e histórico transacional implementados na branch de persistência. Categorias: Resíduos e Água. Registros criados são sempre simulados e começam em Recebida. Autor pode editar nas primeiras 24 horas, enquanto o registro estiver em Recebida. Permissões, coordenadas e versões são verificadas no servidor.
 
-Stack inicial: JavaScript com módulos ES, Vite e Leaflet. Requer Node.js 22.12+ ou 24 LTS e npm.
+Participação, imagens, transições administrativas, denúncias e vínculos ainda são etapas futuras. O seed inclui contribuições e decisões fictícias coerentes para consulta; isso não significa que suas rotas de escrita foram implementadas. O frontend recebeu apenas controles funcionais de conta e formulário nesta entrega.
 
-## Executar localmente
+Requer **Node.js 24** e npm. Backend: Fastify 5 + SQLite/better-sqlite3. Banco local em `data/cuidacao.sqlite`, ignorado pelo Git. Não copie essa pasta para `public/` ou `dist/`.
+
+## Executar a demonstração local
+
+Na pasta do projeto:
 
 ```bash
-git clone https://github.com/IGORtss/CuidAcao.git
-cd CuidAcao
 npm ci
-npm run dev
+npm run db:migrate
+npm run db:seed
+npm run build
+npm start
 ```
 
-Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O fundo cartográfico exige internet; se falhar, use a lista. O repositório é público no GitHub; não são necessárias credenciais para clonar.
+Abra **http://127.0.0.1:3000**. O seed funciona somente em base vazia e imprime cinco contas fictícias com senhas aleatórias (três usuários, dois administradores). Guarde as credenciais localmente; nunca as envie ao Git. Cadastro de novas contas também funciona; não use dados pessoais ou senhas reais.
+
+Em execuções posteriores, use `npm start`; **não execute o seed novamente**. Fechar o servidor não apaga contas, sessões, registros ou histórico. Sessões expiram em oito horas. Ctrl+C encerra o servidor.
+
+O fundo cartográfico exige internet; sua falha preserva lista e formulário com coordenadas manuais. A área exibida é aproximada e não delimita oficialmente o Perequê. Falha da API exibe erro e opção de repetir; não substitui dados por fixtures.
+
+## Desenvolvimento em dois terminais
+
+Terminal da API:
+
+```bash
+CUIDACAO_ORIGIN=http://127.0.0.1:5173 npm run dev:api
+```
+
+Terminal da interface:
+
+```bash
+npm run dev -- --host 127.0.0.1
+```
+
+Abra exatamente **http://127.0.0.1:5173**. A origem precisa coincidir com `CUIDACAO_ORIGIN`; não alterne para localhost. Vite encaminha `/api` ao servidor em 3000. `npm run preview` sozinho testa apenas o frontend e não oferece API funcional.
+
+Variáveis opcionais: `PORT` (padrão 3000), `CUIDACAO_ORIGIN` (origem exata sem caminho), `CUIDACAO_DB_PATH` (banco dedicado). HTTP é permitido somente em origem local; não há deploy nesta etapa.
 
 ## Verificar
 
@@ -87,17 +114,16 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-`npm run preview` permite testar o build local. Os testes de navegador bloqueiam os tiles externos para verificar a alternativa pela lista de forma reproduzível.
+Os testes usam bancos temporários próprios, não a sua base demonstrativa. O E2E inicia API e Vite; deixe portas 3000 e 5173 livres. Tiles externos são bloqueados para testar a alternativa pela lista. Se um Chromium já estiver disponível no ambiente, `CUIDACAO_CHROMIUM_PATH=/caminho/do/chromium npm run test:e2e` permite utilizá-lo.
+
+Os resultados realmente executados e limites constam em [PLAN](docs/PLAN.md) e [ACCEPTANCE](docs/ACCEPTANCE.md).
 
 ## Próximos passos
 
-1. Completar os cenários de navegação pendentes.
-2. Implementar API, banco, cadastro, sessão e criação com histórico transacional.
-3. Implementar participação e evidências.
-4. Implementar administração, transições, duplicatas e moderação.
-5. Verificar o roteiro completo e preparar a apresentação.
-
-A especificação 1.0 fecha as regras da versão demonstrativa. Backend planejado: Node 24, Fastify e SQLite; ainda não instalado. Categorias desta versão: Resíduos e Água. Área cartográfica aproximada, explicitamente simulada. Consulte [o plano](docs/PLAN.md) para distinguir entregas e pendências.
+1. Comentários, complementos e manifestações de apoio/contestação.
+2. Imagens com validação, legenda e recuperação de falha de upload.
+3. Administração, transições, reabertura, denúncias, duplicatas e relacionadas.
+4. Roteiro completo, backup/reset seguro e preparação acadêmica.
 
 ## Documentação normativa 1.0
 

@@ -3,7 +3,7 @@
 ## Direção e estado atual
 Português brasileiro, linguagem comunitária e informação territorial no centro. **A direção visual aprovada em 08/10/2026 substitui a antiga recomendação de “papel claro e verde profundo” como referência geral de interface.** Passamos a uma cartografia artística abstrata integrada à apresentação, com azul-petróleo, grafite quente, areia e acentos terrosos, mantendo superfícies claras pontuais de leitura e contraste. Detalhes normativos, Figma, limites, responsividade e critérios FE estão em [FRONTEND_DESIGN.md](FRONTEND_DESIGN.md).
 
-A **apresentação V6** foi aprovada visualmente. As telas de transição e exploração no Figma são estudos editáveis, não estado funcional nem aprovação pixel-perfect. O código atual do repositório conserva consulta com mapa, lista, filtros e dialog; os demais fluxos abaixo são contratos futuros. Evitar números inventados de impacto, slogans excessivos, rankings de gravidade e ações sem implementação.
+A **apresentação V6** foi aprovada visualmente. As telas de transição e exploração no Figma são estudos editáveis, não estado funcional nem aprovação pixel-perfect. O código atual do repositório conserva consulta com mapa, lista, filtros e dialog; cadastro/login/logout e criação/edição agora estão conectados à API, sem redesenho visual. Participação e administração abaixo continuam contratos futuros. Evitar números inventados de impacto, slogans excessivos, rankings de gravidade e ações sem implementação.
 
 ### Entrada e passagem para o mapa
 - Cartografia abstrata ocupa a apresentação inteira, com composição assimétrica, marca, título “Um território em cuidado coletivo.” e texto curto integrado à imagem.

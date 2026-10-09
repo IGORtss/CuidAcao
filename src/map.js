@@ -21,5 +21,6 @@ export function createMap(element, onSelect, onTileError) {
     }
   }
   function fit() { if (group.getLayers().length) map.fitBounds(group.getBounds().pad(.25), {maxZoom: 16}); }
-  return {show,fit,focus(id) { const marker = markers.get(id); if (marker) {map.panTo(marker.getLatLng()); marker.openPopup();} }};
+  let picking=null;
+  return {show,fit,pickPoint(callback) {if(picking)map.off('click',picking);picking=event=>{picking=null;callback(event.latlng);};map.once('click',picking);element.scrollIntoView({block:'center'});},focus(id) { const marker = markers.get(id); if (marker) {map.panTo(marker.getLatLng()); marker.openPopup();} }};
 }

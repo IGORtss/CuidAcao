@@ -19,7 +19,7 @@ Categorias fechadas para esta versão: Resíduos e Água. A escolha cobre os doi
 IA dentro do produto, chatbots, rankings, recompensas, contato com autoridades, promessa de atendimento oficial, diagnóstico médico, laudos, medição de balneabilidade, notificações externas, recuperação de senha por e-mail, coleta de dados reais, aplicação móvel nativa e deploy público. Não há prova de residência nem validação de identidade real.
 
 ## Entrega atual e alvo
-Implementado: leitura com quatro registros estáticos, mapa, lista, filtros e detalhes. A especificação 1.0 define o restante; não o declara implementado. Estado por etapa em PLAN e cenários de aprovação em ACCEPTANCE.
+Implementado na etapa de persistência: consulta pela API, cadastro, login/logout, sessões, criação/edição do autor e histórico transacional. Seed local com quatro registros fictícios e cinco contas. Participação, imagens e administração continuam previstas; suas rotas ainda não foram entregues. Estado por etapa em PLAN e cenários de aprovação em ACCEPTANCE.
 
 ## Sucesso da versão completa
 Uma demonstração deve mostrar cadastro, criação, persistência após reinício, contribuição de outra conta, revisão por administrador, acompanhamento, encerramento e histórico. Também deve mostrar uma duplicata, uma contestação, moderação e negação de uma ação sem permissão. Consulta e formulários essenciais devem funcionar em viewport móvel e por teclado. Falha dos tiles não impede consulta ou entrada manual de coordenadas. O roteiro deve ser restaurável sem apagar bases alheias.

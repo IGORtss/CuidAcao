@@ -1,5 +1,7 @@
 # Contrato HTTP — versão 1.0
-Alvo da implementação futura; nenhuma rota abaixo existe na entrega de leitura estática.
+Contrato completo alvo. Implementadas nesta entrega: register/login/me/logout; GET/POST occurrences; GET/PATCH occurrences/:id; GET occurrences/:id/history. Demais rotas da tabela permanecem futuras. Sucesso e falhas seguem as convenções abaixo.
+
+A leitura desta etapa retorna os campos da ocorrência e autoria fictícia. Contagens de participação e flags de suporte serão implementadas junto das respectivas capacidades. Histórico público expõe ação, ator, data e motivo, sem snapshots; auditoria includeHidden é restrita a administradores.
 
 ## Convenções
 Prefixo /api/v1, JSON UTF-8, datas UTC ISO 8601, nomes camelCase e códigos de DOMAIN. Sucesso: {data: objeto}; listas: {data: [], page, pageSize, total}. Paginação começa em 1, pageSize padrão 20, máximo 100; ordenação ocorrências createdAt DESC,id DESC, filhos/histórico ASC. Filtros categoria e estado são combinados com E; valor desconhecido retorna 422. Strings/limites em DOMAIN; campos desconhecidos rejeitados. Resposta nunca contém campos de senha/sessão.
