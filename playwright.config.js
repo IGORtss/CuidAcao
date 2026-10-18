@@ -1,2 +1,0 @@
-import {defineConfig, devices} from '@playwright/test';
-export default defineConfig({testDir:'./tests/e2e', use:{baseURL:'http://127.0.0.1:5180', launchOptions: process.env.CUIDACAO_CHROMIUM_PATH ? {executablePath:process.env.CUIDACAO_CHROMIUM_PATH, args:['--no-sandbox']} : {}}, projects:[{name:'desktop',use:{...devices['Desktop Chrome']}},{name:'mobile',use:{...devices['Pixel 7']}}], webServer:{command:'node tests/e2e/server.js',url:'http://127.0.0.1:5180',reuseExistingServer:false}});

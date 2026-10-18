@@ -1,6 +1,6 @@
 # Instruções para agentes — CuidAção
 
-Antes de editar, ler integralmente docs/PRODUCT.md, DOMAIN.md, UX.md, ARCHITECTURE.md, DATA_MODEL.md, API.md, ACCEPTANCE.md, PLAN.md e DECISIONS.md. README descreve execução atual. PRODUCT define escopo, DOMAIN governa comportamento; os demais documentos devem concordar com ambos. Decisões explícitas do usuário prevalecem; registrar divergência e atualizar contratos antes de codificar a parte afetada.
+Antes de editar, ler integralmente apoio/documentacao/PRODUTO.md, DOMINIO.md, UX.md, ARQUITETURA.md, MODELO_DADOS.md, API.md, ACEITE.md, PLANO.md e DECISOES.md. README descreve execução atual. PRODUCT define escopo, DOMAIN governa comportamento; os demais documentos devem concordar com ambos. Decisões explícitas do usuário prevalecem; registrar divergência e atualizar contratos antes de codificar a parte afetada.
 
 ## Escopo e método
 - TCC funcional sobre o Perequê, pt-BR, dados e contas fictícios. Não afirmar que registros são denúncias reais, limite cartográfico oficial ou laudos.

@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createAdministrationClient} from '../../../codigo-fonte/servicos/api.js';
+test('cliente administrativo inclui sessão/versão e não repete falhas nem aceita páginas inconsistentes',async()=>{let calls=0;const client=createAdministrationClient(async(path,options)=>{calls++;assert.equal(options.credentials,'same-origin');assert.equal(JSON.parse(options.body).reason,'<b>Justificativa literal fictícia</b>');return {ok:false,status:409,json:async()=>({error:{message:'Versão alterada.',fields:{expectedVersion:'Revise.'}}})};});await assert.rejects(client.request('/moderation',{expectedVersion:3,reason:'<b>Justificativa literal fictícia</b>'}),error=>error.status===409&&error.fields.expectedVersion==='Revise.');assert.equal(calls,1);
+ const invalid=createAdministrationClient(async()=>({ok:true,json:async()=>({data:[],page:1,total:101,occurrenceVersion:1})}));await assert.rejects(invalid.children('CA-001','contributions'),/incompleta/);
+});
+test('cliente consulta filas privadas com filtros e paginação completos',async()=>{const calls=[],client=createAdministrationClient(async(path,options)=>{calls.push({path,options});return {ok:true,json:async()=>({data:[],total:0,page:1,pageSize:20})};});await client.list({status:'received',visibility:'hidden',page:1,pageSize:20});await client.reports({status:'pending',page:2});await client.requests({page:3});assert.match(calls[0].path,/includeHidden=true/);assert.match(calls[0].path,/visibility=hidden/);assert.equal(calls[1].path,'/api/v1/reports?status=pending&page=2');assert.equal(calls[2].path,'/api/v1/admin/reopen-requests?page=3');assert.ok(calls.every(call=>call.options.method==='GET'));
+});
