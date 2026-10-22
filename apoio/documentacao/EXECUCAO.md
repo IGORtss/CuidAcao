@@ -46,7 +46,7 @@ Etapa 2 implementada: consulta pública, migrações e base demonstrativa, cadas
 
 Item 13: ciclo integrado entre três contas novas e dois administradores, upload parcial recuperado sem duplicar registro e reinícios HTTP com leitura dos arquivos/vínculos/histórico comprovados; 116/116 Node, build e 66/66 E2E desktop/mobile aprovados, diff-check aprovado. [Roteiro isolado](VALIDACAO.md). Base de uso preservada; apresentação isolada preparada no item 14, conforme seção seguinte.
 
-Stack: JavaScript com módulos ES, Vite e Leaflet; base de persistência SQLite com better-sqlite3 13.0.3 e API pública local em Fastify 5.12.5. Requer Node.js 24 e npm. O [driver declara suporte a Node >=22](https://github.com/WiseLibs/better-sqlite3/blob/v13.0.3/package.json). O frontend consulta a API, sem fallback para fixtures. A instalação atual inclui @fastify/multipart 10.1.3 e sharp 0.35.5, com versões fixadas no lockfile. Verificação atual pelo agente em Node 24.21.0 registrada em PLAN; resultados anteriores permanecem identificados como históricos. Evidências e histórico dos bloqueios anteriores estão em PLAN.
+Stack: JavaScript com módulos ES, Vite e Leaflet; base de persistência SQLite com better-sqlite3 13.0.3 e API pública local em Fastify 5.12.5. Requer Node.js 24 e npm. O [driver declara suporte a Node >=22](https://github.com/WiseLibs/better-sqlite3/blob/v13.0.3/package.json). O frontend consulta a API, sem fallback para fixtures. A instalação atual inclui @fastify/multipart 10.1.3 e sharp 0.35.5, com versões fixadas no lockfile. Verificação atual na revisão técnica em Node 24.21.0 registrada em PLAN; resultados anteriores permanecem identificados como históricos. Evidências e histórico dos bloqueios anteriores estão em PLAN.
 
 ## Executar localmente
 
@@ -67,7 +67,7 @@ Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O proxy 
 
 O lockfile atual inclui Fastify 5.12.5, better-sqlite3 13.0.3 e dependências transitivas, sincronizados com package.json. A instalação reproduzível por `npm ci` foi validada pelo usuário no terminal local com Node 24.21.0.
 
-Histórico: nas tentativas anteriores do agente, resolução do lockfile e `npm ci` falharam com EAI_AGAIN; dependências de backend estavam ausentes, Node disponível era 26.10.0 e o ambiente recusava bind local com EPERM. Esses bloqueios foram superados na validação local informada pelo usuário; não são pendências da entrega atual. O registro detalhado permanece em PLAN.
+Histórico: nas tentativas anteriores da execução anterior, resolução do lockfile e `npm ci` falharam com EAI_AGAIN; dependências de backend estavam ausentes, Node disponível era 26.10.0 e o ambiente recusava bind local com EPERM. Esses bloqueios foram superados na validação local informada pelo usuário; não são pendências da entrega atual. O registro detalhado permanece em PLAN.
 
 ## Preparar a base local
 
@@ -138,7 +138,7 @@ Formulários têm labels, mensagens em pt-BR, confirmação local da senha, esta
 
 Não há migração nova nem reescrita da migração 001. Use db:migrate em base ainda não preparada; não faça seed/reset de base preenchida para testar autenticação.
 
-Verificação atual da Etapa 2 pelo agente em Node 24.21.0: resultados completos em PLAN. As limitações anteriores de subprocessos/bind foram superadas executando as suítes fora do sandbox com autorização; nenhum teste foi ignorado ou substituído por mock.
+Verificação atual da Etapa 2 na revisão técnica em Node 24.21.0: resultados completos em PLAN. As limitações anteriores de subprocessos/bind foram superadas executando as suítes fora do sandbox com autorização; nenhum teste foi ignorado ou substituído por mock.
 ## Verificar
 
 ```bash
@@ -170,7 +170,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-O lockfile entregue está sincronizado; não é necessário resolvê-lo novamente antes de `npm ci`. Nesta entrega, o agente também verificou npm ci numa pasta temporária contendo apenas package.json/lockfile, importando SQLite e sharp no Node 24 sem substituir node_modules do projeto. `npm test` prepara bancos temporários, executa os comandos npm de migração/seed, compara os dados após reaplicação/recusa e verifica a API antes/depois de encerrar e iniciar outro processo HTTP. O teste de reinício também cadastra, autentica, cria, edita e envia imagem pelas rotas HTTP reais; compara registro, sessão, histórico, metadados e bytes da imagem após reiniciar o processo. Credenciais do teste ficam somente na memória; comparações de preservação usam digests para não imprimir hashes/salts em falhas.
+O lockfile entregue está sincronizado; não é necessário resolvê-lo novamente antes de `npm ci`. Nesta entrega, também foi verificado npm ci numa pasta temporária contendo apenas package.json/lockfile, importando SQLite e sharp no Node 24 sem substituir node_modules do projeto. `npm test` prepara bancos temporários, executa os comandos npm de migração/seed, compara os dados após reaplicação/recusa e verifica a API antes/depois de encerrar e iniciar outro processo HTTP. O teste de reinício também cadastra, autentica, cria, edita e envia imagem pelas rotas HTTP reais; compara registro, sessão, histórico, metadados e bytes da imagem após reiniciar o processo. Credenciais do teste ficam somente na memória; comparações de preservação usam digests para não imprimir hashes/salts em falhas.
 
 Para a consulta manual nessa mesma cópia, sem usar a base de demonstração:
 
