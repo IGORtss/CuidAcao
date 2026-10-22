@@ -1,0 +1,80 @@
+/* A mesma família de superfícies, da consulta compacta aos formulários. */
+:is(.explorer, .context-card, #account-panel, #details, .occurrence-dialog, .auth-dialog, .contribution-dialog, .stance-dialog, .transition-dialog, .admin-action-dialog, .link-action-dialog) {
+	border-color: #ffffffd9;
+	border-radius: 26px;
+	background-color: var(--hud-paper);
+	color: var(--hud-petrol);
+	box-shadow: var(--hud-shadow);
+}
+.explorer { transition: opacity 180ms, transform 260ms var(--movimento-organico), visibility 260ms; }
+.explorer.is-open :is(.atlas-tools, .list-section, .data-summary):not([hidden]) { animation: none; }
+.explorer :is(.atlas-tools, .list-section, .data-summary) { position: relative; scrollbar-width: thin; scrollbar-color: #bac8bd transparent; }
+.explorer .surface-back {
+	display: inline-flex;
+	width: fit-content;
+	align-self: start;
+	justify-self: start;
+	flex: 0 0 auto;
+	min-height: 32px;
+	margin: 0 0 10px;
+	padding: 5px 11px;
+	border: 1px solid var(--hud-line);
+	border-radius: 999px;
+	color: var(--hud-muted);
+	background: #e8ede280;
+	font-size: 11px;
+	cursor: pointer;
+	transition: translate 220ms var(--movimento-elastico), background 160ms;
+}
+.explorer .surface-back:hover { translate: -3px 0; background: #e8ede2; }
+.explorer .atlas-tools .overlay-panel-heading { display: flex; padding-left: 0; }
+:is(.explorer, #account-panel, #details, dialog) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]), select, textarea) { border-radius: 13px; }
+.explorer :is(.card, .data-metrics, .comparison, .collections, .timeline-controls), .account-preferences, .account-occurrences button { border-radius: 17px; }
+:is(.explorer, #account-panel, #details, dialog) button { transition: background 160ms, border-color 160ms, translate 220ms var(--movimento-elastico); }
+:is(.explorer, #account-panel, #details, dialog) button:active:not(:disabled) { translate: 0 1px; }
+:is(.hud, .explorer, #account-panel, #details, dialog) :focus-visible { outline: 2px solid #356258; outline-offset: 3px; }
+.detail-section-nav { position: relative; gap: 5px; padding: 5px; border-radius: 20px; background: #e8ede2; }
+.detail-section-nav button.secondary { border: 0; border-radius: 15px; background: transparent; }
+.detail-section-nav button[aria-current="true"] { color: var(--hud-paper); background: var(--hud-petrol); box-shadow: 0 3px 9px #102a2d18; }
+#details { scroll-behavior: smooth; scroll-padding-top: 20px; }
+.occurrence-dialog form { position: relative; }
+.occurrence-dialog .occurrence-step { animation: none; }
+/* Transições discretas mantêm o diálogo renderizado durante o fechamento,
+   mas o navegador continua responsável pelo foco e pela modalidade. */
+dialog {
+	opacity: 0;
+	translate: 28px 14px;
+	transition: opacity 160ms, translate 280ms var(--movimento-organico), display 280ms allow-discrete, overlay 280ms allow-discrete;
+}
+dialog[open] { opacity: 1; translate: 0 0; animation: none !important; }
+dialog::backdrop { background: #102a2d00; transition: background 240ms, display 280ms allow-discrete, overlay 280ms allow-discrete; }
+dialog[open]::backdrop { background: #102a2d42; backdrop-filter: blur(3px); }
+.occurrence-dialog::backdrop, #details::backdrop, #account-panel::backdrop { display: none; }
+@starting-style {
+	dialog[open] { opacity: .3; translate: 32px 14px; }
+	dialog[open]::backdrop { background: #102a2d00; }
+}
+.central { background: #f2f4ee; }
+.central-inner { max-width: 920px; }
+.central-head-row { padding-bottom: 16px; border-bottom: 1px solid var(--hud-line); margin-bottom: 22px; }
+.central :is(button, .central-card, .central-summary, .central-composer) { border-radius: 18px; }
+.central h2 { font-family: Georgia, serif; font-weight: 500; letter-spacing: -.035em; }
+.central-feed { gap: 16px; }
+.central-card { overflow: hidden; background: var(--hud-paper); }
+.central-card:hover { translate: 0 -3px; }
+.central-card { transition: translate 260ms var(--movimento-elastico), box-shadow 260ms; }
+@media (max-width: 700px) {
+	:is(.explorer, #account-panel, #details, .occurrence-dialog) { border-radius: 26px 26px 22px 22px; }
+	dialog { translate: 0 38px; }
+	dialog[open] { translate: 0 0; }
+	@starting-style { dialog[open] { translate: 0 48px; } }
+	.hud-panel-head button { width: 36px; height: 36px; }
+	.hud-panel-head { grid-template-columns: 36px minmax(0,1fr) 36px; }
+	.central-inner { padding-top: max(20px, env(safe-area-inset-top)); }
+}
+@media (prefers-reduced-motion: reduce) {
+	:is(.explorer, .context-card, #account-panel, #details, .central, dialog),
+	:is(.explorer, .context-card, #account-panel, #details, .central, dialog) *,
+	dialog::backdrop { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+	dialog { translate: none; }
+}

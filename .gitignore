@@ -1,7 +1,29 @@
 node_modules/
 dist/
-test-results/
-playwright-report/
+/apoio/resultados-testes/
+/apoio/relatorio-playwright/
 .env
 .env.*
 !.env.example
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+/data/
+/extras/private/
+backups/
+credentials/
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.credentials.json
+
+# Isolated presentation database, files, snapshots and local accounts
+/demo-data
+/cuidacao-demo*
+
+# Checkout histórico local e materiais de origem já exportados para codigo-fonte/recursos
+/archive/

@@ -1,119 +1,80 @@
 # CuidAção
 
-Plataforma de monitoramento ambiental comunitário do bairro Perequê, em Guarujá (SP), desenvolvida como Trabalho de Conclusão de Curso (TCC).
+O CuidAção é uma simulação acadêmica de uma plataforma comunitária para registrar e acompanhar problemas ambientais do Perequê, Guarujá. As contas, ocorrências e imagens da demonstração são fictícias. Os registros não são denúncias reais, laudos ou limites cartográficos oficiais.
 
-## Sobre o projeto
+## Por onde começar
 
-O CuidAção propõe um espaço digital para moradores registrarem, visualizarem e acompanharem problemas ambientais do bairro. Um mapa interativo reúne ocorrências, enquanto os registros permitem compartilhar evidências e organizar contribuições da comunidade sobre cada problema.
+O projeto está organizado por camadas e responsabilidades. Abra primeiro [apoio/documentacao/ESTRUTURA.md](apoio/documentacao/ESTRUTURA.md): ele mostra o fluxo entre interface, API, domínio, banco, testes e dados locais.
 
-O projeto amplia uma proposta inicial voltada ao descarte de resíduos e à localização de pontos de coleta. Seu recorte atual inclui problemas ambientais do território, como descarte inadequado de lixo e relatos de possível contaminação da água do mar. Relatos comunitários não equivalem a uma medição técnica ou a um laudo ambiental.
+- `codigo-fonte/aplicacao/` monta a aplicação; `codigo-fonte/funcionalidades/` agrupa interface e mapa.
+- `codigo-fonte/servicos/` concentra integrações; `codigo-fonte/estilos/` preserva a cascata visual.
+- `servidor/http/`, `servidor/dominio/`, `servidor/dados/` e `servidor/linha-comando/` separam as camadas do servidor.
+- `index.html` inicia a página.
+- `apoio/testes/` contém somente testes, servidores auxiliares e dados antigos usados pelos testes.
+- `apoio/documentacao/` contém regras, decisões, histórico e instruções detalhadas.
+- `apoio/` reúne tudo que auxilia desenvolvimento e apresentação, mas não entra no runtime principal.
+- `configuracao/` contém somente a configuração das ferramentas.
 
-## Objetivo
+O checkout histórico em `archive/legacy-CuidAcao/` foi preservado, mas não participa dos scripts nem do runtime. A pasta principal é `/home/higur/CuidAcao`.
 
-Facilitar a visão geral dos problemas ambientais do Perequê e demonstrar como uma plataforma pode organizar registros, participação comunitária, acompanhamento e histórico de ocorrências.
+## Executar o projeto
 
-## Contexto acadêmico
-
-O sistema será desenvolvido como uma **simulação funcional de uma plataforma real**, destinada à apresentação do TCC. As funcionalidades previstas serão demonstradas nesse contexto; o projeto não está sendo preparado para lançamento como serviço público.
-
-Dados fictícios utilizados na demonstração deverão ser identificados como simulados.
-
-## Público e território
-
-- **Público-alvo:** moradores do Perequê interessados em acompanhar a situação ambiental do bairro.
-- **Área de abrangência:** bairro Perequê, Guarujá (SP).
-- **Tema:** monitoramento ambiental comunitário.
-
-## Funcionalidades previstas
-
-- Cadastro e identificação de usuários.
-- Mapa interativo com ocorrências ambientais.
-- Criação de ocorrências por moradores.
-- Inclusão de evidências e informações complementares.
-- Comentários e participação comunitária na verificação dos registros.
-- Acompanhamento do estado de cada ocorrência.
-- Organização de registros duplicados ou relacionados.
-- Administração e moderação das ocorrências.
-- Histórico de alterações e encerramento dos registros.
-
-Esta lista apresenta o escopo geral. Regras de estados, validação, permissões e resolução estão definidas na especificação 1.0 em docs/DOMAIN.md. A implementação continua dividida em etapas; documentação pronta não significa funcionalidade pronta.
-
-## Nova direção visual do frontend (08/10/2026)
-
-A entrada do CuidAção terá **cartografia artística abstrata** como protagonista, tipografia editorial e composição assimétrica. A **V6 foi aprovada como referência visual**; o botão “Explorar o mapa” foi retirado porque a rolagem natural da página fará a passagem à exploração.
-
-A experiência planejada usa transição da ilustração para o **mapa Leaflet real**, um painel comunitário compacto/expansível com registros em destaque, detalhes que preservam contexto cartográfico e navegação móvel acessível. Nada disso transforma cartografia ilustrativa ou registros de exemplo em informação geográfica validada. **O código neste repositório ainda precisa implementar o redesenho.**
-
-- [Especificação detalhada do frontend](docs/FRONTEND_DESIGN.md) — decisões aprovadas, telas em estudo, restrições técnicas e critérios FE.
-- [Figma editável](https://www.figma.com/design/I2Qk0iFboOAnJ5oENX5DNu) — apresentação V6 e estudos estáticos da transição/mapa.
-- [Plano por etapas](docs/PLAN.md) — separa documentação, protótipo no Figma e implementação futura.
-
-## Desenvolvimento com agentes de IA
-
-Agentes como o Codex apoiarão a documentação, implementação e revisão do projeto. O desenvolvimento seguirá etapas pequenas e verificáveis, com regras explícitas para reduzir inconsistências e funcionalidades sem relação com o objetivo do TCC.
-
-Diretrizes:
-
-- Implementar com base na documentação do projeto.
-- Distinguir decisões confirmadas de propostas técnicas.
-- Evitar funcionalidades, dados e regras de negócio inventados.
-- Priorizar os fluxos essenciais antes do acabamento visual.
-- Verificar o comportamento entregue em cada etapa.
-- Manter uma interface clara, adequada ao território e ao público do projeto.
-
-## Estado atual
-
-**Primeira fatia implementada:** mapa → visualizar ocorrência → abrir detalhes. Inclui lista, filtros, navegação por URL e dados fictícios. Cadastro, criação, participação e administração serão implementados nas próximas fatias.
-
-Stack inicial: JavaScript com módulos ES, Vite e Leaflet. Requer Node.js 22.12+ ou 24 LTS e npm.
-
-## Executar localmente
+Requer Node.js 24 e npm.
 
 ```bash
-git clone https://github.com/IGORtss/CuidAcao.git
-cd CuidAcao
 npm ci
+npm run db:migrate
+# Somente em uma base vazia, se quiser os dados fictícios iniciais:
+npm run db:seed
+```
+
+Depois, mantenha dois terminais abertos:
+
+```bash
+# Terminal 1: API em http://127.0.0.1:3002
+npm run start
+
+# Terminal 2: site, normalmente em http://localhost:5173
 npm run dev
 ```
 
-Abra o endereço exibido pelo Vite (normalmente http://localhost:5173). O fundo cartográfico exige internet; se falhar, use a lista. O repositório é público no GitHub; não são necessárias credenciais para clonar.
+Para testar a ponte Firebase Auth localmente, inicie a Emulator Suite e use `npm run start:firebase` no lugar de `npm run start`. Antes, aplique a migração aditiva com `npm run db:migrate`.
 
-## Verificar
+O banco padrão fica em `data/cuidacao.sqlite`. Os comandos de início não apagam nem preenchem o banco automaticamente. O fundo do mapa precisa de internet; se ele falhar, a consulta pela lista continua funcionando. Quando `.env.local` contém a configuração pública completa, o frontend também inicializa Firebase App e Analytics conforme [apoio/documentacao/FIREBASE.md](apoio/documentacao/FIREBASE.md).
+
+## Apresentação do TCC
+
+Para criar uma demonstração isolada, sem alterar o banco de uso:
+
+```bash
+npm run demo:prepare
+npm run demo:start
+```
+
+Abra `http://127.0.0.1:5174`. O roteiro, as contas fictícias e os procedimentos de backup e restauração estão em [apoio/documentacao/DEMONSTRACAO.md](apoio/documentacao/DEMONSTRACAO.md).
+
+## Verificar alterações
 
 ```bash
 npm test
 npm run build
 npx playwright install chromium
 npm run test:e2e
+git diff --check
 ```
 
-`npm run preview` permite testar o build local. Os testes de navegador bloqueiam os tiles externos para verificar a alternativa pela lista de forma reproduzível.
+Os testes usam bancos temporários e não devem resetar o banco de uso. A autenticação Google é opcional e exige configuração externa; veja [apoio/documentacao/EXECUCAO.md](apoio/documentacao/EXECUCAO.md#cadastro-e-login-com-google). O login real do Google não faz parte da verificação automatizada.
 
-## Próximos passos
+## Documentação detalhada
 
-1. Completar os cenários de navegação pendentes.
-2. Implementar API, banco, cadastro, sessão e criação com histórico transacional.
-3. Implementar participação e evidências.
-4. Implementar administração, transições, duplicatas e moderação.
-5. Verificar o roteiro completo e preparar a apresentação.
-
-A especificação 1.0 fecha as regras da versão demonstrativa. Backend planejado: Node 24, Fastify e SQLite; ainda não instalado. Categorias desta versão: Resíduos e Água. Área cartográfica aproximada, explicitamente simulada. Consulte [o plano](docs/PLAN.md) para distinguir entregas e pendências.
-
-## Documentação normativa 1.0
-
-- [Produto e escopo](docs/PRODUCT.md)
-- [Regras e permissões](docs/DOMAIN.md)
-- [Interface e fluxos](docs/UX.md)
-- [Direção visual do frontend 1.1](docs/FRONTEND_DESIGN.md)
-- [Arquitetura](docs/ARCHITECTURE.md)
-- [Modelo de dados](docs/DATA_MODEL.md)
-- [Contrato da API](docs/API.md)
-- [Critérios de aceitação](docs/ACCEPTANCE.md)
-- [Plano e verificação](docs/PLAN.md)
-- [Decisões desta revisão](docs/DECISIONS.md)
-- [Instruções aos agentes](AGENTS.md)
-
----
-
-**CuidAção — cuidado com o território, participação da comunidade e acompanhamento dos problemas ambientais.**
-
+- [Estrutura](apoio/documentacao/ESTRUTURA.md): mapa simples dos arquivos atuais.
+- [Produto](apoio/documentacao/PRODUTO.md): objetivo e escopo.
+- [Domínio](apoio/documentacao/DOMINIO.md): regras de comportamento e permissões.
+- [Interface](apoio/documentacao/UX.md): telas, fluxos e acessibilidade.
+- [API](apoio/documentacao/API.md): rotas HTTP e respostas.
+- [Modelo de dados](apoio/documentacao/MODELO_DADOS.md): tabelas e histórico.
+- [Arquitetura](apoio/documentacao/ARQUITETURA.md): decisões técnicas.
+- [Critérios de aceitação](apoio/documentacao/ACEITE.md): comportamentos que precisam funcionar.
+- [Plano e evidências](apoio/documentacao/PLANO.md): o que foi implementado e verificado.
+- [Execução detalhada](apoio/documentacao/EXECUCAO.md): referência operacional completa preservada do README anterior.
+- [Preparação Firebase](apoio/documentacao/FIREBASE.md): fronteira atual, segurança e migração gradual futura.

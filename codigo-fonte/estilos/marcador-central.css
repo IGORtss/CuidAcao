@@ -1,0 +1,312 @@
+/* Camada visual dos pins do mapa: âncora fixa + elemento visual interno.
+ * O host (.cpin) é posicionado pelo Leaflet exatamente na coordenada da
+ * ocorrência. A ponta (.cpin-tip) nunca é transformada: permanece presa à
+ * coordenada durante toda a interação. O elemento visual interno (.cpin-head)
+ * é que salta, alonga-se e desdobra-se na ficha; os cards nascem dentro
+ * dele. Somente o interno é animado; coordenadas, dados e comportamentos do
+ * mapa são preservados. Hover e teclado são conduzidos por JS, nunca só por
+ * :hover. Respeita prefers-reduced-motion.
+ */
+
+/* ── Hospedeiro: o Leaflet posiciona este elemento na coordenada ── */
+.cpin-host {
+  pointer-events: none;
+}
+
+.cpin-host .cpin-head,
+.cpin-host .cpin-card {
+  pointer-events: auto;
+}
+
+.cpin {
+  position: absolute;
+  /* A origem local coincide com iconAnchor [17, 34], isto é, com o LatLng. */
+  left: 17px;
+  top: 34px;
+  width: 0;
+  height: 0;
+  overflow: visible;
+}
+
+/* ── Ponta: âncora exata, nunca transformada ── */
+/* O rodapé do elemento visual interno coincide com ela; como ela não recebe
+   transform algum, a coordenada real nunca se desloca. */
+.cpin-host .cpin-tip {
+  position: absolute;
+  left: -7px;
+  top: -14px;
+  width: 14px;
+  height: 14px;
+  background: #102a2d;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  transform-origin: 50% 100%;
+  transition: opacity 180ms ease, scale 180ms cubic-bezier(.2, .75, .3, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.cpin--agua .cpin-tip { background: #25677b; }
+.cpin--residuos .cpin-tip { background: #8a542f; }
+
+/* Um único relógio no mapa alimenta todas as cabeças por propriedade
+   herdada. Assim a flutuação não move a ponta, não cria 105 animações por
+   página e não contamina a animação de entrada que pertence ao .pin. */
+@property --cpin-idle-offset {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+.territory-transition.transition-complete #map {
+  animation: cpin-idle-clock 3.6s ease-in-out infinite;
+}
+
+.cpin-host .cpin-motion {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  pointer-events: none;
+  transform: translateY(var(--cpin-idle-offset));
+}
+
+.occurrence-marker:is(.is-previewed, .is-selected) .cpin-motion {
+  --cpin-idle-offset: 0px;
+}
+
+@keyframes cpin-idle-clock {
+  0%, 100% { --cpin-idle-offset: 0px; }
+  50% { --cpin-idle-offset: -1.5px; }
+}
+
+/* ── Elemento visual interno: a cabeça que se alonga na ficha ── */
+/* O rodapé do head coincide com a ponta, então o salto e a compressão
+   acontecem em torno do ponto de ancoragem. */
+.cpin-host .cpin-head {
+  position: absolute;
+  left: -20px;
+  top: -50px;
+  display: block;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  color: #f7f7f4;
+  overflow: hidden;
+  border-radius: 50% 50% 44% 44%;
+  box-shadow: none;
+  transform-origin: 50% 100%;
+  transition: transform 180ms cubic-bezier(.2, .75, .3, 1), opacity 180ms ease, scale 180ms cubic-bezier(.2, .75, .3, 1);
+  z-index: 3;
+}
+
+.cpin-host .cpin-head.water { background: #25677b; }
+.cpin-host .cpin-head.waste { background: #8a542f; }
+.cpin-host .cpin-head.is-card {
+  color: var(--cpin-color);
+  background: #f7f7f4;
+  border: 1px solid #d8dcda;
+  border-radius: 14px;
+  box-shadow: 0 14px 34px #102a2d38;
+}
+.cpin--agua { --cpin-color: #25677b; }
+.cpin--residuos { --cpin-color: #8a542f; }
+
+/* Símbolo da categoria: animado por JS, nunca por :hover. */
+.cpin-host .cpin-shape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  box-sizing: border-box;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+  transform-origin: center;
+  transition: width 220ms cubic-bezier(.2, .75, .3, 1), height 220ms cubic-bezier(.2, .75, .3, 1), transform 220ms cubic-bezier(.2, .75, .3, 1), color 160ms ease;
+  z-index: 3;
+}
+
+.cpin-host .cpin-head.is-card .cpin-shape {
+  width: 38px;
+  height: 38px;
+  padding: 7px;
+  transform: translate(8px, 8px);
+}
+
+/* Durante a seleção, os demais pins são ~80% do tamanho e mais
+   transparentes. Só o head interno é afetado; a ponta não. */
+#map.has-selection .occurrence-marker:not(.is-selected) .cpin-head {
+  opacity: .45;
+  scale: .8;
+}
+
+#map.has-selection .occurrence-marker:not(.is-selected) .cpin-tip {
+  opacity: .45;
+  scale: .8;
+}
+
+/* ── Anel das ocorrências de água: nasce na coordenada e some ── */
+.cpin-host .cpin-ring {
+  position: absolute;
+  left: -18px;
+  top: -18px;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #7fd4d9;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: center;
+  z-index: 0;
+}
+
+/* ── Fichas: nascem dentro do próprio head ── */
+.cpin-host .cpin-card {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  color: #102a2d;
+  background: transparent;
+  border: 0;
+  border-radius: inherit;
+  box-shadow: none;
+  font-family: inherit;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cpin-host .cpin-card[hidden] {
+  display: none !important;
+}
+
+/* A ficha ativa recebe o estado de abertura; o restante permanece escondido. */
+.cpin-host .cpin-card.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cpin-card .cpin-pad {
+  position: relative;
+  min-height: 48px;
+  padding: 10px 12px 12px 54px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.cpin-card small {
+  display: block;
+  color: #52615f;
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cpin-card strong {
+  display: block;
+  margin: 2px 0 4px;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.cpin-card .cpin-state {
+  display: inline-block;
+  margin: 2px 0;
+  padding: 2px 8px;
+  border: 1px solid #e6e8e5;
+  border-radius: 999px;
+  font-size: 10px;
+}
+
+.cpin-card time {
+  display: block;
+  margin-top: 4px;
+  color: #52615f;
+  font-size: 9px;
+}
+
+.cpin-card .cpin-loc,
+.cpin-card .cpin-excerpt {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.cpin-card .cpin-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cpin-card .cpin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.cpin-card .cpin-actions button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+/* Conector curto entre a ponta e a ficha aberta. */
+.cpin-host .cpin-link {
+  position: absolute;
+  background: #f7f7f4;
+  border: 1px solid #d8dcda;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cpin-host .cpin-link[hidden] {
+  display: none !important;
+}
+
+.cpin-host .cpin-link--top {
+  left: -1px;
+  top: -26px;
+  width: 2px;
+  height: 44px;
+  border-width: 0 1px;
+}
+
+.cpin-host .cpin-link--side {
+  top: -12px;
+  height: 2px;
+  width: 44px;
+  border-width: 1px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .territory-transition.transition-complete #map {
+    --cpin-idle-offset: 0px;
+    animation: none !important;
+  }
+  .cpin-host .cpin-motion,
+  .cpin-host .cpin-head,
+  .cpin-host .cpin-shape,
+  .cpin-host .cpin-ring,
+  .cpin-host .cpin-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
