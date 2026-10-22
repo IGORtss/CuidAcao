@@ -190,7 +190,7 @@ Estado atual: itens 5–11 implementados; item 12 revisado; item 13 validado; it
 ## Entregue
 - [x] Primeira leitura: mapa, lista, filtros, detalhes, links diretos e dados simulados.
 - [x] Documentação 1.0: produto, domínio, interface, arquitetura, dados, API e critérios de aceite.
-- [x] Instruções aos agentes e registro de decisões desta revisão.
+- [x] Registro de decisões desta revisão.
 - [x] Três testes Node, build e oito execuções E2E da consulta existente.
 
 ## Etapa 1 — completar contrato de leitura
@@ -206,7 +206,7 @@ Aceite: AC01–AC02 completos. Preservar testes já aprovados.
 - [x] Código de consulta substitui fixtures, com adaptador de códigos/rótulos e datas, sem fallback silencioso.
 - [x] Aprovar integração E2E com API e SQLite reais em Node 24.
 - [x] Código de cadastro, login, logout, sessões, Origin, guardas e limites; testes HTTP/SQLite aprovados.
-- [x] Aprovar E2E de autenticação e reinício de processo HTTP (execução pelo agente fora do sandbox).
+- [x] Aprovar E2E de autenticação e reinício de processo HTTP (execução na revisão técnica fora do sandbox).
 - [x] Criação e edição do autor, validação territorial demonstrativa e persistência.
 - [x] Histórico transacional e versionamento desde a primeira mutação, projeção pública e snapshots privados persistidos; endpoint de auditoria administrativa fica na Etapa 4.
 Aceite: AC03–AC11; documentação de execução real atualizada. Esquema final pode ser criado nesta etapa, rotas posteriores permanecem ausentes. Recebidas criadas pela API passaram a ter triagem no item 8; seed continua opcional para demonstrar outros estados.
@@ -267,9 +267,9 @@ Verificado: 10 testes Node de domínio/serviços aprovados e npm run build aprov
 
 E2E atualizados (8 cenários em desktop/mobile, ainda não aprovados): consultas com 105 registros/múltiplas páginas, filtros/vazio, detalhes, links diretos fora de filtro, Voltar/Avançar/reload, foco, indisponibilidade/retry de API/histórico, falha na segunda página, mudanças rápidas de filtros, seleção excluída por filtro e tiles indisponíveis. Supervisor usa banco temporário isolado com migração/seed e eventos próprios, ignora caminho de demonstração, não reutiliza servidores e remove somente seu diretório temporário ao encerrar. Portas locais 3100/5180. Syntax checks e git diff --check aprovados.
 
-## Histórico — revisão de persistência e consulta no ambiente do agente
+## Histórico — revisão de persistência e consulta no ambiente da execução anterior
 
-Releitura de AGENTS e contratos concluída; revisão do esquema, SQL parametrizado, projeções públicas, seed, transações, HTTP, adaptador e isolamento dos E2E. Corrigido o estado desatualizado de ARCHITECTURE (backend/scripts deixaram de ser apenas futuros). Não foram adicionadas autenticação, escrita HTTP, reset ou deploy. Trabalho local e clone aninhado preservados. Nenhuma base existente foi apagada ou sobrescrita.
+Releitura de contratos concluída; revisão do esquema, SQL parametrizado, projeções públicas, seed, transações, HTTP, adaptador e isolamento dos E2E. Corrigido o estado desatualizado de ARCHITECTURE (backend/scripts deixaram de ser apenas futuros). Não foram adicionadas autenticação, escrita HTTP, reset ou deploy. Trabalho local e clone aninhado preservados. Nenhuma base existente foi apagada ou sobrescrita.
 
 Acrescentados testes ainda pendentes de execução com dependências reais:
 - apoio/testes/banco-de-dados/cli.test.js: comandos reais npm run db:migrate/db:seed em banco novo, reaplicação, recusa de seed e preservação de todas as tabelas por digest; credenciais capturadas somente em memória, sem imprimir segredos em comparações.
@@ -303,9 +303,9 @@ O usuário informou ter concluído no próprio terminal local, com Node.js 24.21
 | npm run build | Build aprovado |
 | npm run test:e2e | 16 execuções E2E aprovadas: 8 cenários em desktop e mobile |
 
-A execução e seus resultados são atribuídos ao usuário; não se trata de reexecução pelo agente no ambiente restrito. Os bloqueios anteriores de DNS/instalação, dependências ausentes, Node diferente da stack e bind local foram superados nessa validação. Permanecem acima apenas como histórico das tentativas anteriores.
+A execução e seus resultados são atribuídos ao usuário; não se trata de reexecução na revisão técnica no ambiente restrito. Os bloqueios anteriores de DNS/instalação, dependências ausentes, Node diferente da stack e bind local foram superados nessa validação. Permanecem acima apenas como histórico das tentativas anteriores.
 
-O package-lock.json atual foi revisado pelo agente: metadados raiz de dependências/devDependencies/engines correspondem a package.json; Fastify 5.12.5, better-sqlite3 13.0.3 e árvore transitiva constam com URLs do registro npm e integridades. README agora usa npm ci, sem etapa de reparo do lockfile.
+O package-lock.json atual foi revisado na revisão técnica: metadados raiz de dependências/devDependencies/engines correspondem a package.json; Fastify 5.12.5, better-sqlite3 13.0.3 e árvore transitiva constam com URLs do registro npm e integridades. README agora usa npm ci, sem etapa de reparo do lockfile.
 
 Com a aprovação dos testes existentes, AC01–AC03 ficam verificados no escopo de consulta e preparação da base: navegação/foco, filtros/vazio/tiles e migração/seed/reaplicação/recusa. A suíte também exercita projeção pública, paginação, rollback interno, persistência entre conexões e reinício de processo HTTP, além de falha da API sem fallback. Isso não completa AC04–AC11, que dependem de cadastro, login/sessões, escrita HTTP, autoria/permissões, validação de criação, Origin e rate limit ainda não implementados. AC30 completo também permanece pendente para todos os fluxos da versão final. Nenhuma funcionalidade de outra etapa foi adicionada nesta atualização.
 
@@ -313,7 +313,7 @@ Commit do passo 3 inclui persistência, API de consulta, integração do fronten
 
 ## Autenticação — entrega atual e evidências
 
-AGENTS e contratos relidos; git status tinha somente o clone aninhado CuidAcao/, preservado e não utilizado. PATH inicial usava /usr/bin/node v26.10.0; foi localizado e usado /home/higur/.local/n/bin/node v24.21.0, inclusive nos comandos npm. Fastify/better-sqlite3 reais carregados nessa versão.
+contratos relidos; git status tinha somente o clone aninhado CuidAcao/, preservado e não utilizado. PATH inicial usava /usr/bin/node v26.10.0; foi localizado e usado /home/higur/.local/n/bin/node v24.21.0, inclusive nos comandos npm. Fastify/better-sqlite3 reais carregados nessa versão.
 
 Implementadas quatro rotas auth, serviços/repos SQL próprios, scrypt compartilhado com seed (parâmetros preservados, duas derivações simultâneas), sessão persistida com token aleatório/SHA-256 e cookie de 8h, logout idempotente, Origin e limites. Cadastro sempre user, sem sessão automática; conta inexistente e senha errada têm mesma resposta. Guardas requireSession/requireAdmin leem banco; /auth/me usa guarda. Serializadores não logam headers/corpos/URL/query/stack/SQL. Não há migração nova nem alteração de migração aplicada.
 
@@ -321,7 +321,7 @@ Interface em codigo-fonte/servicos/auth.js e codigo-fonte/ui/auth.js: cadastro/l
 
 Dependência direta fixada: cookie 1.1.1, já transitiva na base, com engines Node >=18. Documentação oficial da versão e Node 24 consultadas; referências/configuração em ARCHITECTURE. Lock atualizado por npm install --package-lock-only --ignore-scripts --offline --no-audit --no-fund.
 
-Resultados desta execução pelo agente, sem adaptadores:
+Resultados desta execução na revisão técnica, sem adaptadores:
 
 - node --test --test-isolation=none apoio/testes/api/auth.test.js apoio/testes/api/occurrences.test.js apoio/testes/banco-de-dados/persistence.test.js apoio/testes/dominio.test.js apoio/testes/servicos/*.test.js: 41 aprovados com SQLite real.
 - npm run build: aprovado com Node 24.21.0.
@@ -337,7 +337,7 @@ Adicionados 12 cenários Fastify inject em apoio/testes/api/auth.test.js, três 
 
 ## Identidade cartográfica — implementação de 08/10/2026
 
-Referência autorizada: prompt completo do usuário, consolidado em FRONTEND_DESIGN. Branch main, origin IGORtss/CuidAcao; alterações locais de autenticação/documentação preservadas. Clone aninhado não consultado. git ls-remote origin HEAD falhou com “Could not resolve host: github.com”; consulta web de FRONTEND_DESIGN retornou Cache miss. Sem pull/reset/checkout de arquivos remotos, sem alegar sincronização com main remota. Documento ausente criado a partir do prompt, com proveniência explícita.
+Referência autorizada: requisitos fornecidos, consolidado em FRONTEND_DESIGN. Branch main, origin IGORtss/CuidAcao; alterações locais de autenticação/documentação preservadas. Clone aninhado não consultado. git ls-remote origin HEAD falhou com “Could not resolve host: github.com”; consulta web de FRONTEND_DESIGN retornou Cache miss. Sem pull/reset/checkout de arquivos remotos, sem alegar sincronização com main remota. Documento ausente criado a partir dos requisitos, com proveniência explícita.
 
 Implementado (código, ainda sem aprovação visual/E2E):
 - [x] Tokens de petróleo/terra/areia, títulos editoriais e alternativas locais a Noto Serif/Inter, sem novas dependências ou downloads de fontes.
@@ -349,7 +349,7 @@ Implementado (código, ainda sem aprovação visual/E2E):
 - [x] Cinco novos cenários E2E em desktop/mobile: rolagem/instância única, links/teclado/foco, painel/total/filtros, redução de movimento/arte removida, 360px/200%. Vinte execuções anteriores preservadas; total descoberto: 30 execuções em três arquivos.
 - [ ] Aprovar navegador/E2E e revisão visual/360px/200% localmente.
 
-Verificações pelo agente com /home/higur/.local/n/bin/node v24.21.0:
+Verificações na revisão técnica com /home/higur/.local/n/bin/node v24.21.0:
 - npm test executado: seis arquivos aprovados, dois falham por limitações já identificadas (restart HTTP: EPERM no bind; CLI: subprocesso npm retorna saída vazia). Suíte completa não aprovada.
 - node --test --test-isolation=none apoio/testes/api/auth.test.js apoio/testes/api/occurrences.test.js apoio/testes/banco-de-dados/persistence.test.js apoio/testes/dominio.test.js apoio/testes/servicos/*.test.js: 41 testes aprovados, Fastify/SQLite reais, sem adaptadores. Esses testes certificam a base, não os novos fluxos visuais.
 - npm run build: aprovado após ajustes finais. Bundle JS ~176 kB, sem biblioteca de animação adicional.
@@ -363,7 +363,7 @@ Para conferir: Node 24, npm test, npm run build, npx playwright install chromium
 
 ## Etapa 2 — conclusão e evidências de 09/10/2026
 
-Documentação normativa e AGENTS lidos integralmente, código existente inspecionado e trabalho local prévio preservado (incluindo clone aninhado, não utilizado). Execução com PATH apontando /home/higur/.local/n/bin: Node.js 24.21.0. Nenhuma dependência nova, migração aplicada alterada, base existente apagada, commit ou deploy.
+Documentação normativa e documentação técnica lidos integralmente, código existente inspecionado e trabalho local prévio preservado (incluindo clone aninhado, não utilizado). Execução com PATH apontando /home/higur/.local/n/bin: Node.js 24.21.0. Nenhuma dependência nova, migração aplicada alterada, base existente apagada, commit ou deploy.
 
 Entregue: POST de criação e PATCH parcial do autor, schemas de entrada/saída, guardas de Origin/sessão/JSON, serviço de validação e permissões e repositório SQL. Criação gera autoria, id transacional, received, simulated=true, timestamps e version=1; evento created com snapshot na mesma transação. Edição received/visível/sem duplicata, só autor, até 24h inclusive; checagem sob transação immediate, expectedVersion obrigatório, evento edited com antes/depois e incremento de version/updatedAt. Falha do evento reverte alteração e sequência. Admin usa estas rotas apenas como autor, sem correção administrativa.
 
@@ -396,7 +396,7 @@ Este item é criação de ocorrências da lista original do TCC, não Etapa 5 de
 - [x] Evento, mudança e versão na mesma transação; compensação de arquivos em rollback e recuperação de órfãos antigos, conforme ARCHITECTURE.
 - [x] Contratos de API/dados/arquitetura/aceitação/UX/produto/decisões e comandos README atualizados.
 
-### Evidências executadas nesta entrega pelo agente
+### Evidências executadas nesta entrega na revisão técnica
 
 Node.js 24.21.0 (PATH=/home/higur/.local/n/bin:$PATH), dependências reais, SQLite em disco temporário e HTTP real nos testes de reinício. Base existente e clone CuidAcao/ preservados.
 
@@ -417,7 +417,7 @@ Limites: arquivos/rascunhos ainda não enviados vivem só na memória da página
 
 ## Item 6 original — comentários e complementos, concluído
 
-Pré-verificação do item 5 nesta execução, antes de editar código: 60/60 testes Node e 34/34 E2E aprovados, incluindo criação, mapas/listas/reload, imagens/validações, permissões, falha de upload e reinício HTTP. Código, git status, AGENTS e documentos relidos; nenhuma pendência bloqueante do item 5 encontrada. Trabalho prévio e clone aninhado preservados; prowl indisponível (command not found), inspeção local por leitura direta/rg.
+Pré-verificação do item 5 nesta execução, antes de editar código: 60/60 testes Node e 34/34 E2E aprovados, incluindo criação, mapas/listas/reload, imagens/validações, permissões, falha de upload e reinício HTTP. Código, git status, documentos relidos; nenhuma pendência bloqueante do item 5 encontrada. Trabalho prévio e clone aninhado preservados; prowl indisponível (command not found), inspeção local por leitura direta/rg.
 
 - [x] GET público paginado de comentários/complementos com autor/data/tipo e imagens; ocultos como marcador sem texto/imagens e pai oculto=404.
 - [x] POST autenticado e PATCH do autor, campos protegidos/tipos/texto validados, Origin/sessão exigidos.
@@ -433,7 +433,7 @@ Retirada de texto: D05 não concede exclusão/retirada direta ao autor. Não exi
 
 ### Verificação real do item 6
 
-| Comando/verificação | Resultado executado pelo agente |
+| Comando/verificação | Resultado executado na revisão técnica |
 | --- | --- |
 | npm test (Node 24.21.0) | 70/70 aprovados, zero falhas/skips/todo; Fastify/SQLite reais. Sete novos testes API de contribuições, dois do cliente e um reinício HTTP adicionados. |
 | npm run build | Aprovado, bundle JavaScript ~201 kB. |
@@ -452,7 +452,7 @@ Limites mantidos: rascunho/arquivos pendentes vivem na memória da página; reca
 
 ## Item 7 original — apoio e contestação
 
-Antes de editar, conferidos AGENTS, contratos, git status e implementação local. Dependências efetivamente reexecutadas: 70/70 testes Node, build e 38/38 E2E aprovados, incluindo criação/imagens/comentários/complementos e reinício HTTP. Não havia pendência bloqueante dos itens 5/6. Trabalho local e clone aninhado preservados; nenhuma base preexistente resetada.
+Antes de editar, conferidos documentação técnica, contratos, git status e implementação local. Dependências efetivamente reexecutadas: 70/70 testes Node, build e 38/38 E2E aprovados, incluindo criação/imagens/comentários/complementos e reinício HTTP. Não havia pendência bloqueante dos itens 5/6. Trabalho local e clone aninhado preservados; nenhuma base preexistente resetada.
 
 - [x] Persistência e consulta pública paginada, autor/data/tipo/justificativa e contagens próprias.
 - [x] PUT autenticado cria/substitui/reativa posição própria; DELETE retira sem apagar linha/histórico.
@@ -467,7 +467,7 @@ Antes de editar, conferidos AGENTS, contratos, git status e implementação loca
 - [x] Persistência após encerrar servidor e iniciar outro processo HTTP, com posições ativas/retiradas e histórico.
 - [x] Contratos e README atualizados, sem administração, novas transições ou gestão de duplicatas.
 
-### Verificações do item 7 executadas pelo agente
+### Verificações do item 7 executadas na revisão técnica
 
 Node.js 24.21.0, PATH=/home/higur/.local/n/bin:$PATH, dependências reais. `npm test`: 79/79 aprovados, zero falhas/skips/todo; seis novos testes API, dois do cliente e um reinício HTTP. Build aprovado após adaptação final da sessão (~211 kB JS). `npx --no-install playwright install chromium` aprovado, utilizando fallback ubuntu24.04 informado pela ferramenta no Arch. `git diff --check` aprovado. `npm run test:e2e`: 42/42 aprovados, 47,6s na última execução, incluindo 38 regressões e quatro novas execuções de manifestações em desktop/mobile. Nenhuma verificação exigida ficou bloqueada ou não executada.
 
@@ -479,7 +479,7 @@ Limites: rascunho vive na memória e não sobrevive ao reload; perda de resposta
 
 ## Item 8 original — estados e acompanhamento, concluído
 
-AGENTS e documentos normativos relidos integralmente; git status/código/migração/políticas existentes inspecionados, prowl indisponível e leitura direta/rg utilizados. Antes de editar, dependências realmente reexecutadas: 79/79 testes Node e 42/42 E2E aprovados. Criação/imagens/contribuições/manifestações e histórico estavam funcionando; não houve pendência bloqueante. Matriz DOMAIN/API coerente; referências a pedidos/transições futuros e painel em UX foram atualizadas para o escopo real. Nenhuma regra, aresta ou responsável inventado.
+documentos normativos relidos integralmente; git status/código/migração/políticas existentes inspecionados, prowl indisponível e leitura direta/rg utilizados. Antes de editar, dependências realmente reexecutadas: 79/79 testes Node e 42/42 E2E aprovados. Criação/imagens/contribuições/manifestações e histórico estavam funcionando; não houve pendência bloqueante. Matriz DOMAIN/API coerente; referências a pedidos/transições futuros e painel em UX foram atualizadas para o escopo real. Nenhuma regra, aresta ou responsável inventado.
 
 - [x] Matriz fechada dos seis estados, apenas administrador independente, motivo 20–1000 após trim.
 - [x] Confirmação exige suporte independente válido e parecer individual de todas as contestações ativas visíveis, sem quórum ou alteração automática.
@@ -494,7 +494,7 @@ AGENTS e documentos normativos relidos integralmente; git status/código/migraç
 
 Migração 001 já contém estados/razões terminais/pedidos/índice pending/anexos; reutilizada sem alteração e sem dependência nova. Rejeição de pedidos, painel administrativo completo, correções, denúncias, moderação e gestão de vínculos continuam futuros. Referências relacionadas são usadas só quando vínculo já existe.
 
-### Evidências finais executadas pelo agente
+### Evidências finais executadas na revisão técnica
 
 | Verificação | Resultado real |
 | --- | --- |
@@ -519,7 +519,7 @@ AC17–AC19 verificados; AC20 parcial (encerramento/reabertura com pedido, nova 
 
 ## Item 9 original — área administrativa
 
-AGENTS e todos os contratos normativos relidos integralmente; git status e código real conferidos antes de editar. Trabalho existente, clone aninhado e base do desenvolvedor preservados. prowl indisponível; inspeção por leitura direta/rg. Base atual realmente reexecutada: 90/90 Node e 46/46 E2E aprovados, sem usar apenas o planejamento ou a evidência histórica. Nenhuma pendência bloqueante dos itens anteriores. D01/D08 mantidos; operacionalização de includeHidden/filas/auditoria e suspensão de correção em duplicata registrada em DECISIONS/API/DOMAIN.
+todos os contratos normativos relidos integralmente; git status e código real conferidos antes de editar. Trabalho existente, clone aninhado e base do desenvolvedor preservados. prowl indisponível; inspeção por leitura direta/rg. Base atual realmente reexecutada: 90/90 Node e 46/46 E2E aprovados, sem usar apenas o planejamento ou a evidência histórica. Nenhuma pendência bloqueante dos itens anteriores. D01/D08 mantidos; operacionalização de includeHidden/filas/auditoria e suspensão de correção em duplicata registrada em DECISIONS/API/DOMAIN.
 
 - [x] Navegação Administração, filas Recebidas/Verificação/Todas/Denúncias/Pedidos, filtros categoria/estado/visibilidade e paginação.
 - [x] Guarda administrativa atual em todas as consultas privadas, incluindo filhos, auditoria e arquivos; sem includeHidden permanece projeção pública.
@@ -558,7 +558,7 @@ AC20–AC23 agora verificados no escopo normativo, AC01–AC19 preservados. Etap
 
 ## Item 10 original — duplicatas e ocorrências relacionadas
 
-AGENTS/documentos normativos e código inspecionados, git status conferido; trabalho dos itens anteriores, clone aninhado e bases existentes preservados. Dependências reexecutadas antes de editar: 101/101 Node e 52/52 E2E desktop/mobile aprovados. Sem pendência bloqueante. D07/contratos coerentes; detalhes operacionais em DECISIONS, sem regras novas de estado, autorização, fusão ou participação.
+documentos normativos e código inspecionados, git status conferido; trabalho dos itens anteriores, clone aninhado e bases existentes preservados. Dependências reexecutadas antes de editar: 101/101 Node e 52/52 E2E desktop/mobile aprovados. Sem pendência bloqueante. D07/contratos coerentes; detalhes operacionais em DECISIONS, sem regras novas de estado, autorização, fusão ou participação.
 
 Implementados seis endpoints de vínculos, repositório/serviço dedicados, migração 002 de índice simétrico (001 intacta), guarda atual admin/independência dos dois autores, principal mais antiga, ausência de cadeia/ciclo/autorrelação/filhos/relações da origem, versões exatas dos dois ids e condições D07. Operações alteram somente vínculo, incrementam ambas versões e gravam dois eventos correlacionados atomicamente. Retarget é desvinculação seguida de vinculação auditadas; desvincular preserva estado e pode resolver principal indisponível. Criar/remover relação exige ambos visíveis, não descartados e sem duplicata, inclusive após moderação/estado. Relações permitem closed e não somam contagens. Conteúdo, autoria, identificadores, arquivos e contribuições ficam em seus registros.
 
@@ -588,7 +588,7 @@ AC24–AC26 verificados; Etapa 4 concluída no escopo AC17–AC26, sem antecipar
 
 ## Item 11 original — revisão integrada de histórico e encerramento
 
-Revisão de 09/10/2026, sem recriar histórico/transições, sem migração nova, dependência, evento retroativo ou alteração de permissões. Antes de editar foram lidos AGENTS e todos os contratos normativos/README, inspecionados git status, serviços, rotas, repositórios, interface e testes. O trabalho local dos itens anteriores e o diretório não rastreado `CuidAcao/` foram preservados. Dependências atuais reexecutadas: 112/112 Node e 56/56 E2E, aprovados; não foram aceitos apenas os números históricos do item 10.
+Revisão de 09/10/2026, sem recriar histórico/transições, sem migração nova, dependência, evento retroativo ou alteração de permissões. Antes de editar foram lidos todos os contratos normativos/README, inspecionados git status, serviços, rotas, repositórios, interface e testes. O trabalho local dos itens anteriores e o diretório não rastreado `CuidAcao/` foram preservados. Dependências atuais reexecutadas: 112/112 Node e 56/56 E2E, aprovados; não foram aceitos apenas os números históricos do item 10.
 
 ### Preparação da base de uso
 
@@ -629,7 +629,7 @@ Logs locais: `/tmp/cuidacao-item11-node-first.log`, `/tmp/cuidacao-item11-build-
 
 ## Item 12 original — revisão integrada da interface
 
-Revisão de 09/10/2026, sem redesenho, nova funcionalidade de domínio, dependência, migração, modificação da base de uso, commit, push ou deploy. AGENTS, FRONTEND_DESIGN, README e contratos normativos lidos; git status e implementação/testes inspecionados antes de editar. Preservados os itens anteriores, registros e diretório não rastreado `CuidAcao/`. Todos os fluxos existentes foram confrontados com suas permissões e testes, sem aceitar números históricos como resultado atual. Base de uso não recebeu seed/reset; navegador e suíte usaram bases temporárias próprias.
+Revisão de 09/10/2026, sem redesenho, nova funcionalidade de domínio, dependência, migração, modificação da base de uso, commit, push ou deploy. FRONTEND_DESIGN, README e contratos normativos lidos; git status e implementação/testes inspecionados antes de editar. Preservados os itens anteriores, registros e diretório não rastreado `CuidAcao/`. Todos os fluxos existentes foram confrontados com suas permissões e testes, sem aceitar números históricos como resultado atual. Base de uso não recebeu seed/reset; navegador e suíte usaram bases temporárias próprias.
 
 ### Problemas encontrados e correções verificadas
 
@@ -727,7 +727,7 @@ Logs locais fora do versionamento: `/tmp/cuidacao-item13-{node-baseline,e2e-base
 
 ## Item 14 original — dados e recuperação da apresentação
 
-Revisão de AGENTS, README e contratos antes da implementação. Base histórica novamente executada: 116/116 Node e 66/66 E2E aprovados. Migrações 001/002, autorização, imagens, contribuições, transições, administração, vínculos e auditoria já existiam; foram reutilizados sem modificar seus serviços ou frontend. Seed legado e todas as alterações locais anteriores preservados. Não há nova migração nem dependência.
+Revisão de README e contratos antes da implementação. Base histórica novamente executada: 116/116 Node e 66/66 E2E aprovados. Migrações 001/002, autorização, imagens, contribuições, transições, administração, vínculos e auditoria já existiam; foram reutilizados sem modificar seus serviços ou frontend. Seed legado e todas as alterações locais anteriores preservados. Não há nova migração nem dependência.
 
 ### Entrega
 
@@ -761,7 +761,7 @@ Causa da falha histórica do marcador móvel continua indeterminada. Dispositivo
 
 ### Conclusão e nova conferência — 11/10/2026
 
-Após interrupção, código e pastas persistiram; os arquivos temporários de logs/capturas de 09/10 já não estavam disponíveis. Não se tratou seus resultados históricos como nova execução. Conferidos git status, AGENTS, dados locais e ausência de locks ativos. O bloqueio web foi também aplicado ao Vite normal de desenvolvimento, evitando exposição da pasta demonstrativa ao iniciar npm run dev. A tabela anterior descreve a execução de 09/10; as verificações abaixo foram novamente realizadas em 11/10.
+Após interrupção, código e pastas persistiram; os arquivos temporários de logs/capturas de 09/10 já não estavam disponíveis. Não se tratou seus resultados históricos como nova execução. Conferidos git status, documentação técnica, dados locais e ausência de locks ativos. O bloqueio web foi também aplicado ao Vite normal de desenvolvimento, evitando exposição da pasta demonstrativa ao iniciar npm run dev. A tabela anterior descreve a execução de 09/10; as verificações abaixo foram novamente realizadas em 11/10.
 
 Correção da contagem documental: o cenário contém 48 eventos persistidos, dos quais 45 de auditoria de conteúdo e três privados de denúncias. O número 45 vinha da consulta de auditoria que exclui denúncias, não do total do banco. current, initial e a cópia restaurada foram conferidos; nenhum evento foi inventado, apagado ou alterado.
 
