@@ -1,3 +1,5 @@
+import { accountService } from "../dominio/contas.js";
+import { accountMailer } from "../servicos/email-conta.js";
 /**
  * API HTTP: schemas, rotas, configuração do Fastify e respostas de erro.
  * Edite este arquivo diretamente. Guia: apoio/documentacao/ESTRUTURA.md.
@@ -872,10 +874,12 @@ const credentials = objectAuth({
 	},
 	password: {
 		type: "string",
-		minLength: 12,
+		minLength: 8,
 		maxLength: 128
 	}
 });
+const registrationCredentials = objectAuth({ ...credentials.properties, email: { type: "string", minLength: 3, maxLength: 254 } }, ["username", "password"]);
+const loginCredentials = objectAuth({ ...credentials.properties, username: { type: "string", minLength: 3, maxLength: 254 } });
 const user = objectAuth({
 	id: { type: "string" },
 	username: { type: "string" },
@@ -923,6 +927,7 @@ export function authRoutes(app, auth, now, limits = authLimits(now)) {
 		preValidation: async (request, reply) => limits.take("register", request.ip, null, reply),
 		schema: {
 			...schema,
+			body: registrationCredentials,
 			response: {
 				...response,
 				201: objectAuth({ data: user })
@@ -932,8 +937,8 @@ export function authRoutes(app, auth, now, limits = authLimits(now)) {
 	app.post("/api/v1/auth/login", {
 		bodyLimit: 8192,
 		onRequest: entry(false),
-		preValidation: async (request, reply) => limits.take("login", request.ip, typeof request.body?.username === "string" ? request.body.username.toLowerCase().slice(0, 30) : "", reply),
-		schema
+		preValidation: async (request, reply) => limits.take("login", request.ip, typeof request.body?.username === "string" ? request.body.username.trim().toLowerCase().slice(0, 254) : "", reply),
+		schema: { ...schema, body: loginCredentials }
 	}, async (request, reply) => {
 		const result = await auth.login(request.body, request.headers.cookie);
 		return reply.header("set-cookie", result.cookie).send({ data: result.user });
@@ -1790,7 +1795,7 @@ export function preferenceRoutes(app, service) {
 }
 
 // ── Criação da API e tratamento de erros ──
-export function createApp({ db, databasePath, uploadDirectory, logger = false, google = {}, firebase = {}, webOrigin = process.env.CUIDACAO_WEB_ORIGIN ?? "http://localhost:5173", now = Date.now } = {}) {
+export function createApp({ db, databasePath, uploadDirectory, logger = false, google = {}, firebase = {}, accountMail = undefined, webOrigin = process.env.CUIDACAO_WEB_ORIGIN ?? "http://localhost:5173", now = Date.now } = {}) {
 	configuredOrigin(webOrigin);
 	const safeLogger = logger ? {
 		...typeof logger === "object" ? logger : {},
@@ -1888,6 +1893,7 @@ export function createApp({ db, databasePath, uploadDirectory, logger = false, g
 		now
 	}), limits = authLimits(now);
 	authRoutes(app, auth, now, limits);
+	accountRoutes(app, accountService(database, {origin: auth.origin, now, sendMail: accountMail === undefined ? accountMailer() : accountMail}), limits);
 	googleRoutes(app, googleService(database, auth, {
 		...google,
 		now
@@ -1930,4 +1936,22 @@ export function createApp({ db, databasePath, uploadDirectory, logger = false, g
 	} });
 	app.register(async (scoped) => attachmentRoutes(scoped, attachments, admin));
 	return app;
+}
+
+
+function accountRoutes(app, service, limits) {
+ const shape = properties => ({type:"object",properties,required:Object.keys(properties),additionalProperties:false});
+ const text = {type:"string",maxLength:254};
+ app.get("/api/v1/auth/account/config", async (_request,reply)=>reply.header("cache-control","no-store").send({data:service.configuration()}));
+ app.get("/api/v1/auth/account", {preHandler:app.requireSession}, async(request,reply)=>reply.header("cache-control","no-store").send({data:service.status(request.user)}));
+ for (const [path,body,authenticated,operation] of [
+  ["password/request",shape({email:text}),false,request=>service.requestReset(request.body.email)],
+  ["password/reset",shape({token:text,password:{type:"string",minLength:8,maxLength:128}}),false,request=>service.reset(request.body.token,request.body.password)],
+  ["email/request",shape({}),true,request=>service.requestVerification(request.user)],
+  ["email/verify",shape({token:text}),false,request=>service.verify(request.body.token)]
+ ]) app.post("/api/v1/auth/"+path,{bodyLimit:8192,
+  onRequest:async(request,reply)=>{reply.header("cache-control","no-store");await app.requireOrigin(request);if(!/^application\/json(?:\s*;|$)/i.test(request.headers["content-type"]??""))throw new AuthError(415,"UNSUPPORTED_MEDIA_TYPE","Envie os dados em formato JSON.");},
+  preValidation:async(request,reply)=>limits.take(path,request.ip,null,reply),
+  ...(authenticated?{preHandler:app.requireSession}:{}), schema:{body,querystring:shape({})}
+ },async(request,reply)=>{await operation(request);return reply.code(204).send();});
 }

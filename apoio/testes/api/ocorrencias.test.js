@@ -18,7 +18,7 @@ async function setup(t) {
   migrate(db);
   const userId = randomUUID();
   const observerId = randomUUID();
-  for (const [id,username] of [[userId,'autor_ficticio'],[observerId,'observador_ficticio']]) db.prepare(`INSERT INTO users
+  for (const [id,username] of [[userId,'autor_ficticio'],[observerId,'observador_ficticio']]) db.prepare(`INSERT INTO users (id,username,passwordHash,passwordSalt,passwordParams,role,createdAt,updatedAt)
     VALUES (?,?, 'PRIVATE_HASH','PRIVATE_SALT','{}','user','2026-10-01T12:00:00.000Z','2026-10-01T12:00:00.000Z')`).run(id,username);
   const occurrence = (id,{category='residuos',status='received',visibility='visible',duplicateOfId=null,createdAt='2026-10-01T12:00:00.000Z'}={}) => {
     db.prepare(`INSERT INTO occurrences

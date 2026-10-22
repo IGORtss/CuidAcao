@@ -1113,7 +1113,7 @@ function assertUsername(username) {
 	return username.toLowerCase();
 }
 function assertPassword(password) {
-	if (typeof password !== "string" || [...password].length < 12 || [...password].length > 128) throw new AuthError(422, "INVALID_PASSWORD", "A senha deve ter 12–128 caracteres.", { password: "A senha deve ter 12–128 caracteres." });
+	if (typeof password !== "string" || [...password].length < 8 || [...password].length > 128) throw new AuthError(422, "INVALID_PASSWORD", "A senha deve ter 8–128 caracteres.", { password: "A senha deve ter 8–128 caracteres." });
 	return password;
 }
 export const tokenHash = (token) => createHash("sha256").update(token).digest("hex");
@@ -1171,19 +1171,21 @@ export function authService(db, { webOrigin = "http://localhost:5173", now = Dat
 		origin: configuration.origin,
 		ready: dummyCredential,
 		issueSession,
-		async register({ username, password }) {
+		async register({ username, password, email }) {
+			if (email !== undefined) email = normalizeAccountEmail(email);
 			username = assertUsername(username);
 			password = assertPassword(password);
 			const credential = await hashPassword(password), user = {
 				id: randomUUID(),
 				username,
+				email,
 				...credential,
 				createdAt: new Date(now()).toISOString()
 			};
 			try {
 				repository.createUser(user);
 			} catch (error) {
-				if (error.code === "SQLITE_CONSTRAINT_UNIQUE") throw new AuthError(409, "USERNAME_TAKEN", "Esse nome de usuário já está em uso.");
+				if (error.code === "SQLITE_CONSTRAINT_UNIQUE") throw new AuthError(409, "ACCOUNT_TAKEN", "Apelido ou e-mail já cadastrado.");
 				if (error.code === "SQLITE_CONSTRAINT_CHECK") throw new AuthError(422, "INVALID_USERNAME", "Use 3–30 caracteres: minúsculas, números ou sublinhado.", { username: "Use 3–30 caracteres: minúsculas, números ou sublinhado." });
 				throw error;
 			}
@@ -1194,7 +1196,7 @@ export function authService(db, { webOrigin = "http://localhost:5173", now = Dat
 			};
 		},
 		async login({ username, password }, header) {
-			const normalized = typeof username === "string" ? username.toLowerCase() : "";
+			const normalized = typeof username === "string" ? username.trim().toLowerCase() : "";
 			const user = repository.userByUsername(normalized);
 			const valid = await verifyPassword(password, user?.passwordHash ? user : await dummyCredential());
 			if (!user?.passwordHash || !valid) throw new AuthError(401, "INVALID_CREDENTIALS", "Usuário ou senha inválidos.");
@@ -2301,4 +2303,11 @@ export function transitionService(db, { now = Date.now } = {}) {
 			}
 		}).immediate();
 	} };
+}
+
+
+export function normalizeAccountEmail(email) {
+ if (typeof email !== "string" || email.trim().length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+  throw new AuthError(422, "INVALID_EMAIL", "Informe um e-mail válido.", {email: "Informe um e-mail válido."});
+ return email.trim().toLowerCase();
 }

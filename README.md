@@ -78,3 +78,9 @@ Os testes usam bancos temporários e não devem resetar o banco de uso. A autent
 - [Plano e evidências](apoio/documentacao/PLANO.md): o que foi implementado e verificado.
 - [Execução detalhada](apoio/documentacao/EXECUCAO.md): referência operacional completa preservada do README anterior.
 - [Preparação Firebase](apoio/documentacao/FIREBASE.md): fronteira atual, segurança e migração gradual futura.
+
+## Cadastro e acesso
+
+Abra o perfil sobre o mapa para criar conta com apelido público único e senha de 8–128 caracteres. Confirme a senha e, após o cadastro, entre com o apelido e a senha. A sessão persiste por oito horas em cookie HttpOnly; perfil, ocorrências e logout continuam integrados. Google e e-mail foram retirados da interface por solicitação do usuário. Dados e contas anteriores são preservados.
+
+Execute `npm run db:migrate` antes de iniciar uma instalação ainda não atualizada. O checkout não contém projeto Android/Gradle/Capacitor; o fluxo utiliza o layout web responsivo existente.

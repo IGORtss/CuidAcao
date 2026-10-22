@@ -199,3 +199,28 @@ GET `/api/v1/auth/firebase/config` retorna somente `data.enabled`. POST `/fireba
 POST de ocorrência passa a aceitar `environmentalRepresentation` apenas nas combinações públicas D13, sempre `accuracy=approximate`, GeoJSON dentro da caixa e até 50 posições. PATCH comum continua recusando o campo. Listagens aceitam `includeDuplicates=true` para a coleção recorrente já contratada.
 
 Rotas `/account/*` têm `Cache-Control: no-store`; ausência de sessão=401, alvo alheio=404, Origin divergente=403 e JSON/campos inválidos=422. Respostas não incluem snapshots privados. Notificação contém eventId, occurrenceId, action, createdAt, reason público, título atual e tipo do acompanhamento; ocultos deixam de aparecer.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.
+
+### Contrato de contas por e-mail
+
+`POST /api/v1/auth/register`: `{username,password,email}`; e-mail normalizado, privado e único. `email` opcional apenas para compatibilidade com os clientes legados. O formulário atual exige e-mail. `POST /auth/login` mantém `{username,password}` e aceita e-mail no campo `username`. Cadastro retorna 201 sem iniciar sessão. Nenhuma projeção pública inclui e-mail.
+
+- `GET /api/v1/auth/account/config`: `{data:{emailEnabled}}`, sem segredos.
+- `GET /api/v1/auth/account`: sessão obrigatória; `{data:{email,verified,emailEnabled}}`, `no-store`.
+- `POST /api/v1/auth/password/request`: `{email}`, 204 genérico quando disponível, inclusive conta ausente.
+- `POST /api/v1/auth/password/reset`: `{token,password}`, 204, revoga todas as sessões.
+- `POST /api/v1/auth/email/request`: `{}`, sessão obrigatória, solicita link de verificação.
+- `POST /api/v1/auth/email/verify`: `{token}`, 204.
+
+Escritas exigem Origin exata, JSON, limites de tamanho/tentativas; token inválido/expirado/reutilizado retorna 422. Sem transporte ou com falha de envio: 503 explícito. Tokens de 32 bytes aleatórios são guardados apenas como SHA-256, com finalidade e validade (30 minutos para redefinir, 24 horas para verificar). Consumo e atualização são atômicos. Links usam fragmento, retirado da URL ao abrir o diálogo; nenhum consumo acontece por GET. Verificar e-mail não muda permissões nem impede uso inicial da conta.
+
+Senhas de cadastro, entrada e redefinição: 8–128 caracteres, sem exigir combinação de tipos de caracteres; senhas existentes permanecem válidas.
+
+
+## Cadastro simples — solicitação posterior de 22/10/2026
+
+A interface oferece somente cadastro e entrada por apelido e senha, com confirmação da senha no cadastro e mínimo de oito caracteres. Retirados campos/botões de Google, e-mail e gerenciamento por e-mail da interface. Contas, vínculos e dados persistidos permanecem preservados; serviços anteriores mantidos para compatibilidade, sem exposição no fluxo simples.

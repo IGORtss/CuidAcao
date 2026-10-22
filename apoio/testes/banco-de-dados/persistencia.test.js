@@ -37,7 +37,7 @@ test('schema, migrações e persistência entre conexões', async t => {
   const db = storage.db;
   assert.equal(db.pragma('foreign_keys', {simple:true}), 1);
   assert.equal(db.pragma('journal_mode', {simple:true}), 'wal');
-  assert.deepEqual(migrate(db), [1,2,3,4,5,6]);
+  assert.deepEqual(migrate(db), [1,2,3,4,5,6,7]);
   assert.deepEqual(migrate(db), []);
   for (const table of ['users','sessions','occurrences','contributions','stances','attachments','occurrence_relations','reports','subscriptions','saved_queries','notification_reads','events','schema_migrations']) {
     assert.ok(db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").get(table));
@@ -170,7 +170,7 @@ test('seed recusa base parcialmente preenchida ou alheia; migração falha atomi
   assert.equal(db.prepare("SELECT name FROM sqlite_master WHERE name='schema_migrations'").get(),undefined);
   const other = temporary(t).db;
   migrate(other);
-  other.exec("INSERT INTO users VALUES ('test','teste_ficticio','hash','salt','{}','user','date','date')");
+  other.exec("INSERT INTO users (id,username,passwordHash,passwordSalt,passwordParams,role,createdAt,updatedAt) VALUES ('test','teste_ficticio','hash','salt','{}','user','date','date')");
   await assert.rejects(seed(other),/base contém dados/);
   const foreign = temporary(t).db;
   migrate(foreign);
@@ -181,5 +181,5 @@ test('seed recusa base parcialmente preenchida ou alheia; migração falha atomi
 
 test('migrações 002/003/004/005 sobre base 001 preenchida preservam vínculos, filhos e auditoria',async t=>{
  const storage=temporary(t),db=storage.db;db.exec(migrations.find(entry=>entry.version===1).sql);db.exec("CREATE TABLE schema_migrations(version INTEGER PRIMARY KEY,appliedAt TEXT NOT NULL) STRICT");db.prepare('INSERT INTO schema_migrations VALUES (?,?)').run(1,new Date().toISOString());await seed(db);
- const tables=['users','sessions','occurrences','contributions','stances','attachments','occurrence_relations','reports','events','occurrence_sequence'],snapshot=()=>JSON.stringify(tables.map(table=>db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all())),before=snapshot();assert.deepEqual(migrate(db),[2,3,4,5,6]);assert.ok(snapshot()!==before);assert.equal(db.prepare("SELECT count(*) total FROM occurrences WHERE environmentalRepresentationJson IS NOT NULL").get().total,0);assert.deepEqual(migrate(db),[]);assert.ok(db.prepare("SELECT 1 FROM sqlite_master WHERE name='occurrence_relations_reverse'").get());
+ const tables=['users','sessions','occurrences','contributions','stances','attachments','occurrence_relations','reports','events','occurrence_sequence'],snapshot=()=>JSON.stringify(tables.map(table=>db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all())),before=snapshot();assert.deepEqual(migrate(db),[2,3,4,5,6,7]);assert.ok(snapshot()!==before);assert.equal(db.prepare("SELECT count(*) total FROM occurrences WHERE environmentalRepresentationJson IS NOT NULL").get().total,0);assert.deepEqual(migrate(db),[]);assert.ok(db.prepare("SELECT 1 FROM sqlite_master WHERE name='occurrence_relations_reverse'").get());
 });

@@ -895,3 +895,32 @@ Verificação nesta máquina (Node 26.12.0, Chromium Playwright 153; o requisito
 - Inspeção visual em 1440×900 e 390×844; testes cobrem 360px, tela curta, ampliação de 200%, teclado, preferência reduzida, inversão da navegação, dimensões intermediárias reais e preservação da câmera. Sintaxe dos módulos alterados aprovada.
 
 Duas URLs de download do lockfile vieram traduzidas incorretamente no ZIP (`remote-configuracao` e `node-servidor`). Corrigidas somente para os nomes publicados já declarados; versões e integridades mantidas. Dependências locais ficaram na pasta `node_modules` do projeto, sem vínculo com uma pasta temporária. Gravação das transições em `/home/higur/Downloads/CuidAcao-navegacao.webm`, fora do código-fonte. Site/API locais respondem HTTP 200 em `http://127.0.0.1:5174/`. Sem publicação. Dispositivo físico, teclado virtual real e leitor de tela não foram verificados.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Implementado: cadastro com e-mail privado e apelido único, entrada por e-mail ou apelido, preservação do cadastro legado, sessão HttpOnly existente de oito horas, logout, Google opcional existente e perfil sobre o mapa com suas ocorrências. Novo gerenciamento de e-mail no perfil e recuperação no diálogo de entrada. Migração 007 aditiva, aplicada ao banco local sem seed/reset. Nenhuma dependência adicionada.
+
+Recuperação/verificação: tokens aleatórios de 32 bytes, hash SHA-256 no banco, finalidade separada, expiração de 30 minutos/24 horas e consumo atômico de uso único. Redefinir senha revoga sessões na mesma transação; falha controlada desfaz senha/revogação/consumo. Links usam fragmento retirado da URL, com confirmação por POST. Origin, JSON, tamanho e limites de tentativas são exigidos. E-mail não integra projeções públicas. Transporte privado HTTPS configurável descrito no README; ausência/falha produz erro explícito, sem autenticação simulada.
+
+Verificado neste ambiente (Node 26.12.0; o projeto requer Node 24):
+- Build final aprovado e `git diff --check` sem erros. Advertência já existente de importação Firebase estática/dinâmica.
+- 48 testes de domínio/clientes/unitários aprovados.
+- Grupo direcionado de autenticação: 37 aprovados; um teste de Google entre processos não inicia servidor neste ambiente restrito. Inclui sessão, cookies, senhas, permissões, Google controlado, ponte Firebase e recuperação/verificação.
+- Seis testes novos de conta/transporte aprovados, incluindo concorrência de e-mail, finalidade/expiração/reuso de token, falha de envio, CSRF/limites e rollback da redefinição.
+- Quatro testes de migração/preservação aprovados; 11 testes da consulta de ocorrências aprovados após adaptar fixtures às colunas aditivas.
+- `npm run db:migrate` direto aprovado (também em banco temporário), sem seed/reset.
+
+Limites: `npm test` foi executado e não ficou integralmente verde. Testes HTTP entre processos falham ao iniciar servidores; testes CLI via execFile retornam saída vazia neste ambiente, enquanto o comando direto funciona. A execução integral que permaneceu sem progresso foi interrompida, sem marcar esses testes como aprovados. `npm run test:e2e` foi executado, mas o sandbox recusa escutar 127.0.0.1:3100 com EPERM; os cenários atualizados desktop/mobile não puderam rodar. Reexecutar regressão/E2E em Node 24 com portas locais permitidas.
+
+Pendências externas identificadas: o ambiente da API não contém CUIDACAO_GOOGLE_CLIENT_ID/CUIDACAO_FIREBASE_PROJECT_ID nem CUIDACAO_ACCOUNT_MAIL_URL/CUIDACAO_ACCOUNT_MAIL_TOKEN. Configurar um provedor Google e o transporte real de e-mail antes de validar esses serviços. Nenhum projeto Android/Gradle/Capacitor existe neste checkout; preservado o fluxo web responsivo, sem recriar APK. Validação em aparelho/contêiner Android continua pendente.
+
+
+### Flexibilização da senha — 22/10/2026
+
+Mínimo reduzido para oito caracteres no cadastro, entrada e redefinição, com mensagens correspondentes na interface. Sem exigência de maiúsculas, números ou símbolos. Dezoito testes direcionados de autenticação/contas aprovados, incluindo cadastro/login/redefinição com oito letras e rejeição de sete. Build aprovado; diff sem erros. Mantidas as limitações de regressão HTTP/E2E do ambiente registradas acima.
+
+
+### Cadastro simples — solicitação posterior de 22/10/2026
+
+Retirados da interface campo de e-mail, acesso Google e gerenciamento/recuperação por e-mail. Cadastro por apelido, senha e confirmação; entrada, sessão e logout preservados. Serviços e dados anteriores mantidos por compatibilidade, sem reset/migração destrutiva. Dezenove testes de autenticação/contas aprovados, incluindo cadastro sem e-mail com oito letras, sessão e logout. Build e diff-check aprovados. E2E desktop/mobile atualizado; execução bloqueada novamente por EPERM ao escutar 127.0.0.1:3100. Cenários exclusivos da interface Google desativados conforme retirada solicitada; testes da API permanecem.

@@ -157,3 +157,13 @@ Ao escolher uma função, o menu se transforma no painel contextual corresponden
 Pedido explícito do usuário: navegação com transformação espacial da interface, componentes orgânicos e identidade consistente. O menu principal e seus painéis compartilham a mesma superfície: largura e altura acompanham o conteúdo real, com limite de viewport e rolagem interna. Avançar desloca o conteúdo para a esquerda e apresenta o próximo em sequência; voltar inverte o percurso e devolve foco à ação de origem. A marca permanece como âncora. Perfil é compacto; camadas e lista acomodam mais conteúdo; investigação conserva o mapa utilizável.
 
 Painéis completos têm retorno ao menu e surgem a partir da HUD. A Central se expande sobre o mapa existente e recolhe ao voltar; feed e publicação usam entrada coordenada. Formulários mantêm campos, rascunhos e permissões; mudanças de etapa e de modo de autenticação ajustam a altura e movem os campos. Diálogos móveis entram como folhas inferiores. Movimento reduzido remove interpolação, deslocamentos e atrasos, inclusive quando a preferência muda durante uma transição. Conteúdo visual de saída é temporário, inerte, sem IDs e excluído de leitores de tela. A navegação pode ser interrompida ou invertida sem bloquear a próxima ação.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.
+
+
+## Cadastro simples — solicitação posterior de 22/10/2026
+
+A interface oferece somente cadastro e entrada por apelido e senha, com confirmação da senha no cadastro e mínimo de oito caracteres. Retirados campos/botões de Google, e-mail e gerenciamento por e-mail da interface. Contas, vínculos e dados persistidos permanecem preservados; serviços anteriores mantidos para compatibilidade, sem exposição no fluxo simples.

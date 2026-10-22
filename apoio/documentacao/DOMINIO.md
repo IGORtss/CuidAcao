@@ -2,7 +2,7 @@
 07/10/2026 • normativa para a versão de apresentação; autenticação, criação/edição, imagens, comentários/complementos e manifestações, ciclo de estados e pedidos de reabertura implementados; área administrativa, denúncias/correções/moderação e rejeição de pedidos implementadas no item 9; gestão de vínculos implementada no item 10; histórico e encerramento revistos no item 11.
 
 ## D01 — Identidade e acesso
-Visitante consulta conteúdo público. Conta ativa tem papel user ou admin; cadastro sempre cria user. Usuário: identificador público fictício de 3–30 caracteres ASCII minúsculos, números ou sublinhado, único após normalização para minúsculas; senha de 12–128 caracteres, sem remoção de espaços. Não coletar nome civil, e-mail, CPF, endereço residencial ou comprovação de residência. Cadastro não inicia sessão: encaminha para login. Administração é atribuída apenas pela preparação local da demonstração, nunca por campo do cadastro ou botão público.
+Visitante consulta conteúdo público. Conta ativa tem papel user ou admin; cadastro sempre cria user. Usuário: identificador público fictício de 3–30 caracteres ASCII minúsculos, números ou sublinhado, único após normalização para minúsculas; senha de 8–128 caracteres, sem remoção de espaços. Não coletar nome civil, e-mail, CPF, endereço residencial ou comprovação de residência. Cadastro não inicia sessão: encaminha para login. Administração é atribuída apenas pela preparação local da demonstração, nunca por campo do cadastro ou botão público.
 
 Admin pode participar como usuário, mas não pode confirmar, descartar, encerrar, reabrir, corrigir administrativamente ou moderar sua própria ocorrência/contribuição. Outro administrador decide; seed inclui dois administradores. Na revisão de denúncia, o revisor não pode ser denunciante nem autor do conteúdo. A vinculação administrativa também não pode envolver ocorrências de autoria do revisor. Não há gestão de papéis ou bloqueio de contas na interface desta versão.
 
@@ -126,3 +126,13 @@ A solicitação explícita do usuário acrescenta autenticação Google opcional
 ## D01 — Extensão Firebase Auth (15/10/2026)
 
 Firebase Auth pode substituir o transporte Google anterior sem substituir a sessão do CuidAção. O navegador envia ao backend somente o ID token Firebase recém-obtido; o servidor verifica assinatura, emissor, projeto, expiração, revogação e `sign_in_provider=google.com`. A identidade local usa `firebase uid`, nunca e-mail, nome, foto ou claim de papel. Primeiro acesso ainda exige username fictício; conta criada recebe papel `user`, não tem senha local e não é vinculada automaticamente a conta local ou Google legada. O token Firebase não é persistido e a sessão opaca local continua governando todas as permissões.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.
+
+
+## Cadastro simples — solicitação posterior de 22/10/2026
+
+A interface oferece somente cadastro e entrada por apelido e senha, com confirmação da senha no cadastro e mínimo de oito caracteres. Retirados campos/botões de Google, e-mail e gerenciamento por e-mail da interface. Contas, vínculos e dados persistidos permanecem preservados; serviços anteriores mantidos para compatibilidade, sem exposição no fluxo simples.

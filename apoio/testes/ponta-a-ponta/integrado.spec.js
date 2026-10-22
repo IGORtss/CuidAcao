@@ -19,7 +19,7 @@ test('ciclo integrado entre cinco contas, upload parcial e decisões distintas d
   const page=await context.newPage();await page.goto('/#map');
   const nav=page.locator('.auth-nav'),auth=page.locator('.auth-dialog');
   await openFullProfile(page);await page.locator('#account-panel').getByRole('button',{name:register?'Criar conta':'Entrar',exact:true}).click();
-  await auth.getByLabel('Nome de usuário fictício').fill(account.username);await auth.getByLabel('Senha',{exact:true}).fill(account.password);
+  await auth.getByLabel(/Apelido público|E-mail ou apelido público/).fill(account.username);await auth.getByLabel('Senha',{exact:true}).fill(account.password);
   if(register){await auth.getByLabel('Confirmar senha').fill(account.password);await auth.getByRole('button',{name:'Criar conta',exact:true}).click();await expect(auth.locator('#auth-message')).toContainText('Conta criada');await auth.getByLabel('Senha',{exact:true}).fill(account.password);}
   await auth.getByRole('button',{name:'Entrar',exact:true}).click();await expect(auth).not.toBeVisible();await expect(nav.locator('#session-user')).toHaveText('Conta: '+account.username);return page;
  }

@@ -28,7 +28,7 @@ test('cadastro normaliza, cria user sem sessão, scrypt exato e duplicado=409',a
 });
 test('validação rejeita role, campos desconhecidos, espaços, limites e tipos sem criar contas',async t=>{
  const {db,post}=await setup(t);let i=0;
- for(const body of [{...payload,role:'admin'},{...payload,email:'ficticio@example.invalid'},{...payload,username:'ab'},{...payload,username:'a'.repeat(31)},{...payload,username:' nome'},{...payload,username:'José'},{...payload,password:'curta'},{...payload,password:'x'.repeat(129)},{...payload,password:123456789123},{username:payload.username},null]){
+ for(const body of [{...payload,role:'admin'},{...payload,email:'invalido'},{...payload,username:'ab'},{...payload,username:'a'.repeat(31)},{...payload,username:' nome'},{...payload,username:'José'},{...payload,password:'curta'},{...payload,password:'x'.repeat(129)},{...payload,password:123456789123},{username:payload.username},null]){
   const result=await post('register',body,{remoteAddress:`127.0.1.${++i}`,headers:{origin,'content-type':'application/json'},...(body===null?{payload:'null'}:{})});assert.equal(result.statusCode,422);publicOnly(result);
  }
  assert.equal(db.prepare('SELECT count(*) n FROM users').get().n,0);

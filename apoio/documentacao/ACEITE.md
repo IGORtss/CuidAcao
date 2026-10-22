@@ -210,3 +210,8 @@ Critérios da decisão de mapa Leaflet permanente como cenário da primeira tela
 | 16 | A apresentação inicial não mostra HUD; a ilha aparece somente no mapa interativo concluído | `apoio/testes/ponta-a-ponta/transicao.spec.js`, `navegacao.spec.js`, desktop/mobile |
 
 Conferência final em 13/10/2026: 135/135 Node, build Vite e 86/86 E2E desktop/mobile aprovados, sem falhas ou skips. Capturas Chromium em 1440×900 e 390×844 foram inspecionadas com tiles reais; zoom simulado a 200% cobriu 360/390px. Dispositivo físico e leitor de tela não foram executados.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.

@@ -36,3 +36,8 @@ As decisões gerais vêm das conversas do projeto; nome CuidAção e primeiro pr
 DOMAIN governa comportamento; DATA_MODEL e API o operacionalizam; UX define apresentação; ARCHITECTURE define implementação; ACCEPTANCE define evidência de conclusão; PLAN separa trabalho entregue e futuro. Em conflito, corrigir os documentos antes de implementar a parte conflitante.
 
 Autenticação Google opcional autorizada na solicitação de 11/10/2026: complementa usuário/senha, sem ampliar permissões, integrar outros serviços Google ou vincular automaticamente contas existentes. Primeiro acesso pede username local e cria apenas usuário comum. Contratos detalhados em DOMAIN/API; ativação depende de cliente Google configurado, não de dados demonstrativos.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.

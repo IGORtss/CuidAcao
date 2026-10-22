@@ -13,7 +13,7 @@ test('comandos npm reais migram, fazem seed e recusam segunda execução sem alt
  t.after(()=>rmSync(directory,{recursive:true,force:true}));
  const env={...process.env,CUIDACAO_DB_PATH:filename};
  const run=script=>execute('npm',['run',script],{cwd:new URL('../../../',import.meta.url),env,timeout:20000});
- assert.ok((await run('db:migrate')).stdout.includes('Migrações aplicadas: 1, 2, 3, 4, 5, 6.'));
+ assert.ok((await run('db:migrate')).stdout.includes('Migrações aplicadas: 1, 2, 3, 4, 5, 6, 7.'));
  // Plaintext remains in memory only; never attach seed stdout to an assertion/log.
  const seeded=await run('db:seed');assert.ok(seeded.stdout.includes('Seed fictício concluído.'));
  function snapshot(){const db=openDatabase(filename);try{return Object.fromEntries(['users','sessions','occurrences','contributions','stances','attachments','occurrence_relations','reports','subscriptions','saved_queries','notification_reads','events','schema_migrations','occurrence_sequence'].map(table=>[table,(()=>{const rows=db.prepare(`SELECT * FROM ${table} ORDER BY rowid`).all();return {count:rows.length,digest:createHash('sha256').update(JSON.stringify(rows)).digest('hex')};})()]));}finally{db.close();}}

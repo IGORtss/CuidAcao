@@ -105,3 +105,8 @@ users preserva colunas/IDs/roles/datas, permitindo passwordHash/passwordSalt/pas
 ## Firebase Auth — migração 006
 
 `firebase_identities(uid,userId,createdAt)` mantém uma identidade Firebase por conta local, com FK restritiva e sem e-mail, perfil, token ou papel externo. `firebase_flows(tokenHash,uid,expiresAt)` guarda apenas a pendência opaca de primeiro acesso por dez minutos. Criação de usuário, identidade, consumo da pendência e sessão local compartilham uma transação; a migração é aditiva e não altera usuários, sessões ou identidades Google existentes.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.

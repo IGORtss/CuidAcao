@@ -1,8 +1,7 @@
 /**
  * Cadastro e sessão
  */
-import { createAuthClient, createGoogleClient, createFirebaseIdentityClient, createRequestScope } from "../../../servicos/api.js";
-import { mountGoogleAuth } from "./autenticacao-google.js";
+import { createAuthClient, createRequestScope } from "../../../servicos/api.js";
 import { entrarElementos, ajustarAltura } from "./movimento.js";
 
 const node = (tag, text, className) => {
@@ -13,7 +12,7 @@ const node = (tag, text, className) => {
 };
 
 export function mountAuth(header) {
-	const client = createAuthClient(), googleClient = createGoogleClient(), firebaseClient = createFirebaseIdentityClient(), scope = createRequestScope();
+	const client = createAuthClient(), scope = createRequestScope();
 	const nav = node("nav", "", "auth-nav auth-state");
 	nav.setAttribute("aria-label", "Conta fictícia");
 	header.append(nav);
@@ -29,8 +28,8 @@ export function mountAuth(header) {
 	close.type = "button";
 	close.setAttribute("aria-label", "Fechar autenticação");
 	head.append(title, close);
-	const help = node("p", "Use um identificador fictício de 3 a 30 letras, números ou sublinhado e senha de 12 a 128 caracteres. Não informe dados pessoais nem uma senha usada em outros serviços.");
-	const localHelp = help.textContent;
+	const help = node("p", "Use um identificador fictício de 3 a 30 letras, números ou sublinhado e senha de 8 a 128 caracteres. Não informe dados pessoais nem uma senha usada em outros serviços.");
+	const localHelp = "Escolha um apelido público de 3 a 30 letras, números ou sublinhado e uma senha com pelo menos 8 caracteres.";
 	const message = node("p", "");
 	message.id = "auth-message";
 	message.setAttribute("role", "status");
@@ -50,8 +49,8 @@ export function mountAuth(header) {
 		form.append(wrapper);
 		return input;
 	};
-	const username = field("auth-username", "Nome de usuário fictício", "text", "username");
-	username.maxLength = 30;
+	const username = field("auth-username", "Apelido público", "text", "username");
+	username.maxLength = 254;
 	username.autocapitalize = "none";
 	username.spellcheck = false;
 	const password = field("auth-password", "Senha", "password", "current-password");
@@ -63,37 +62,10 @@ export function mountAuth(header) {
 	const switchMode = node("button", "Criar conta", "secondary");
 	switchMode.type = "button";
 	form.append(submit, switchMode);
-	const googleBox = node("div", "", "google-auth");
-	dialog.append(head, help, message, form, googleBox);
+	dialog.append(head, help, message, form);
 	document.body.append(dialog);
 	let user = null, busy = false, checking = true, mode = "login", originFocus = null, view = 0, lastUserId = null;
 	const listeners = new Set();
-	const googleUI = mountGoogleAuth(googleBox, googleClient, firebaseClient, {
-		current: () => dialog.open && mode !== "google",
-		busy: () => busy,
-		onBusy(value) {
-			if (value) scope.cancel();
-			busy = value;
-			checking = false;
-			renderNav();
-			renderForm();
-		},
-		onPending() {
-			mode = "google";
-			clearPasswords();
-			showMessage("Identidade Google validada. Escolha um nome fictício disponível; nenhuma conta existente será vinculada.");
-			renderForm();
-			username.focus();
-		},
-		onUser: acceptGoogleUser,
-		onError: (text) => showMessage(text, true)
-	});
-	function acceptGoogleUser(account) {
-		user = account;
-		notice.textContent = "Sessão iniciada com Google.";
-		clearPasswords();
-		if (dialog.open) dialog.close();
-	}
 	function button(label, action) {
 		const control = node("button", label, "secondary");
 		control.type = "button";
@@ -114,17 +86,13 @@ export function mountAuth(header) {
 		if (changed) for (const listener of listeners) listener();
 	}
 	function renderForm() {
-		help.textContent = mode === "google" ? "Escolha um identificador fictício de 3 a 30 letras, números ou sublinhado. Sua conta Google não recebe senha local nem é vinculada a outra conta." : localHelp;
-		title.textContent = mode === "google" ? "Escolher nome de usuário" : mode === "register" ? "Criar conta" : "Entrar";
-		password.parentElement.hidden = mode === "google";
-		password.required = mode !== "google";
-		googleBox.hidden = mode === "google";
-		googleBox.inert = busy;
+		help.textContent = localHelp;
+		title.textContent = mode === "register" ? "Criar conta" : "Entrar";
 		confirmation.parentElement.hidden = mode !== "register";
 		confirmation.required = mode === "register";
 		password.autocomplete = mode === "register" ? "new-password" : "current-password";
-		submit.textContent = busy ? "Aguarde…" : mode === "google" ? "Criar conta e entrar" : title.textContent;
-		switchMode.textContent = mode === "google" ? "Usar usuário e senha" : mode === "register" ? "Já tenho conta" : "Criar conta";
+		submit.textContent = busy ? "Aguarde…" : title.textContent;
+		switchMode.textContent = mode === "register" ? "Já tenho conta" : "Criar conta";
 		for (const element of [...form.elements, close]) element.disabled = busy;
 		form.setAttribute("aria-busy", String(busy));
 	}
@@ -152,7 +120,6 @@ export function mountAuth(header) {
 		renderForm();
 		if (!dialog.open) dialog.showModal();
 		username.focus();
-		googleUI.show();
 	}
 	function closeDialog() {
 		if (busy) return;
@@ -169,14 +136,12 @@ export function mountAuth(header) {
 	});
 	dialog.addEventListener("close", () => {
 		view++;
-		googleUI.cancel();
 		clearPasswords();
 		if (!document.querySelector("#details")?.open) (originFocus?.isConnected ? originFocus : controls.querySelector("button,span"))?.focus();
 	});
 	switchMode.addEventListener("click", () => {
 		const previousBounds = dialog.getBoundingClientRect();
-		googleUI.cancel();
-		mode = mode === "google" ? "login" : mode === "register" ? "login" : "register";
+		mode = mode === "register" ? "login" : "register";
 		view++;
 		clearPasswords();
 		showMessage("");
@@ -184,36 +149,16 @@ export function mountAuth(header) {
 		ajustarAltura(dialog, previousBounds);
 		entrarElementos(form, mode === "register" ? 1 : -1);
 		username.focus();
-		googleUI.show();
 	});
 	form.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		if (busy) return;
-		if (!/^[A-Za-z0-9_]{3,30}$/.test(username.value)) {
+		if (mode !== "login" && !/^[A-Za-z0-9_]{3,30}$/.test(username.value)) {
 			showMessage("Use de 3 a 30 letras, números ou sublinhado no identificador fictício.", true, [username]);
 			return;
 		}
-		if (mode === "google") {
-			scope.cancel();
-			busy = true;
-			renderNav();
-			renderForm();
-			try {
-				const firebaseConfiguration = await firebaseClient.config();
-				const result = await (firebaseConfiguration?.enabled ? firebaseClient : googleClient).complete(username.value);
-				if (result?.user) acceptGoogleUser(result.user);
-				else showMessage("Resposta de autenticação inválida.", true);
-			} catch (error) {
-				showMessage(error.message, true, [username]);
-			} finally {
-				busy = false;
-				renderNav();
-				renderForm();
-			}
-			return;
-		}
-		if ([...password.value].length < 12 || [...password.value].length > 128) {
-			showMessage("A senha deve ter de 12 a 128 caracteres.", true, [password]);
+		if ([...password.value].length < 8 || [...password.value].length > 128) {
+			showMessage("A senha deve ter de 8 a 128 caracteres.", true, [password]);
 			return;
 		}
 		if (mode === "register" && password.value !== confirmation.value) {
@@ -267,8 +212,6 @@ export function mountAuth(header) {
 		renderNav();
 		notice.textContent = "Saindo…";
 		try {
-			googleUI.cancel();
-			googleUI.disableAutoSelect();
 			await client.logout();
 			user = null;
 			notice.textContent = "Sessão encerrada.";

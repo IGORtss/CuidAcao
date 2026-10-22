@@ -27,6 +27,7 @@ const tables = [
 	"google_flows",
 	"firebase_identities",
 	"firebase_flows",
+	"account_tokens",
 	"subscriptions",
 	"saved_queries",
 	"notification_reads",
@@ -646,6 +647,7 @@ function copySnapshot(source, destination) {
 	const db = openDatabase(join(destination, "db.sqlite"));
 	try {
 		db.prepare("DELETE FROM sessions").run();
+		if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='account_tokens'").get()) db.prepare("DELETE FROM account_tokens").run();
 		if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='google_flows'").get()) db.prepare("DELETE FROM google_flows").run();
 		if (db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='firebase_flows'").get()) db.prepare("DELETE FROM firebase_flows").run();
 		db.pragma("wal_checkpoint(TRUNCATE)");

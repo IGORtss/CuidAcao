@@ -160,3 +160,8 @@ Referências oficiais consultadas: https://developers.google.com/identity/gsi/we
 ## Ponte Firebase Auth
 
 Quando `CUIDACAO_FIREBASE_PROJECT_ID` está definido, `servidor/servicos/administrador-firebase.js` inicializa o Admin SDK com o Auth Emulator local ou Application Default Credentials no ambiente hospedado. O frontend usa `signInWithPopup`, força a emissão de ID token, envia-o por POST same-origin e encerra imediatamente a sessão do SDK no navegador. O backend aceita somente token verificado do projeto e provedor Google, grava apenas `uid` na migração 006 e converte a identidade em `cuidacao_session`. Testes injetam o verificador na borda HTTP; produção nunca confia em claims fornecidas pelo cliente. Firebase Admin 14.5.0 exige Node >=22 e é compatível com Node 24.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.

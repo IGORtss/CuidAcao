@@ -268,6 +268,19 @@ CREATE TABLE firebase_flows (
 ) STRICT;
 CREATE INDEX firebase_flows_expiry ON firebase_flows(expiresAt);
 `
+	},
+	{
+		name: "007_account_email.sql", version: 7,
+		sql: `ALTER TABLE users ADD COLUMN email TEXT;
+CREATE UNIQUE INDEX users_email_unique ON users(email) WHERE email IS NOT NULL;
+ALTER TABLE users ADD COLUMN emailVerifiedAt TEXT;
+CREATE TABLE account_tokens (
+ tokenHash TEXT PRIMARY KEY NOT NULL,
+ userId TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+ purpose TEXT NOT NULL CHECK(purpose IN ('reset','verify')),
+ expiresAt TEXT NOT NULL
+) STRICT;
+CREATE INDEX account_tokens_expiry ON account_tokens(expiresAt);`
 	}
 ];
 export function migrate(db) {
@@ -447,11 +460,11 @@ export function attachmentRepository(db) {
 export function authRepository(db) {
 	return {
 		userByUsername(username) {
-			return db.prepare("SELECT id,username,role,passwordHash,passwordSalt,passwordParams FROM users WHERE username=?").get(username);
+			return db.prepare("SELECT id,username,role,passwordHash,passwordSalt,passwordParams FROM users WHERE username=? OR email=?").get(username, username);
 		},
 		createUser(user) {
-			db.prepare(`INSERT INTO users (id,username,role,passwordHash,passwordSalt,passwordParams,createdAt,updatedAt)
-  VALUES (?,?,'user',?,?,?,?,?)`).run(user.id, user.username, user.passwordHash, user.passwordSalt, user.passwordParams, user.createdAt, user.createdAt);
+			db.prepare(`INSERT INTO users (id,username,role,passwordHash,passwordSalt,passwordParams,createdAt,updatedAt,email)
+  VALUES (?,?,'user',?,?,?,?,?,?)`).run(user.id, user.username, user.passwordHash, user.passwordSalt, user.passwordParams, user.createdAt, user.createdAt, user.email ?? null);
 		},
 		createSession(session, previousHash) {
 			return db.transaction(() => {

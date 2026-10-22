@@ -251,7 +251,7 @@ const messages = {
 	400: "Não foi possível enviar os dados.",
 	401: "Usuário ou senha inválidos.",
 	403: "Origem não permitida. Confira o endereço local da aplicação.",
-	409: "Esse nome de usuário já está em uso.",
+	409: "Esse apelido já está em uso.",
 	422: "Verifique o nome de usuário e a senha.",
 	429: "Muitas tentativas. Aguarde um minuto e tente novamente."
 };

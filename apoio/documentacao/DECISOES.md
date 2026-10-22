@@ -217,3 +217,18 @@ Documentos acadêmicos mantêm precisão e sobriedade, mas não precisam soar bu
 ## Movimento contínuo e superfícies orgânicas — 22/10/2026
 
 Solicitação explícita do usuário substitui a restrição visual anterior de movimentos de 120–190ms: entradas coordenadas de 310ms, transformações de 330–390ms e saídas curtas de 160–240ms, com expansão inicial em duas fases. CSS e Web Animations API nativos; nenhuma dependência nova. Dimensões reais são interpoladas para preservar a legibilidade dos textos; deslocamento e recorte conectam superfícies maiores. Mantidos dados, permissões, câmera Leaflet, hashes, foco e contratos de domínio. A referência de imagem mencionada não veio anexada nesta solicitação; direção implementada a partir da descrição e dos tokens existentes.
+
+
+## Autenticação prioritária — 22/10/2026
+
+Solicitação explícita posterior autoriza e-mail privado e senha no cadastro, apelido público único, entrada por e-mail ou apelido (preservando contas existentes), sessão local HttpOnly e Google opcional sem vínculo automático. Cadastro encaminha à entrada. O e-mail nunca integra projeções públicas. Recuperação e verificação usam links de uso único, expiração e transporte externo configurável; sem transporte, a interface informa indisponibilidade e não simula envio. Android aproveita o fluxo web responsivo existente, sem recriar APK. Esta autorização substitui a proibição anterior de e-mail/recuperação somente no gerenciamento de contas.
+
+
+## Senhas mais simples — 22/10/2026
+
+Pedido posterior do usuário flexibiliza o mínimo de 12 para 8 caracteres no cadastro e na redefinição, mantendo máximo de 128. Não exigir maiúsculas, números ou símbolos. Preservar senhas existentes, hashing, limites de tentativas e validação no servidor.
+
+
+## Cadastro simples — solicitação posterior de 22/10/2026
+
+A interface oferece somente cadastro e entrada por apelido e senha, com confirmação da senha no cadastro e mínimo de oito caracteres. Retirados campos/botões de Google, e-mail e gerenciamento por e-mail da interface. Contas, vínculos e dados persistidos permanecem preservados; serviços anteriores mantidos para compatibilidade, sem exposição no fluxo simples.
