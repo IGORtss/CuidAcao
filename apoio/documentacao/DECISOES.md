@@ -56,13 +56,13 @@ Estas são escolhas novas para preencher lacunas, distintas das decisões gerais
 | Arquitetura | Frontend existente + Fastify + SQLite local | Mantém escopo pequeno, persistência real e testes diretos de API |
 
 ## Alterações de escopo explicitadas
-A 0.1 deixava categorias e cartografia oficial abertas; a 1.0 fecha duas categorias e usa geografia ilustrativa para o aceite. A expansão ambiental geral e o polígono oficial ficam fora desta versão. A 0.1 sugeria framework futuro: não haverá troca de frontend no escopo atual. Cadastro real no contexto de simulação não é substituído por seletor de papéis. Regras numéricas são convenções desta versão e podem ser revistas conscientemente, nunca alteradas silenciosamente pelo agente.
+A 0.1 deixava categorias e cartografia oficial abertas; a 1.0 fecha duas categorias e usa geografia ilustrativa para o aceite. A expansão ambiental geral e o polígono oficial ficam fora desta versão. A 0.1 sugeria framework futuro: não haverá troca de frontend no escopo atual. Cadastro real no contexto de simulação não é substituído por seletor de papéis. Regras numéricas são convenções desta versão e podem ser revistas conscientemente, nunca alteradas sem revisão e registro técnico.
 
 ## Limitações externas
 Sem fonte cartográfica oficial incorporada; sem alegação de precisão territorial. Sem revisão de normas específicas da instituição de ensino, pois não foram fornecidas. Sem avaliação de operação pública/produção. Nenhuma dessas limitações impede os critérios funcionais definidos para o TCC demonstrativo.
 
 ## Direção visual autorizada em 08/10/2026
-O usuário aprovou cartografia artística/editorial em petróleo/areia, sem CTA no hero, revelação natural do Leaflet e painel comunitário de consulta. FRONTEND_DESIGN consolida o prompt fornecido, pois o remoto não pôde ser consultado. Painel escolhe até quatro registros na ordem existente de createdAt/id dos filtros, sem avaliar gravidade; expande a lista integral. Fontes locais alternativas a Noto Serif/Inter evitam dependências externas. Sheet móvel é não modal e permanece no fluxo, com botões/teclado como alternativa a gestos. Discussão e anexos continuam futuros onde não há API; nenhuma regra de domínio ou autorização mudou.
+O usuário aprovou cartografia artística/editorial em petróleo/areia, sem CTA no hero, revelação natural do Leaflet e painel comunitário de consulta. FRONTEND_DESIGN consolida os requisitos visuais definidos, pois o remoto não pôde ser consultado. Painel escolhe até quatro registros na ordem existente de createdAt/id dos filtros, sem avaliar gravidade; expande a lista integral. Fontes locais alternativas a Noto Serif/Inter evitam dependências externas. Sheet móvel é não modal e permanece no fluxo, com botões/teclado como alternativa a gestos. Discussão e anexos continuam futuros onde não há API; nenhuma regra de domínio ou autorização mudou.
 
 ## Arte de abertura autorizada em 12/10/2026
 

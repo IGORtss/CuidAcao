@@ -38,18 +38,6 @@ Dados fictícios utilizados na demonstração deverão ser identificados como si
 
 Esta lista apresenta o escopo geral. Regras de estados, validação, permissões e resolução estão definidas na especificação 1.0 em apoio/documentacao/DOMINIO.md. A implementação continua dividida em etapas; documentação pronta não significa funcionalidade pronta.
 
-## Desenvolvimento com agentes de IA
-
-Agentes como o Codex apoiarão a documentação, implementação e revisão do projeto. O desenvolvimento seguirá etapas pequenas e verificáveis, com regras explícitas para reduzir inconsistências e funcionalidades sem relação com o objetivo do TCC.
-
-Diretrizes:
-
-- Implementar com base na documentação do projeto.
-- Distinguir decisões confirmadas de propostas técnicas.
-- Evitar funcionalidades, dados e regras de negócio inventados.
-- Priorizar os fluxos essenciais antes do acabamento visual.
-- Verificar o comportamento entregue em cada etapa.
-- Manter uma interface clara, adequada ao território e ao público do projeto.
 
 ## Estado atual
 
@@ -244,7 +232,6 @@ Dados, roteiro e recuperação da apresentação entregues no item 14. Material 
 - [Critérios de aceitação](ACEITE.md)
 - [Plano e verificação](PLANO.md)
 - [Decisões desta revisão](DECISOES.md)
-- [Instruções aos agentes](AGENTS.md)
 
 ---
 

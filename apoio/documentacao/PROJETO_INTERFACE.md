@@ -1,6 +1,6 @@
 # Identidade cartográfica — direção aprovada em 08/10/2026
 
-Referência: prompt integral do usuário desta entrega, sem dependência de Figma. O documento estava ausente localmente; Git remoto falhou por DNS e a consulta web não retornou conteúdo. Este registro consolida o prompt, não se apresenta como cópia do remoto.
+Referência: especificação visual consolidada do projeto.
 
 ## Composição e limites
 O mapa é protagonista. Entrada editorial assimétrica quase da altura da viewport, marca cuidAção., localização PEREQUÊ · GUARUJÁ (SP), título “Um território em cuidado coletivo.” e descrição “Mapeando, acompanhando e discutindo os desafios socioambientais do Perequê.” Um convite linear “Explorar o mapa”, sem aparência de botão, permite concluir a passagem; a primeira rolagem também inicia automaticamente a transição existente. Navegação superior e links de salto acessíveis permitem acesso direto.
@@ -18,7 +18,7 @@ Mapa ocupa largura; painel contextual flutuante compacto em desktop, sheet não 
 Prévia no popup tem título, categoria, estado, local e trecho do relato, com Ver detalhes. Detalhe expandido conserva hash, Voltar/Avançar, reload, filtros, retorno de foco e separa Relato, Evidências, Discussão e Histórico. Discussão consulta comentários/complementos públicos e permite participação autenticada conforme D05 no item 6; imagens do relato original e complementos usam API real, legenda/alt e retirada autorizada. Nenhuma ação de escrita fictícia. Autenticação existente é preservada, não refeita.
 
 ## Aceite visual e funcional
-Desktop e 360px, ampliação 200%, teclado e prefers-reduced-motion; sem overflow horizontal. Testar rolagem, acesso direto ao mapa/ocorrência, painel/contagens/filtros, foco, ausência de arte, falhas de API/tiles e autenticação existente. Suítes exigidas em AGENTS; aprovação anterior não certifica o redesign. Sem deploy, mudanças de domínio/backend ou dados persistentes.
+Desktop e 360px, ampliação 200%, teclado e prefers-reduced-motion; sem overflow horizontal. Testar rolagem, acesso direto ao mapa/ocorrência, painel/contagens/filtros, foco, ausência de arte, falhas de API/tiles e autenticação existente. As suítes automatizadas devem ser executadas; aprovação anterior não certifica o redesign. Sem deploy, mudanças de domínio/backend ou dados persistentes.
 
 ## Camada de interface sobre o mapa — revisão de 12/10/2026
 

@@ -143,7 +143,7 @@ Não criar botão Entrar antes de haver rota funcional; não exibir filtros e bu
 - Não inicializar múltiplas instâncias de Leaflet durante transição; limitar trabalho em scroll, animar `opacity`/`transform` quando possível, pausar trabalho fora da viewport, não usar grandes imagens raster de UI.
 - Tratar conteúdo externo como texto (textContent) e respeitar autorização de servidor; nenhuma decisão visual muda isso.
 
-## 11. Plano de implementação recomendado para agentes
+## 11. Plano de implementação recomendado
 
 A documentação é **contrato de direção**, não ordem para sobrescrever o frontend existente de uma vez.
 

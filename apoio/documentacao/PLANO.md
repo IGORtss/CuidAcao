@@ -190,7 +190,7 @@ Estado atual: itens 5–11 implementados; item 12 revisado; item 13 validado; it
 ## Entregue
 - [x] Primeira leitura: mapa, lista, filtros, detalhes, links diretos e dados simulados.
 - [x] Documentação 1.0: produto, domínio, interface, arquitetura, dados, API e critérios de aceite.
-- [x] Instruções aos agentes e registro de decisões desta revisão.
+- [x] Registro de decisões desta revisão.
 - [x] Três testes Node, build e oito execuções E2E da consulta existente.
 
 ## Etapa 1 — completar contrato de leitura
