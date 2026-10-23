@@ -1,6 +1,74 @@
 # CuidAção
 
-O CuidAção é uma simulação acadêmica de uma plataforma comunitária para registrar e acompanhar problemas ambientais do Perequê, Guarujá. As contas, ocorrências e imagens da demonstração são fictícias. Os registros não são denúncias reais, laudos ou limites cartográficos oficiais.
+O **CuidAção** é uma ferramenta para organizar, visualizar e acompanhar problemas ambientais. Com foco inicial no bairro Perequê, em Guarujá (SP), reúne ocorrências em um mapa interativo para facilitar a consulta de informações sobre o território e suas atualizações.
+
+A proposta é manter os registros acessíveis e organizados ao longo do tempo. Em vez de mostrar apenas onde um problema foi relatado, o CuidAção permite consultar sua descrição, as contribuições recebidas e o histórico de acompanhamento.
+
+## Sobre o projeto
+
+Situações como descarte irregular de resíduos e alterações observadas na água podem persistir, mudar ou receber novos relatos. O CuidAção organiza essas informações por localização, categoria e estado, sem tratar um relato como comprovação técnica.
+
+A participação dos moradores faz parte desse processo: usuários cadastrados podem registrar ocorrências e, conforme as regras de cada estado, acrescentar observações, comentários e manifestações de apoio ou contestação. O histórico preserva as atualizações, permitindo entender o que mudou em cada registro.
+
+## Como funciona
+
+O mapa interativo é o principal meio de explorar as ocorrências. Também é possível consultar registros em lista, usar filtros e abrir uma ficha com localização, descrição, imagens disponíveis, estado e histórico.
+
+A ferramenta permite:
+
+- **Registrar ocorrências:** informar o problema observado, sua localização e, opcionalmente, anexar imagens.
+- **Consultar o território:** localizar registros no mapa ou na lista e filtrar por categoria e estado.
+- **Complementar informações:** adicionar observações e comentários, além de apoiar ou contestar registros quando permitido.
+- **Acompanhar mudanças:** consultar estados, atualizações e o histórico de cada ocorrência.
+- **Relacionar registros:** identificar ocorrências relacionadas e duplicadas sem perder o histórico original.
+
+O CuidAção organiza relatos e contribuições; não substitui análises ambientais especializadas nem serviços oficiais de atendimento.
+
+## Estado do projeto
+
+O projeto possui um protótipo funcional para demonstração, desenvolvido inicialmente no contexto de um Trabalho de Conclusão de Curso. As contas, ocorrências e imagens demonstrativas são fictícias: não representam denúncias reais, laudos, medições ambientais oficiais ou limites cartográficos oficiais.
+
+## Funcionamento técnico
+
+O CuidAção separa a interface, a API e a persistência de dados. A interface apresenta as informações; o servidor valida as operações e aplica as regras do sistema; o banco armazena os registros e seu histórico.
+
+### Interface e fluxo de dados
+
+O frontend utiliza HTML, CSS, módulos JavaScript e Vite. O mapa é exibido com Leaflet. Ao consultar ou criar uma ocorrência, a interface envia uma requisição HTTP à API; o servidor valida a solicitação, consulta ou altera os dados e devolve uma resposta em JSON. A interface então atualiza o mapa, a lista ou os detalhes apresentados.
+
+### Banco de dados
+
+O banco principal é o **SQLite**, acessado pelo servidor com `better-sqlite3`. Ele funciona localmente, sem exigir um serviço de banco separado. As tabelas armazenam usuários, sessões, ocorrências, contribuições, manifestações, anexos, relações entre registros, denúncias e eventos de histórico. Também há dados de acompanhamento e consultas salvas.
+
+As operações utilizam transações, chaves estrangeiras e consultas parametrizadas para preservar a consistência dos registros. O histórico de eventos guarda as mudanças relevantes; o controle de versões ajuda a detectar alterações concorrentes. Migrações SQL numeradas atualizam o esquema sem recriar a base a cada execução.
+
+O arquivo padrão fica em `data/cuidacao.sqlite`. As imagens são mantidas em armazenamento privado local, com metadados e referências no banco, e são disponibilizadas por rotas que verificam as permissões.
+
+### API e regras de acesso
+
+O backend utiliza **Node.js 24** e **Fastify 5**. A API segue o prefixo `/api/v1`, recebe e devolve dados em JSON nas operações usuais e valida os dados antes de gravá-los. Exemplos de rotas:
+
+| Método | Rota | Função |
+| --- | --- | --- |
+| `GET` | `/api/v1/occurrences` | Listar e filtrar ocorrências |
+| `GET` | `/api/v1/occurrences/:id` | Consultar os detalhes de um registro |
+| `POST` | `/api/v1/occurrences` | Criar uma ocorrência autenticada |
+| `GET` | `/api/v1/occurrences/:id/history` | Consultar o histórico público |
+| `POST` | `/api/v1/auth/login` | Iniciar sessão |
+| `GET` | `/api/v1/auth/me` | Consultar a sessão atual |
+
+A consulta pública não exige conta, mas ações de participação e criação dependem de autenticação. Revisões, moderação e mudanças administrativas seguem permissões próprias. As senhas são armazenadas como hashes e as sessões usam cookies `HttpOnly`, com tokens verificados pelo servidor. As regras de autoria, estado e visibilidade são aplicadas no backend, não apenas na interface.
+
+### Organização do código
+
+- `codigo-fonte/aplicacao/` e `codigo-fonte/funcionalidades/`: composição da interface e funcionalidades como o mapa.
+- `codigo-fonte/servicos/` e `codigo-fonte/estilos/`: comunicação com serviços e estilos.
+- `servidor/http/`: requisições e rotas da API.
+- `servidor/dominio/`: regras de funcionamento e permissões.
+- `servidor/dados/`: persistência e acesso ao banco.
+- `servidor/linha-comando/`: operações locais de manutenção.
+
+Para mais detalhes, consulte [Arquitetura](apoio/documentacao/ARQUITETURA.md), [API](apoio/documentacao/API.md) e [Modelo de dados](apoio/documentacao/MODELO_DADOS.md).
 
 ## Por onde começar
 
@@ -42,7 +110,7 @@ Para testar a ponte Firebase Auth localmente, inicie a Emulator Suite e use `npm
 
 O banco padrão fica em `data/cuidacao.sqlite`. Os comandos de início não apagam nem preenchem o banco automaticamente. O fundo do mapa precisa de internet; se ele falhar, a consulta pela lista continua funcionando. Quando `.env.local` contém a configuração pública completa, o frontend também inicializa Firebase App e Analytics conforme [apoio/documentacao/FIREBASE.md](apoio/documentacao/FIREBASE.md).
 
-## Apresentação do TCC
+## Executar demonstração
 
 Para criar uma demonstração isolada, sem alterar o banco de uso:
 
