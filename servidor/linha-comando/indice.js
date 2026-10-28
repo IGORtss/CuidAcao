@@ -544,6 +544,8 @@ function writePrivate(path, data) {
 }
 const json = (path, value) => writePrivate(path, JSON.stringify(value, null, 2) + "\n");
 function syncDirectory(path) {
+    // Windows does not support fsync on directory handles. File fsync is retained.
+    if (process.platform === "win32") return;
 	const fd = openSync(path, "r");
 	try {
 		fsyncSync(fd);

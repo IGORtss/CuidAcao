@@ -21,7 +21,7 @@ function temporary(t) {
 test('openDatabase repara diretório de dados quebrado antes de criar o SQLite', t => {
   const directory = mkdtempSync(join(tmpdir(), 'cuidacao-broken-link-'));
   const brokenDir = join(directory, 'data');
-  symlinkSync('extras/private/data', brokenDir);
+  symlinkSync(join(directory,'extras','private','data'), brokenDir, process.platform==='win32'?'junction':'dir');
   const db = openDatabase(join(brokenDir, 'test.sqlite'));
   t.after(() => {
     db.close();

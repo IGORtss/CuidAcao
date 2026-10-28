@@ -154,7 +154,9 @@ export function mountHud({ onAction, onClosePanel } = {}) {
 	});
 	menu.addEventListener("click", event => {
 		const button = event.target.closest("[data-hud-action]");
-		if (!button || motionState !== "open") return;
+		// Visible menu actions stay usable while the opening animation finishes.
+		// The destination transition invalidates the opening timers.
+		if (!button || !requestedOpen || view !== "menu" || motionState.startsWith("closing")) return;
 		lastAction = button;
 		const action = button.dataset.hudAction;
 		if (action === "explore") { closeHud({ restoreFocus: false }); document.getElementById("map")?.focus({ preventScroll: true }); return; }

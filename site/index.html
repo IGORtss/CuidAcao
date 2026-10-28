@@ -257,6 +257,18 @@
   
     button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {outline:3px solid #e0a72e;outline-offset:3px}
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+    @media(max-width:640px){
+      header>div{padding-left:12px!important;padding-right:12px!important;gap:6px!important}
+      header>div>button:first-child{gap:7px!important;min-width:0}
+      header>div>button:first-child>div:first-child{width:34px!important;height:34px!important}
+      header>div>button:first-child>div:first-child svg{width:27px!important;height:27px!important}
+      header>div>button:first-child p{display:none}
+      header>div>button:first-child .t-xl{font-size:calc(1.15rem * var(--font-scale))!important}
+      header>div>div:last-child{gap:1px!important}
+      header>div>div:last-child>button{width:44px!important;min-width:44px;height:44px!important}
+    }
+    @media(max-width:360px){#headerThemeQuickBtn{display:none}}
   </style>
 </head>
 <body class="min-h-screen flex flex-col pb-20 lg:pb-0">
@@ -1316,7 +1328,7 @@
                 <span class="block t-sm font-bold text-main">Alertas de Campanhas de Vacinação</span>
                 <span class="block t-xs text-sub">Avisos sobre mutirões de saúde e horários nas UBS</span>
               </div>
-              <input type="checkbox" data-preference="vacinacao" checked onchange="safeSetStorage('cuidacao_pref_vacinacao', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+              <input type="checkbox" data-preference="vacinacao" checked onchange="savePreference(this, 'vacinacao')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
             </label>
 
             <label class="flex items-center justify-between gap-3 py-1.5 cursor-pointer border-t border-[var(--border-subtle)] pt-3">
@@ -1324,7 +1336,7 @@
                 <span class="block t-sm font-bold text-main">Atualizações de Protocolos de Denúncia</span>
                 <span class="block t-xs text-sub">Notificações sobre vistorias ambientais e resgate animal</span>
               </div>
-              <input type="checkbox" data-preference="protocolos" checked onchange="safeSetStorage('cuidacao_pref_protocolos', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+              <input type="checkbox" data-preference="protocolos" checked onchange="savePreference(this, 'protocolos')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
             </label>
 
             <label class="flex items-center justify-between gap-3 py-1.5 cursor-pointer border-t border-[var(--border-subtle)] pt-3">
@@ -1332,7 +1344,7 @@
                 <span class="block t-sm font-bold text-main">Atividades da Comunidade</span>
                 <span class="block t-xs text-sub">Destaques semanais de ações locais do seu bairro</span>
               </div>
-              <input type="checkbox" data-preference="comunidade" checked onchange="safeSetStorage('cuidacao_pref_comunidade', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+              <input type="checkbox" data-preference="comunidade" checked onchange="savePreference(this, 'comunidade')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
             </label>
           </div>
 
@@ -1624,7 +1636,7 @@
     <div class="bg-[var(--bg-page)] border border-[var(--border-strong)] w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="px-6 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
         <span id="modalNewsCategory" class="px-3 py-0.5 rounded-full t-xs font-bold bg-[#159947] text-white">Saúde em foco</span>
-        <button onclick="closeNewsModal()" class="w-8 h-8 rounded-lg surface-card flex items-center justify-center text-main">✕</button>
+        <button onclick="closeNewsModal()" aria-label="Fechar notícia" class="w-8 h-8 rounded-lg surface-card flex items-center justify-center text-main">✕</button>
       </div>
       <div class="p-6 overflow-y-auto space-y-3.5">
         <img id="modalNewsImg" src="" alt="" class="w-full h-56 object-cover rounded-2xl" />
@@ -1659,6 +1671,7 @@
     function escapeHTML(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
     function safeImage(value) { return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value || '') ? value : ''; }
     function localDate(date = new Date()) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+    function persistRecords(key, records) { try { safeSetStorage(key, JSON.stringify(records)); return true; } catch(e) { showToast(e.message); return false; } }
     function safeGetStorage(key, fallback) {
       try {
         const val = localStorage.getItem(key);
@@ -1789,7 +1802,7 @@
     let userAppointments = defaultAppointments;
     try {
       const savedApt = safeGetStorage('cuidacao_appointments', null);
-      if (savedApt) userAppointments = JSON.parse(savedApt);
+      if (savedApt && Array.isArray(JSON.parse(savedApt))) userAppointments = JSON.parse(savedApt).filter(a => a && Number.isFinite(a.id) && typeof a.date === 'string');
     } catch (e) {}
 
     // Denúncias salvas
@@ -1797,7 +1810,7 @@
     let userReports = defaultReports;
     try {
       const savedRep = safeGetStorage('cuidacao_reports', null);
-      if (savedRep) userReports = JSON.parse(savedRep);
+      if (savedRep && Array.isArray(JSON.parse(savedRep))) userReports = JSON.parse(savedRep).filter(a => a && Number.isFinite(a.id));
     } catch (e) {}
 
     // Publicações da Comunidade
@@ -1846,7 +1859,7 @@
     let communityPosts = defaultCommunityPosts;
     try {
       const savedComm = safeGetStorage('cuidacao_community', null);
-      if (savedComm) communityPosts = JSON.parse(savedComm);
+      if (savedComm && Array.isArray(JSON.parse(savedComm))) communityPosts = JSON.parse(savedComm).filter(a => a && Number.isFinite(a.id) && typeof a.title === 'string' && typeof a.body === 'string');
     } catch (e) {}
 
     // Pontos Reais do Mapa Interativo (Guarujá - SP)
@@ -1943,7 +1956,7 @@
 
     function setThemePreference(mode) {
       themePreference = mode;
-      safeSetStorage('cuidacao_theme', mode);
+      try { safeSetStorage('cuidacao_theme', mode); } catch { showToast('Tema aplicado nesta sessão. Armazenamento indisponível.'); }
       applyEffectiveTheme();
       const msg = mode === 'light' ? 'Modo Claro ativado' : mode === 'dark' ? 'Modo Escuro ativado' : 'Modo Automático ativado';
       showToast(msg);
@@ -1962,9 +1975,9 @@
        3. ACESSIBILIDADE: TAMANHO DAS LETRAS (PEQUENO, PADRÃO, GRANDE)
        -------------------------------------------------------------------------- */
     function setFontSizeLevel(level) {
-      const clamped = Math.max(0, Math.min(2, level));
+      const clamped = Number.isFinite(Number(level)) ? Math.max(0, Math.min(2, Math.round(Number(level)))) : 1;
       fontSizeLevel = clamped;
-      safeSetStorage('cuidacao_fontsize', String(clamped));
+      try { safeSetStorage('cuidacao_fontsize', String(clamped)); } catch { showToast('Fonte aplicada nesta sessão. Armazenamento indisponível.'); }
 
       const scale = fontScaleMap[clamped];
       document.documentElement.style.setProperty('--font-scale', String(scale));
@@ -2010,8 +2023,9 @@
        4. NAVEGAÇÃO ENTRE AS 5 ÁREAS PRINCIPAIS + CONFIGURAÇÕES
        -------------------------------------------------------------------------- */
     function switchPage(pageName) {
-      currentPage = pageName;
       const pages = ['inicio', 'saude', 'denuncias', 'comunidade', 'mapa', 'configuracoes'];
+      if (!pages.includes(pageName)) return;
+      currentPage = pageName;
 
       pages.forEach(p => {
         const el = document.getElementById('page-' + p);
@@ -2059,6 +2073,7 @@
         }, 120);
       }
 
+      syncAccessibleControls();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -2137,7 +2152,7 @@
           <img
             src="${article.image}"
             alt="${article.title}"
-            onerror="this.src='https://placehold.co/300x220/159947/FFFFFF?text=cuidACAO'"
+            onerror="this.onerror=null;this.src='https://placehold.co/300x220/159947/FFFFFF?text=cuidACAO'"
             class="w-full sm:w-36 h-40 sm:h-28 rounded-2xl object-cover shrink-0 bg-emerald-900/10"
           />
           <div class="flex-1 min-w-0 w-full">
@@ -2155,6 +2170,7 @@
     }
 
     function renderHomeNews(searchQuery = '') {
+      searchQuery=searchQuery.trim().toLowerCase();
       const container = document.getElementById('homeNewsList');
       if (!container) return;
       const filtered = newsArticles.filter(n => {
@@ -2163,7 +2179,7 @@
       });
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="surface-card rounded-2xl p-5 text-center t-sm text-sub">Nenhuma notícia encontrada para "${searchQuery}".</div>`;
+        container.innerHTML = `<div class="surface-card rounded-2xl p-5 text-center t-sm text-sub">Nenhuma notícia encontrada para "${escapeHTML(searchQuery)}".</div>`;
         return;
       }
       container.innerHTML = filtered.slice(0, 3).map(createNewsCardHTML).join('');
@@ -2178,7 +2194,7 @@
           <img
             src="${article.image}"
             alt="${article.title}"
-            onerror="this.src='https://placehold.co/400x240/159947/FFFFFF?text=cuidACAO'"
+            onerror="this.onerror=null;this.src='https://placehold.co/400x240/159947/FFFFFF?text=cuidACAO'"
             class="w-full h-44 object-cover bg-emerald-900/10"
           />
           <div class="p-4 flex flex-col flex-1 justify-between gap-2">
@@ -2212,6 +2228,7 @@
       if (!art) return;
       document.getElementById('modalNewsCategory').textContent = art.category;
       document.getElementById('modalNewsImg').src = art.image;
+      document.getElementById('modalNewsImg').alt = art.title;
       document.getElementById('modalNewsDate').textContent = art.date;
       document.getElementById('modalNewsTitle').textContent = art.title;
       document.getElementById('modalNewsBody').textContent = art.fullText;
@@ -2302,7 +2319,7 @@
             </div>
             <h4 class="t-sm font-extrabold text-main">${escapeHTML(apt.specialty)}</h4>
             <p class="t-xs text-sub">${escapeHTML(apt.unit)}</p>
-            <p class="t-xs text-muted-custom">Paciente: ${escapeHTML(apt.patient)} (${apt.susCard || 'Cartão SUS'})</p>
+            <p class="t-xs text-muted-custom">Paciente: ${escapeHTML(apt.patient)} (${escapeHTML(apt.susCard || 'Identificador fictício')})</p>
           </div>
           <button
             onclick="cancelAppointment(${apt.id})"
@@ -2324,6 +2341,8 @@
       const notes = document.getElementById('aptNotes').value.trim();
 
       if (!date || date < localDate()) { showToast('Escolha uma data a partir de hoje.'); return; }
+      if (!patient || !unit || !specialty) { showToast('Preencha os dados obrigatórios.'); return; }
+      if (userAppointments.some(a => a.unit === unit && a.date === date && a.time === selectedTimeSlot)) { showToast('Você já tem uma simulação nesta unidade, data e horário.'); return; }
       const newApt = {
         id: Date.now(),
         unit,
@@ -2336,8 +2355,9 @@
         protocol: 'TCC-' + crypto.randomUUID().slice(0,8).toUpperCase()
       };
 
-      userAppointments.unshift(newApt);
-      safeSetStorage('cuidacao_appointments', JSON.stringify(userAppointments));
+      const nextAppointments = [newApt, ...userAppointments];
+      if (!persistRecords('cuidacao_appointments', nextAppointments)) return;
+      userAppointments = nextAppointments;
       renderAppointments();
 
       document.getElementById('aptPatient').value = '';
@@ -2347,8 +2367,9 @@
     }
 
     function cancelAppointment(id) {
-      userAppointments = userAppointments.filter(a => a.id !== id);
-      safeSetStorage('cuidacao_appointments', JSON.stringify(userAppointments));
+      const nextAppointments = userAppointments.filter(a => a.id !== id);
+      if (!persistRecords('cuidacao_appointments', nextAppointments)) return;
+      userAppointments = nextAppointments;
       renderAppointments();
       showToast('Agendamento cancelado.');
     }
@@ -2420,10 +2441,11 @@
       if (!file) return;
       if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2*1024*1024) { showToast('Selecione JPG, PNG ou WebP de até 2 MB.'); return; }
       const reader = new FileReader();
+      reader.onerror = () => showToast('Não foi possível ler a imagem. Selecione novamente.');
       reader.onload = () => {
         attachedEvidence = {name:file.name, data:reader.result}; hasAttachedEvidence = true;
         document.getElementById('attachPhotoText').textContent = file.name + ' ✓ (clique para remover)';
-        const img = document.createElement('img'); img.src = reader.result; img.alt = 'Prévia da evidência selecionada'; img.style.cssText = 'max-width:220px;max-height:160px;border-radius:12px;margin-top:8px';
+        const img = document.createElement('img'); img.onerror = () => { clearEvidence(); showToast('A imagem está inválida. Selecione outra.'); }; img.src = reader.result; img.alt = 'Prévia da evidência selecionada'; img.style.cssText = 'max-width:220px;max-height:160px;border-radius:12px;margin-top:8px';
         document.getElementById('evidencePreview').replaceChildren(img);
       };
       reader.readAsDataURL(file);
@@ -2472,7 +2494,7 @@
             ${rep.evidence ? `<img src="${safeImage(rep.evidence.data)}" alt="Evidência anexada" style="max-width:180px;max-height:130px;border-radius:12px">` : ''}
             <div class="flex flex-wrap items-center justify-between gap-2 pt-1 t-xs text-muted-custom">
               <span>📍 ${escapeHTML(rep.location)}</span>
-              <span>${rep.date} • Urgência: ${rep.urgency}</span>
+              <span>${escapeHTML(rep.date)} • Urgência: ${escapeHTML(rep.urgency)} • ${rep.anonymous !== false ? 'Anônima' : 'Não anônima'}</span>
             </div>
           </div>
         `;
@@ -2497,11 +2519,15 @@
         location,
         description,
         status: 'Rascunho local',
-        date: 'Agora mesmo'
+        date: new Date().toLocaleString('pt-BR'),
+        anonymous: document.getElementById('repAnonymous').checked
       };
 
-      userReports.unshift(newRep);
-      safeSetStorage('cuidacao_reports', JSON.stringify(userReports));
+      if (!location || !description) { showToast('Informe a localização e a descrição.'); return; }
+      const nextReports = [newRep, ...userReports];
+      if (!persistRecords('cuidacao_reports', nextReports)) return;
+      userReports = nextReports;
+      filterReportsList('todas');
       renderReportsHistory();
 
       document.getElementById('repLocation').value = '';
@@ -2540,6 +2566,7 @@
     }
 
     function renderHomeCommunity(searchQuery = '') {
+      searchQuery=searchQuery.trim().toLowerCase();
       const container = document.getElementById('homeCommunityList');
       if (!container) return;
       const filtered = communityPosts.filter(p => {
@@ -2565,15 +2592,15 @@
       const container = document.getElementById('fullCommunityFeed');
       if (!container) return;
       const filtered = communityPosts.filter(p => activeCommunityFilter === 'todas' || p.category === activeCommunityFilter);
-      container.innerHTML = filtered.map(createCommunityCardHTML).join('');
+      container.innerHTML = filtered.length ? filtered.map(createCommunityCardHTML).join('') : '<p class="surface-card rounded-2xl p-5 text-sub">Nenhuma publicação nesta categoria.</p>';
     }
 
     function toggleLikePost(postId) {
       const post = communityPosts.find(p => p.id === postId);
       if (!post) return;
-      post.liked = !post.liked;
-      post.likes += post.liked ? 1 : -1;
-      safeSetStorage('cuidacao_community', JSON.stringify(communityPosts));
+      const nextPosts = communityPosts.map(p => p.id === postId ? {...p, liked: !p.liked, likes: p.likes + (p.liked ? -1 : 1)} : p);
+      if (!persistRecords('cuidacao_community', nextPosts)) return;
+      communityPosts = nextPosts;
       renderHomeCommunity(document.getElementById('globalSearchInput')?.value || '');
       renderFullCommunityFeed();
     }
@@ -2585,7 +2612,8 @@
       const title = document.getElementById('postTitle').value.trim();
       const body = document.getElementById('postBody').value.trim();
 
-      communityPosts.unshift({
+      if (!author || !title || !body) { showToast('Preencha nome, título e mensagem.'); return; }
+      const nextPosts = [{
         id: Date.now(),
         author,
         category,
@@ -2594,9 +2622,11 @@
         date: 'Agora mesmo',
         likes: 1,
         liked: true
-      });
+      }, ...communityPosts];
 
-      safeSetStorage('cuidacao_community', JSON.stringify(communityPosts));
+      if (!persistRecords('cuidacao_community', nextPosts)) return;
+      communityPosts = nextPosts;
+      filterCommunityCategory('todas');
 
       document.getElementById('postAuthor').value = '';
       document.getElementById('postTitle').value = '';
@@ -2611,7 +2641,8 @@
        10. MAPA INTERATIVO REAL (LEAFLET.JS + OPENSTREETMAP GUARUJÁ - SP)
        -------------------------------------------------------------------------- */
     function initLeafletMap() {
-      if (leafletMap || typeof L === 'undefined') return;
+      if (leafletMap) return;
+      if (typeof L === 'undefined') { document.getElementById('realLeafletMap').textContent = 'Mapa indisponível no momento. Os pontos e rotas continuam disponíveis na lista ao lado.'; return; }
 
       const mapContainer = document.getElementById('realLeafletMap');
       if (!mapContainer) return;
@@ -2755,6 +2786,7 @@
     /* --------------------------------------------------------------------------
        11. MODAIS E TOAST DE FEEDBACK
        -------------------------------------------------------------------------- */
+    function savePreference(el, key) { try { safeSetStorage('cuidacao_pref_' + key, el.checked ? '1' : '0'); showToast('Preferência salva neste navegador.'); } catch(e) { el.checked = !el.checked; showToast(e.message); } }
     function openSettingsModal() {
       document.getElementById('settingsModal').classList.remove('hidden');
     }
@@ -2770,6 +2802,9 @@
       const badge = document.getElementById('notifUnreadBadge');
       modal.classList.toggle('hidden');
       if (badge) badge.classList.add('hidden');
+      let empty = document.getElementById('emptyNotifications');
+      if (!empty) { empty=document.createElement('p'); empty.id='emptyNotifications'; empty.className='p-4 text-sub'; empty.textContent='Nenhuma notificação nas categorias habilitadas.'; modal.querySelector('.max-h-80').append(empty); }
+      empty.hidden=Array.from(items).some(item=>!item.hidden);
     }
 
     let toastTimer = null;
@@ -2813,7 +2848,41 @@
     function saveTerritoryServer(){const input=document.getElementById('territoryServer');const value=input.value.trim();try{if(value){const url=new URL(value);if(url.protocol!=='https:' && !(url.protocol==='http:'&&['127.0.0.1','localhost'].includes(url.hostname)))throw Error();if(url.username||url.password||url.search||url.hash)throw Error();safeSetStorage('cuidacao_territory_server',url.origin);}else safeSetStorage('cuidacao_territory_server','');document.getElementById('territoryFrame').removeAttribute('src');showToast('Conexão salva neste navegador.');}catch{showToast('Informe uma URL HTTPS válida, sem senha ou parâmetros.');}}
     window.addEventListener('message',event=>{if(event.source===document.getElementById('territoryFrame')?.contentWindow && event.origin===territoryOrigin() && event.data?.type==='cuidacao-ready')syncTerritoryPreferences();});
 
+
+    let modalReturnFocus = null;
+    const modalIds = ['settingsModal', 'notificationsModal', 'newsReaderModal'];
+    function syncAccessibleControls() {
+      document.querySelectorAll('article[onclick], #notificationsModal .surface-card-interactive').forEach(el => {
+        el.setAttribute('role','button'); el.tabIndex = 0;
+        if(!el.dataset.keyboardReady) { el.dataset.keyboardReady='1'; el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}}); }
+      });
+      document.querySelectorAll('[data-nav], [data-mnav]').forEach(el=> { if((el.dataset.nav || el.dataset.mnav) === currentPage) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current'); });
+      document.querySelectorAll('[data-slot]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.slot===selectedTimeSlot)));
+    }
+    function setupDialogs() {
+      modalIds.forEach(id => {
+        const el=document.getElementById(id); el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.setAttribute('aria-label', id==='settingsModal'?'Acessibilidade e aparência':id==='notificationsModal'?'Notificações':'Leitura de notícia');
+        el.addEventListener('click',e=>{if(e.target===el) el.classList.add('hidden');});
+        new MutationObserver(changes=>{
+          if(!changes.some(c=>c.attributeName==='class')) return;
+          if(!el.classList.contains('hidden')) { modalReturnFocus=document.activeElement; el.querySelector('button')?.focus(); }
+          else if(modalReturnFocus?.isConnected) modalReturnFocus.focus();
+          document.body.style.overflow=modalIds.some(i=>!document.getElementById(i).classList.contains('hidden'))?'hidden':'';
+        }).observe(el,{attributes:true,attributeFilter:['class']});
+      });
+      document.addEventListener('keydown',e=>{
+        if(e.key!=='Tab')return;
+        const modal=modalIds.map(i=>document.getElementById(i)).find(el=>!el.classList.contains('hidden')); if(!modal)return;
+        const controls=Array.from(modal.querySelectorAll('button,input,a[href],[tabindex="0"]')).filter(el=>!el.hidden&&el.getClientRects().length);
+        const first=controls[0],last=controls.at(-1); if(!first)return;
+        if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+      });
+      new MutationObserver(syncAccessibleControls).observe(document.querySelector('main'),{childList:true,subtree:true});
+      syncAccessibleControls();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      setupDialogs();
       document.getElementById('territoryServer').value=safeGetStorage('cuidacao_territory_server','');
       new MutationObserver(syncTerritoryPreferences).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','style']});
       const defaultDate = new Date();

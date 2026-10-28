@@ -20,7 +20,9 @@
     "firebase:emulators": "PATH=$HOME/.local/share/cuidacao-tools/temurin-21/bin:$PATH firebase emulators:start --project cuidacao-13fc8 --only auth,firestore,storage,hosting",
     "firebase:hosting": "npm run build && firebase emulators:start --project cuidacao-13fc8 --only hosting",
     "firebase:deploy:check": "npm run build && firebase deploy --project cuidacao-13fc8 --only firestore:rules,storage,hosting --dry-run",
-    "integrado:start": "node integrado/servidor.js"
+    "integrado:start": "node integrado/servidor.js",
+    "test:interface-local": "node apoio/testes/interface-local.test.cjs",
+    "test:integrado": "node --test apoio/testes/api/integracao-site.test.js"
   },
   "keywords": [],
   "author": "",
