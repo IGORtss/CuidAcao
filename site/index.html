@@ -1,0 +1,2844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="cuidAÇÃO: protótipo do TCC com saúde, meio ambiente, proteção animal, comunidade e mapa interativo." />
+  <title>cuidAÇÃO — Saúde Pública, Meio Ambiente e Proteção Animal</title>
+
+  <!-- Favicon oficial: fundo verde sólido #159947 com cantos arredondados e símbolo branco centralizado -->
+  <link id="dynamicFavicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23159947'/%3E%3Cpath d='M48 14 C28 18 18 36 23 56 C26 67 36 74 47 76 C47 56 44 37 36 26 C41 34 46 49 48 68 C51 47 52 27 48 14 Z' fill='white'/%3E%3Cpath d='M51 31 C56 23 68 23 75 30 C82 37 81 50 71 61 C64 68 55 74 49 78 C48 61 48 44 51 31 Z' fill='white'/%3E%3Cpath d='M12 58 C10 68 15 79 25 86 L42 96 C45 98 47 95 46 92 L43 85 C42 82 39 80 35 78 L23 70 C19 67 17 62 17 57 C17 54 13 54 12 58 Z' fill='white'/%3E%3Cpath d='M88 58 C90 68 85 79 75 86 L58 96 C55 98 53 95 54 92 L57 85 C58 82 61 80 65 78 L77 70 C81 67 83 62 83 57 C83 54 87 54 88 58 Z' fill='white'/%3E%3C/svg%3E" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Leaflet CSS & JS para o Mapa Interativo Real -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. PALETA DE CORES E VARIÁVEIS DE TEMA (MODO CLARO & MODO ESCURO)
+       ========================================================================== */
+    :root {
+      /* Escala tipográfica dinâmica: 0.90 (Pequeno), 1.00 (Padrão), 1.18 (Grande) */
+      --font-scale: 1;
+
+      /* Modo Claro */
+      --bg-page: #f3f9f5;
+      --bg-surface: #ffffff;
+      --bg-surface-alt: #e3f5e8;
+      --bg-highlight: #d4f0dc;
+      --bg-input: #ffffff;
+      --bg-nav: rgba(255, 255, 255, 0.95);
+
+      --text-primary: #111c15;
+      --text-title: #0f6e32;
+      --text-secondary: #2d4a38;
+      --text-muted: #52735e;
+
+      --brand-primary: #159947;
+      --brand-primary-hover: #0f6e32;
+      --brand-dark: #0f6e32;
+      --brand-soft: rgba(21, 153, 71, 0.14);
+
+      --border-subtle: #cfe6d6;
+      --border-strong: #8fc9a3;
+      --shadow-card: 0 6px 20px -4px rgba(15, 110, 50, 0.07), 0 2px 6px -1px rgba(15, 110, 50, 0.04);
+      --shadow-elevated: 0 14px 30px -6px rgba(15, 110, 50, 0.14);
+    }
+
+    html[data-theme="dark"] {
+      /* Modo Escuro */
+      --bg-page: #0a140e;
+      --bg-surface: #122218;
+      --bg-surface-alt: #182e21;
+      --bg-highlight: #1e3829;
+      --bg-input: #0e1b13;
+      --bg-nav: rgba(18, 34, 24, 0.95);
+
+      --text-primary: #f0fdf4;
+      --text-title: #f0fdf4;
+      --text-secondary: #cbead6;
+      --text-muted: #8ab399;
+
+      --brand-primary: #22c55e;
+      --brand-primary-hover: #4ade80;
+      --brand-dark: #86efac;
+      --brand-soft: rgba(34, 197, 94, 0.18);
+
+      --border-subtle: #1e3829;
+      --border-strong: #2d573e;
+      --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.5);
+      --shadow-elevated: 0 16px 36px -6px rgba(0, 0, 0, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. ESCALA TIPOGRÁFICA DE ACESSIBILIDADE (PROPORCIONAL EM TODA A INTERFACE)
+       ========================================================================== */
+    .t-xs {
+      font-size: calc(0.76rem * var(--font-scale));
+      line-height: 1.4;
+    }
+    .t-sm {
+      font-size: calc(0.875rem * var(--font-scale));
+      line-height: 1.48;
+    }
+    .t-base {
+      font-size: calc(0.98rem * var(--font-scale));
+      line-height: 1.52;
+    }
+    .t-md {
+      font-size: calc(1.08rem * var(--font-scale));
+      line-height: 1.42;
+    }
+    .t-lg {
+      font-size: calc(1.22rem * var(--font-scale));
+      line-height: 1.35;
+    }
+    .t-xl {
+      font-size: calc(1.46rem * var(--font-scale));
+      line-height: 1.28;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+    .t-2xl {
+      font-size: calc(1.78rem * var(--font-scale));
+      line-height: 1.22;
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    }
+
+    /* ==========================================================================
+       3. COMPONENTES VISUAIS, CARDS, BOTÕES E INPUTS
+       ========================================================================== */
+    .surface-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-card);
+      transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.18s ease, box-shadow 0.25s ease;
+    }
+
+    .surface-card-interactive:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .surface-card-interactive:active {
+      transform: translateY(0);
+    }
+
+    .surface-alt {
+      background-color: var(--bg-surface-alt);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .surface-highlight {
+      background-color: var(--bg-surface);
+      border: 2px solid var(--border-strong);
+      box-shadow: var(--shadow-card);
+    }
+
+    .input-field {
+      background-color: var(--bg-input);
+      border: 1.5px solid var(--border-subtle);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
+    }
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px var(--brand-soft);
+    }
+
+    .btn-primary {
+      background-color: var(--brand-primary);
+      color: #ffffff;
+      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: var(--brand-primary-hover);
+    }
+    html[data-theme="dark"] .btn-primary {
+      color: #052010;
+      font-weight: 700;
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-surface-alt);
+      color: var(--text-primary);
+      border: 1px solid var(--border-strong);
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background-color: var(--bg-highlight);
+    }
+
+    .text-main { color: var(--text-primary); }
+    .text-title-custom { color: var(--text-title); }
+    .text-sub { color: var(--text-secondary); }
+    .text-muted-custom { color: var(--text-muted); }
+    .text-brand { color: var(--brand-primary); }
+
+    /* Controle deslizante (Slider) de Acessibilidade */
+    input[type="range"].a11y-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: var(--border-strong);
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type="range"].a11y-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0f6e32;
+      border: 3px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    html[data-theme="dark"] input[type="range"].a11y-slider::-webkit-slider-thumb {
+      background: #22c55e;
+      border-color: #0a140e;
+    }
+    input[type="range"].a11y-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+
+    /* Transição suave entre abas */
+    .page-view {
+      animation: fadePage 0.22s ease-out;
+    }
+    @keyframes fadePage {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mapa Interativo Leaflet adaptado para Modo Claro e Escuro */
+    #realLeafletMap {
+      width: 100%;
+      height: 430px;
+      z-index: 10;
+    }
+    html[data-theme="dark"] #realLeafletMap .leaflet-tile-pane {
+      filter: invert(100%) hue-rotate(150deg) brightness(92%) contrast(90%);
+    }
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+  
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {outline:3px solid #e0a72e;outline-offset:3px}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 lg:pb-0">
+
+  <!-- ==========================================================================
+       BIBLIOTECA DE SÍMBOLOS E ÍCONES VETORIAIS ORIGINAIS DO cuidAÇÃO (SVG)
+       ========================================================================== -->
+  <svg width="0" height="0" class="hidden" aria-hidden="true">
+    <defs>
+      <!-- Símbolo Oficial cuidAÇÃO: Folha (meio ambiente) + Coração (saúde) + Mãos protetoras (proteção) -->
+      <g id="cuidacao-symbol">
+        <!-- Folha à esquerda com nervura -->
+        <path d="M48 14 C28 18 18 36 23 56 C26 67 36 74 47 76 C47 56 44 37 36 26 C41 34 46 49 48 68 C51 47 52 27 48 14 Z" fill="currentColor" />
+        <!-- Coração integrado à direita -->
+        <path d="M51 31 C56 23 68 23 75 30 C82 37 81 50 71 61 C64 68 55 74 49 78 C48 61 48 44 51 31 Z" fill="currentColor" />
+        <!-- Mão protetora esquerda -->
+        <path d="M12 58 C10 68 15 79 25 86 L42 96 C45 98 47 95 46 92 L43 85 C42 82 39 80 35 78 L23 70 C19 67 17 62 17 57 C17 54 13 54 12 58 Z" fill="currentColor" />
+        <!-- Mão protetora direita -->
+        <path d="M88 58 C90 68 85 79 75 86 L58 96 C55 98 53 95 54 92 L57 85 C58 82 61 80 65 78 L77 70 C81 67 83 62 83 57 C83 54 87 54 88 58 Z" fill="currentColor" />
+      </g>
+
+      <!-- Card 1: Agendamento de Consultas -->
+      <g id="icon-service-agendamento">
+        <circle cx="26" cy="16" r="8" fill="currentColor" />
+        <path d="M12 44 C12 33 18 28 26 28 C34 28 40 33 40 44 Z" fill="currentColor" />
+        <path d="M38 18 V26 C38 31 43 34 47 34 C51 34 54 31 54 26 V20" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" />
+        <circle cx="54" cy="18" r="3.5" fill="currentColor" />
+        <circle cx="21" cy="36" r="2.2" fill="var(--bg-surface)" />
+        <path d="M21 31 V36 M31 31 V37" stroke="var(--bg-surface)" stroke-width="2" stroke-linecap="round" />
+      </g>
+
+      <!-- Card 2: Denúncias Ambientais -->
+      <g id="icon-service-ambiental">
+        <path d="M12 44 C14 24 27 12 46 10 C43 26 34 38 18 42 Z" fill="currentColor" />
+        <path d="M12 44 C22 34 30 25 38 16" stroke="var(--bg-surface)" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M40 24 L54 46 H26 Z" fill="currentColor" stroke="var(--bg-surface)" stroke-width="2.5" stroke-linejoin="round" />
+        <path d="M40 32 V38" stroke="var(--bg-surface)" stroke-width="2.8" stroke-linecap="round" />
+        <circle cx="40" cy="42.5" r="1.6" fill="var(--bg-surface)" />
+      </g>
+
+      <!-- Card 3: Maus-tratos a Animais -->
+      <g id="icon-service-animal">
+        <ellipse cx="26" cy="34" rx="9" ry="7.5" fill="currentColor" />
+        <circle cx="15" cy="24" r="3.8" fill="currentColor" />
+        <circle cx="22" cy="19" r="3.8" fill="currentColor" />
+        <circle cx="30" cy="19" r="3.8" fill="currentColor" />
+        <circle cx="37" cy="24" r="3.5" fill="currentColor" />
+        <path d="M42 26 L52 30 V37 C52 43 47.5 47.5 42 49 C36.5 47.5 32 43 32 37 V30 Z" fill="currentColor" stroke="var(--bg-surface)" stroke-width="2.2" />
+        <path d="M38.5 37.5 L41 40 L46 34.5" fill="none" stroke="var(--bg-surface)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+      </g>
+
+      <!-- Card 4: Notícias de Saúde -->
+      <g id="icon-service-noticias">
+        <rect x="12" y="12" width="36" height="34" rx="5" fill="currentColor" />
+        <path d="M48 18 H52 C54.2 18 56 19.8 56 22 V41 C56 43.8 53.8 46 51 46 H46" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" />
+        <rect x="18" y="18" width="11" height="10" rx="1.5" fill="var(--bg-surface)" />
+        <line x1="33" y1="20" x2="42" y2="20" stroke="var(--bg-surface)" stroke-width="2.8" stroke-linecap="round" />
+        <line x1="33" y1="26" x2="42" y2="26" stroke="var(--bg-surface)" stroke-width="2.8" stroke-linecap="round" />
+        <line x1="18" y1="34" x2="42" y2="34" stroke="var(--bg-surface)" stroke-width="2.8" stroke-linecap="round" />
+        <line x1="18" y1="40" x2="36" y2="40" stroke="var(--bg-surface)" stroke-width="2.8" stroke-linecap="round" />
+      </g>
+
+      <!-- Card 5: Comunidade -->
+      <g id="icon-service-comunidade">
+        <circle cx="18" cy="23" r="5.5" fill="currentColor" />
+        <path d="M8 43 C8 36 12 32 18 32 C24 32 28 36 28 43 Z" fill="currentColor" />
+        <circle cx="46" cy="23" r="5.5" fill="currentColor" />
+        <path d="M36 43 C36 36 40 32 46 32 C52 32 56 36 56 43 Z" fill="currentColor" />
+        <circle cx="32" cy="19" r="7" fill="currentColor" stroke="var(--bg-surface)" stroke-width="2" />
+        <path d="M19 46 C19 36.5 24.5 31 32 31 C39.5 31 45 36.5 45 46 Z" fill="currentColor" stroke="var(--bg-surface)" stroke-width="2" />
+      </g>
+
+      <!-- Card 6: Mapa -->
+      <g id="icon-service-mapa">
+        <ellipse cx="32" cy="45" rx="15" ry="4.5" fill="none" stroke="currentColor" stroke-width="3.2" />
+        <path d="M32 10 C22.5 10 15 17.2 15 26.2 C15 36.5 32 45 32 45 C32 45 49 36.5 49 26.2 C49 17.2 41.5 10 32 10 Z" fill="currentColor" />
+        <circle cx="32" cy="25" r="5.5" fill="var(--bg-surface)" />
+      </g>
+    </defs>
+  </svg>
+
+  <!-- ==========================================================================
+       CABEÇALHO FIXO SUPERIOR (NAVEGAÇÃO DESKTOP + CONTROLES DE ACESSIBILIDADE)
+       ========================================================================== -->
+  <header class="sticky top-0 z-40 bg-[var(--bg-nav)] backdrop-blur-md border-b border-[var(--border-subtle)] transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
+
+      <!-- Logotipo Oficial cuidAÇÃO -->
+      <button onclick="switchPage('inicio')" class="flex items-center gap-3 text-left group focus:outline-none shrink-0" aria-label="Ir para o Início do cuidAÇÃO">
+        <div class="w-11 h-11 rounded-2xl bg-[#159947] text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform shrink-0">
+          <svg class="w-8 h-8" viewBox="0 0 100 100">
+            <use href="#cuidacao-symbol"></use>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-baseline tracking-tight leading-none">
+            <span class="t-xl font-medium text-main">cuid</span>
+            <span class="t-xl font-extrabold text-brand">AÇÃO</span>
+          </div>
+          <p class="t-xs text-muted-custom font-semibold tracking-wide mt-0.5">
+            saúde • ambiente • proteção
+          </p>
+        </div>
+      </button>
+
+      <!-- Navegação Desktop (As 5 Áreas Principais) -->
+      <nav aria-label="Navegação Principal" class="hidden lg:flex items-center gap-1.5 surface-alt p-1.5 rounded-2xl">
+        <button onclick="switchPage('inicio')" data-nav="inicio" class="desktop-nav-btn px-4 py-2 rounded-xl t-sm font-bold flex items-center gap-2 transition">
+          <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+          </svg>
+          <span>Início</span>
+        </button>
+
+        <button onclick="switchPage('saude')" data-nav="saude" class="desktop-nav-btn px-4 py-2 rounded-xl t-sm font-semibold flex items-center gap-2 transition">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h2l1-2 2 4 1-2h2"/>
+          </svg>
+          <span>Saúde</span>
+        </button>
+
+        <button onclick="switchPage('denuncias')" data-nav="denuncias" class="desktop-nav-btn px-4 py-2 rounded-xl t-sm font-semibold flex items-center gap-2 transition">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <span>Denúncias</span>
+        </button>
+
+        <button onclick="switchPage('comunidade')" data-nav="comunidade" class="desktop-nav-btn px-4 py-2 rounded-xl t-sm font-semibold flex items-center gap-2 transition">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>Comunidade</span>
+        </button>
+
+        <button onclick="switchPage('mapa')" data-nav="mapa" class="desktop-nav-btn px-4 py-2 rounded-xl t-sm font-semibold flex items-center gap-2 transition">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>Mapa</span>
+        </button>
+      </nav>
+
+      <!-- Ações Rápidas do Cabeçalho (Aparência, Acessibilidade, Notificações e Configurações) -->
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- Alternador Rápido de Tema -->
+        <button
+          onclick="cycleThemeQuick()"
+          id="headerThemeQuickBtn"
+          class="w-10 h-10 rounded-xl surface-card flex items-center justify-center text-main hover:border-[var(--border-strong)] active:scale-95 transition"
+          aria-label="Alternar entre Modo Claro, Escuro e Automático"
+          title="Alternar Aparência (Modo Claro / Escuro / Automático)"
+        >
+          <span id="headerThemeIcon" class="text-base">☀️</span>
+        </button>
+
+        <!-- Botão de Acessibilidade (Ícone Verde Oficial) -->
+        <button
+          onclick="openSettingsModal()"
+          class="w-10 h-10 rounded-xl bg-[#159947] text-white flex items-center justify-center shadow-sm hover:opacity-95 active:scale-95 transition relative"
+          aria-label="Acessibilidade e Tamanho das Letras"
+          title="Acessibilidade: Ajustar Tamanho das Letras"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" stroke-opacity="0.95"/>
+            <circle cx="12" cy="7.5" r="1.5" fill="currentColor" stroke="none"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 10.5h9M12 10.5v4m0 0l-2 3.5m2-3.5l2 3.5"/>
+          </svg>
+          <span id="fontBadgeIndicator" class="hidden absolute -bottom-1 -right-1 px-1 rounded bg-amber-400 text-[#0a140e] text-[10px] font-extrabold leading-tight shadow">
+            A+
+          </span>
+        </button>
+
+        <!-- Botão de Notificações -->
+        <button
+          onclick="toggleNotificationsPanel()"
+          class="w-10 h-10 rounded-xl surface-card flex items-center justify-center text-main hover:border-[var(--border-strong)] active:scale-95 transition relative"
+          aria-label="Notificações"
+          title="Notificações"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+          <span id="notifUnreadBadge" class="w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-[var(--bg-surface)] absolute top-2 right-2"></span>
+        </button>
+
+        <!-- Botão de Configurações (Engrenagem) -->
+        <button
+          onclick="switchPage('configuracoes')"
+          data-nav="configuracoes"
+          id="headerConfigBtn"
+          class="w-10 h-10 rounded-xl surface-card flex items-center justify-center text-main hover:border-[var(--border-strong)] active:scale-95 transition"
+          aria-label="Configurações"
+          title="Configurações de Aparência e Acessibilidade"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       CONTEÚDO PRINCIPAL DO SITE
+       ========================================================================== -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8"><aside role="note" style="max-width:1216px;margin:16px auto;padding:14px 20px;border:1px solid var(--border-subtle);border-radius:18px;background:var(--bg-surface-alt);color:var(--text-primary);font-size:13px;line-height:1.6"><strong>Projeto TCC · Demonstração interativa</strong><br>Agendamentos, denúncias e publicações ficam somente neste navegador e não são enviados a órgãos públicos. Use dados fictícios. Notícias, distâncias e pontos são exemplos da referência; confirme os dados com os serviços responsáveis.</aside>
+
+    <!-- ========================================================================
+         ABA 1: INÍCIO (TELA INICIAL COMPLETA)
+         ======================================================================== -->
+    <section id="page-inicio" class="page-view space-y-8">
+
+      <!-- Card Principal de Boas-Vindas e Pesquisa -->
+      <div class="surface-card rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="max-w-2xl space-y-2">
+            <h1 class="t-2xl font-extrabold text-title-custom tracking-tight">
+              Olá! Como podemos cuidar de você hoje?
+            </h1>
+            <p class="t-sm text-sub">
+              Encontre unidades de saúde próximas, agende consultas, registre denúncias ambientais ou de proteção animal e acompanhe as ações da sua comunidade.
+            </p>
+          </div>
+
+          <!-- Atalhos rápidos de Acessibilidade e Aparência -->
+          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button onclick="openSettingsModal()" class="btn-secondary px-3.5 py-2.5 rounded-2xl t-xs font-bold flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-[#159947] text-white inline-flex items-center justify-center font-extrabold">A+</span>
+              <span>Letra: <strong id="bannerFontLabel">Padrão</strong></span>
+            </button>
+            <button onclick="openSettingsModal()" class="btn-secondary px-3.5 py-2.5 rounded-2xl t-xs font-bold flex items-center gap-2">
+              <span id="bannerThemeEmoji">☀️</span>
+              <span>Tema: <strong id="bannerThemeName">Modo Claro</strong></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Campo de pesquisa em tempo real -->
+        <div class="mt-6">
+          <div class="relative">
+            <svg class="w-5 h-5 text-muted-custom absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input
+              type="search"
+              id="globalSearchInput"
+              oninput="handleGlobalSearch(this.value)"
+              placeholder="O que você está procurando?"
+              aria-label="O que você está procurando?"
+              class="input-field w-full pl-12 pr-28 py-4 rounded-2xl t-base shadow-sm"
+            />
+            <button
+              id="clearSearchBtn"
+              onclick="clearGlobalSearch()"
+              class="hidden absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl surface-alt t-xs font-bold text-main hover:opacity-80"
+            >
+              Limpar ✕
+            </button>
+          </div>
+
+          <!-- Status da busca -->
+          <div id="searchStatusBanner" class="hidden mt-3 px-4 py-2.5 rounded-2xl surface-alt flex flex-wrap items-center justify-between gap-2 t-xs">
+            <span id="searchStatusText" class="font-semibold text-main">Mostrando resultados...</span>
+            <button onclick="clearGlobalSearch()" class="font-bold text-brand underline">Mostrar tudo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- OS 6 SERVIÇOS PRINCIPAIS (Com destaque visual para os 3 primeiros) -->
+      <div aria-label="Serviços Principais">
+        <div class="flex flex-wrap items-end justify-between gap-2 mb-4">
+          <div>
+            <h2 class="t-xl font-extrabold text-title-custom">Serviços Principais</h2>
+            <p class="t-sm text-sub">Acesso rápido aos serviços de saúde pública, meio ambiente e proteção animal</p>
+          </div>
+        </div>
+
+        <div id="servicesGridContainer" class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
+
+          <!-- 1. Agendamento de Consultas (Destaque Principal) -->
+          <button
+            onclick="openServiceAction('agendamento')"
+            data-keywords="agendamento de consultas médico ubs vacina posto saúde exame atendimento"
+            class="service-card-item surface-highlight surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group relative"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#159947] text-white mb-2">
+              Prioritário • Saúde
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#159947]/12 text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-agendamento"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Agendamento de Consultas</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Encontre unidades de saúde próximas e acesse o agendamento de consultas.
+              </p>
+            </div>
+          </button>
+
+          <!-- 2. Denúncias Ambientais (Destaque Principal) -->
+          <button
+            onclick="openServiceAction('denuncia-ambiental')"
+            data-keywords="denúncias ambientais poluição descarte irregular lixo queimadas meio ambiente"
+            class="service-card-item surface-highlight surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group relative"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#159947] text-white mb-2">
+              Prioritário • Ambiente
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#159947]/12 text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-ambiental"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Denúncias Ambientais</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Denúncias de poluição, descarte irregular de lixo, queimadas e crimes ambientais.
+              </p>
+            </div>
+          </button>
+
+          <!-- 3. Maus-tratos a Animais (Destaque Principal) -->
+          <button
+            onclick="openServiceAction('denuncia-animal')"
+            data-keywords="maus-tratos a animais denúncias proteção animal abandono resgate cães gatos"
+            class="service-card-item surface-highlight surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group relative"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#159947] text-white mb-2">
+              Prioritário • Proteção
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#159947]/12 text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-animal"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Maus-tratos a Animais</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Registre e acompanhe denúncias relacionadas à proteção e bem-estar animal.
+              </p>
+            </div>
+          </button>
+
+          <!-- 4. Notícias de Saúde -->
+          <button
+            onclick="openServiceAction('noticias')"
+            data-keywords="notícias de saúde vacinação prevenção de doenças campanhas qualidade de vida"
+            class="service-card-item surface-card surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold surface-alt text-sub mb-2">
+              Informativo
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl surface-alt text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-noticias"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Notícias de Saúde</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Informações sobre vacinação, prevenção de doenças e qualidade de vida.
+              </p>
+            </div>
+          </button>
+
+          <!-- 5. Comunidade -->
+          <button
+            onclick="openServiceAction('comunidade')"
+            data-keywords="comunidade iniciativas locais campanhas conscientização ações comunitárias moradores"
+            class="service-card-item surface-card surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold surface-alt text-sub mb-2">
+              Participação
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl surface-alt text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-comunidade"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Comunidade</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Compartilhe informações, iniciativas locais, campanhas e ações comunitárias.
+              </p>
+            </div>
+          </button>
+
+          <!-- 6. Mapa -->
+          <button
+            onclick="openServiceAction('mapa')"
+            data-keywords="mapa localização unidades de saúde ubs ecopontos proteção animal"
+            class="service-card-item surface-card surface-card-interactive rounded-3xl p-5 sm:p-6 text-center flex flex-col items-center justify-between group"
+          >
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold surface-alt text-sub mb-2">
+              Geolocalização
+            </span>
+            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl surface-alt text-brand flex items-center justify-center my-2 group-hover:scale-105 transition-transform">
+              <svg class="w-14 h-14 sm:w-16 sm:h-16" viewBox="0 0 64 56">
+                <use href="#icon-service-mapa"></use>
+              </svg>
+            </div>
+            <div>
+              <h3 class="t-lg font-extrabold text-main leading-snug">Mapa</h3>
+              <p class="t-xs text-sub mt-1.5">
+                Localize unidades de saúde, ecopontos ambientais e pontos de proteção animal.
+              </p>
+            </div>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- SEÇÃO DUPLA: SAÚDE EM FOCO + NOSSA COMUNIDADE -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- Coluna 1 (7 colunas no Desktop): Saúde em foco -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h2 class="t-xl font-extrabold text-title-custom">Saúde em foco</h2>
+              <p class="t-xs text-sub">Campanhas de vacinação, prevenção de doenças, preservação ambiental e qualidade de vida</p>
+            </div>
+            <button onclick="switchPage('comunidade'); setTimeout(() => scrollToElement('comunidadeNoticiasSection'), 100);" class="btn-secondary px-3.5 py-2 rounded-xl t-xs font-bold shrink-0">
+              Ver todas →
+            </button>
+          </div>
+
+          <div id="homeNewsList" class="space-y-3.5">
+            <!-- Preenchido dinamicamente via JavaScript -->
+          </div>
+        </div>
+
+        <!-- Coluna 2 (5 colunas no Desktop): Nossa comunidade + Acesso Complementar ao Mapa -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- Nossa comunidade -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="t-xl font-extrabold text-title-custom">Nossa comunidade</h2>
+                <p class="t-xs text-sub">Campanhas de conscientização e iniciativas dos moradores</p>
+              </div>
+              <button onclick="switchPage('comunidade'); setTimeout(() => scrollToElement('newCommunityPostCard'), 100);" class="btn-primary px-3.5 py-2 rounded-xl t-xs font-bold shrink-0">
+                + Nova Publicação
+              </button>
+            </div>
+
+            <div id="homeCommunityList" class="space-y-3.5">
+              <!-- Preenchido dinamicamente via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Card Complementar de Acesso ao Mapa -->
+          <div class="surface-card rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-[#159947]/15 text-brand flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6" viewBox="0 0 64 56"><use href="#icon-service-mapa"></use></svg>
+                </div>
+                <div>
+                  <h3 class="t-md font-extrabold text-main">Mapa de Pontos Importantes</h3>
+                  <p class="t-xs text-sub">Unidades de saúde, ecopontos e proteção animal no Guarujá</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold surface-alt text-brand">Guarujá - SP</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+              <div class="surface-alt rounded-xl p-2.5 t-xs">
+                <span class="font-bold text-main block">🏥 UBS / Saúde Pública</span>
+                <span class="text-sub">Hospital Santo Amaro e UPA Enseada</span>
+              </div>
+              <div class="surface-alt rounded-xl p-2.5 t-xs">
+                <span class="font-bold text-main block">♻️ Ecoponto & Zoonoses</span>
+                <span class="text-sub">Ecoponto Paecara e Proteção Animal</span>
+              </div>
+            </div>
+
+            <button onclick="switchPage('mapa')" class="btn-primary w-full py-2.5 rounded-xl t-xs font-bold flex items-center justify-center gap-2">
+              <span>Explorar Mapa Interativo</span>
+              <span>→</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         ABA 2: SAÚDE (UNIDADES PRÓXIMAS E AGENDAMENTO DE CONSULTAS)
+         ======================================================================== -->
+    <section id="page-saude" class="page-view hidden space-y-8">
+
+      <!-- Cabeçalho da Aba Saúde -->
+      <div class="surface-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-2xl">
+          <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#159947] text-white">
+            Saúde Pública • Atendimento ao Cidadão
+          </span>
+          <h1 class="t-2xl font-extrabold text-title-custom">Agendamento de Consultas e Unidades de Saúde</h1>
+          <p class="t-sm text-sub">
+            Encontre unidades de saúde próximas, escolha a especialidade médica ou campanha de vacinação e teste o fluxo de agendamento local do TCC.
+          </p>
+        </div>
+        <button onclick="switchPage('mapa'); filterMapCategory('saude');" class="btn-secondary px-4 py-3 rounded-2xl t-xs font-bold shrink-0 flex items-center gap-2 self-start md:self-center">
+          <span>📍 Ver Unidades no Mapa</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Lista de Unidades de Saúde Próximas (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="surface-card rounded-3xl p-5 space-y-4">
+            <div>
+              <h2 class="t-lg font-extrabold text-title-custom">Unidades de Saúde Próximas</h2>
+              <p class="t-xs text-sub">Clique em uma unidade para selecioná-la no agendamento</p>
+            </div>
+
+            <input
+              type="search"
+              id="ubsFilterInput"
+              oninput="renderHealthUnitsList(this.value)"
+              placeholder="Filtrar por nome, bairro ou especialidade..."
+              class="input-field w-full px-3.5 py-2.5 rounded-xl t-xs"
+            />
+
+            <div id="healthUnitsList" class="space-y-3">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+
+          <!-- Comprovantes de Agendamentos Registrados -->
+          <div class="surface-card rounded-3xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <h2 class="t-lg font-extrabold text-title-custom">Meus Agendamentos</h2>
+              <span id="appointmentsCountBadge" class="px-2.5 py-0.5 rounded-full t-xs font-bold surface-alt text-brand">1 ativo</span>
+            </div>
+            <div id="appointmentsList" class="space-y-3">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulário Interativo de Agendamento de Consultas (7 cols) -->
+        <div class="lg:col-span-7 surface-card rounded-3xl p-6 sm:p-7 space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border-subtle)] pb-3">
+            <div class="flex items-center gap-2.5">
+              <div class="w-10 h-10 rounded-xl bg-[#159947]/15 text-brand flex items-center justify-center">
+                <svg class="w-7 h-7" viewBox="0 0 64 56"><use href="#icon-service-agendamento"></use></svg>
+              </div>
+              <div>
+                <h2 class="t-lg font-extrabold text-title-custom">Agendar Consulta ou Vacinação</h2>
+                <p class="t-xs text-sub">Use dados fictícios para salvar uma simulação neste navegador</p>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg surface-alt t-xs font-semibold text-brand">Registro local</span>
+          </div>
+
+          <form id="appointmentForm" onsubmit="submitAppointment(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="aptUnit" class="block t-xs font-bold text-main mb-1">1. Unidade de Saúde *</label>
+                <select id="aptUnit" required class="input-field w-full rounded-xl px-3.5 py-3 t-sm">
+                  <option value="Hospital Santo Amaro / UBS Vila Maia (0,8 km)">Hospital Santo Amaro / UBS Vila Maia (0,8 km)</option>
+                  <option value="UPA Enseada / Unidade de Saúde (2,1 km)">UPA Enseada / Unidade de Saúde (2,1 km)</option>
+                  <option value="UBS Jardim Boa Esperança (1,4 km)">UBS Jardim Boa Esperança (1,4 km)</option>
+                  <option value="UBS Vicente de Carvalho — Paecara (2,8 km)">UBS Vicente de Carvalho — Paecara (2,8 km)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="aptSpecialty" class="block t-xs font-bold text-main mb-1">2. Especialidade / Atendimento *</label>
+                <select id="aptSpecialty" required class="input-field w-full rounded-xl px-3.5 py-3 t-sm">
+                  <option value="Clínico Geral (Saúde da Família)">Clínico Geral (Saúde da Família)</option>
+                  <option value="Vacinação (Campanha Multivacinação)">Vacinação (Campanha Multivacinação)</option>
+                  <option value="Pediatria">Pediatria</option>
+                  <option value="Odontologia Preventiva">Odontologia Preventiva</option>
+                  <option value="Ginecologia / Saúde da Mulher">Ginecologia / Saúde da Mulher</option>
+                  <option value="Acompanhamento Hiperdia">Acompanhamento Hiperdia</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="aptDate" class="block t-xs font-bold text-main mb-1">3. Data da Consulta *</label>
+                <input type="date" id="aptDate" required class="input-field w-full rounded-xl px-3.5 py-3 t-sm" />
+              </div>
+
+              <div>
+                <label class="block t-xs font-bold text-main mb-1">4. Horário Disponível *</label>
+                <div class="grid grid-cols-4 gap-2" id="timeSlotsGroup">
+                  <button type="button" onclick="selectTimeSlot('08:30')" data-slot="08:30" class="slot-btn btn-primary rounded-xl py-2.5 t-xs font-bold text-center">08:30</button>
+                  <button type="button" onclick="selectTimeSlot('10:00')" data-slot="10:00" class="slot-btn btn-secondary rounded-xl py-2.5 t-xs font-semibold text-center">10:00</button>
+                  <button type="button" onclick="selectTimeSlot('14:00')" data-slot="14:00" class="slot-btn btn-secondary rounded-xl py-2.5 t-xs font-semibold text-center">14:00</button>
+                  <button type="button" onclick="selectTimeSlot('15:30')" data-slot="15:30" class="slot-btn btn-secondary rounded-xl py-2.5 t-xs font-semibold text-center">15:30</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="aptPatient" class="block t-xs font-bold text-main mb-1">5. Nome Completo do Paciente *</label>
+                <input type="text" id="aptPatient" required minlength="3" placeholder="Ex: Maria Clara Silva" class="input-field w-full rounded-xl px-3.5 py-3 t-sm" />
+              </div>
+              <div>
+                <label for="aptSusCard" class="block t-xs font-bold text-main mb-1">6. Identificador fictício do paciente *</label>
+                <input type="text" id="aptSusCard" required minlength="6" placeholder="Ex: TESTE001" class="input-field w-full rounded-xl px-3.5 py-3 t-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label for="aptNotes" class="block t-xs font-bold text-main mb-1">7. Observações Adicionais (Opcional)</label>
+              <input type="text" id="aptNotes" placeholder="Ex: Retorno de exames, atualização da carteira de vacinação..." class="input-field w-full rounded-xl px-3.5 py-2.5 t-sm" />
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl t-base font-bold shadow-md flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span>Salvar Simulação de Agendamento</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         ABA 3: DENÚNCIAS (DENÚNCIA AMBIENTAL E MAUS-TRATOS A ANIMAIS)
+         ======================================================================== -->
+    <section id="page-denuncias" class="page-view hidden space-y-8">
+
+      <!-- Cabeçalho da Aba Denúncias -->
+      <div class="surface-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-2xl">
+          <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#159947] text-white">
+            Fiscalização Cidadã • Meio Ambiente e Proteção Animal
+          </span>
+          <h1 class="t-2xl font-extrabold text-title-custom">Central de Denúncias cuidAÇÃO</h1>
+          <p class="t-sm text-sub">
+            Registre ocorrências de poluição, descarte irregular de lixo, queimadas ou maus-tratos a animais e acompanhe o protocolo gerado.
+          </p>
+        </div>
+        <div class="surface-alt rounded-2xl px-4 py-3 t-xs text-main shrink-0">
+          <span class="font-extrabold block text-brand">🔒 Armazenamento local</span>
+          <span>Nenhum envio é realizado a órgãos públicos</span>
+        </div>
+      </div>
+
+      <!-- Alternância entre Denúncia Ambiental e Maus-tratos a Animais -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button
+          type="button"
+          id="btnSelectAmbiental"
+          onclick="selectReportCategory('Denúncia Ambiental')"
+          class="btn-primary rounded-3xl p-5 text-left flex items-center gap-4 shadow-md"
+        >
+          <div class="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center shrink-0">
+            <svg class="w-12 h-12" viewBox="0 0 64 56"><use href="#icon-service-ambiental"></use></svg>
+          </div>
+          <div class="flex-1">
+            <span class="t-xs font-bold uppercase tracking-wider opacity-90 block">Meio Ambiente</span>
+            <h2 class="t-lg font-extrabold leading-snug">Denúncia Ambiental</h2>
+            <p class="t-xs opacity-90 mt-0.5">Poluição, descarte irregular de lixo, queimadas e agressão ambiental.</p>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          id="btnSelectAnimal"
+          onclick="selectReportCategory('Maus-tratos a Animais')"
+          class="btn-secondary rounded-3xl p-5 text-left flex items-center gap-4"
+        >
+          <div class="w-16 h-16 rounded-2xl bg-[#159947]/15 text-brand flex items-center justify-center shrink-0">
+            <svg class="w-12 h-12" viewBox="0 0 64 56"><use href="#icon-service-animal"></use></svg>
+          </div>
+          <div class="flex-1">
+            <span class="t-xs font-bold uppercase tracking-wider opacity-80 block">Proteção e Bem-Estar</span>
+            <h2 class="t-lg font-extrabold leading-snug">Maus-tratos a Animais</h2>
+            <p class="t-xs opacity-80 mt-0.5">Abandono, agressão, falta de abrigo/água ou animais precisando de resgate.</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Formulário Validado + Histórico de Protocolos -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <form id="reportForm" onsubmit="submitReport(event)" class="lg:col-span-7 surface-card rounded-3xl p-6 sm:p-7 space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
+            <h3 id="reportFormTitle" class="t-lg font-extrabold text-title-custom">🌿 Registrar Denúncia Ambiental</h3>
+            <span class="t-xs font-bold text-brand">Rascunho do TCC</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="repSubtype" class="block t-xs font-bold text-main mb-1">1. Tipo de Ocorrência *</label>
+              <select id="repSubtype" required class="input-field w-full rounded-xl px-3.5 py-3 t-sm">
+                <!-- Preenchido via JS -->
+              </select>
+            </div>
+
+            <div>
+              <label for="repUrgency" class="block t-xs font-bold text-main mb-1">2. Nível de Urgência *</label>
+              <select id="repUrgency" class="input-field w-full rounded-xl px-3.5 py-3 t-sm">
+                <option value="Média">Média (Vistoria programada)</option>
+                <option value="Alta">Alta (Risco ativo à saúde / vida)</option>
+                <option value="Emergência">Emergência Imediata</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="repLocation" class="block t-xs font-bold text-main mb-1">3. Localização ou Ponto de Referência *</label>
+            <div class="flex gap-2">
+              <input
+                type="text"
+                id="repLocation"
+                required
+                minlength="5"
+                placeholder="Informe endereço, número aproximado, bairro ou referência..."
+                class="input-field w-full rounded-xl px-3.5 py-3 t-sm"
+              />
+              <button
+                type="button"
+                onclick="fillSimulatedGPS()"
+                class="btn-secondary px-4 rounded-xl t-xs font-bold shrink-0"
+                title="Preencher com localização atual"
+              >
+                📍 Usar GPS
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label for="repDesc" class="block t-xs font-bold text-main mb-1">4. Descrição da Ocorrência *</label>
+            <textarea
+              id="repDesc"
+              rows="4"
+              required
+              minlength="10"
+              placeholder="Relate com detalhes o problema observado para auxiliar a equipe de fiscalização ou resgate..."
+              class="input-field w-full rounded-xl px-3.5 py-3 t-sm"
+            ></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+            <button
+              type="button"
+              onclick="toggleEvidenceAttachment()"
+              id="attachPhotoBtn"
+              class="btn-secondary px-4 py-2.5 rounded-xl t-xs font-bold flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 text-brand" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span id="attachPhotoText">Anexar foto ou evidência (até 2 MB)</span>
+            </button><input type="file" id="evidenceFile" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="readEvidence(this.files[0])"><div id="evidencePreview"></div>
+
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="repAnonymous" checked class="w-4 h-4 accent-[#159947] rounded" />
+              <span class="t-xs font-bold text-sub">Registrar como denúncia anônima</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn-primary w-full py-3.5 rounded-2xl t-base font-bold shadow-md flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span>Salvar Rascunho de Denúncia</span>
+          </button>
+        </form>
+
+        <!-- Histórico de Denúncias Registradas -->
+        <div class="lg:col-span-5 surface-card rounded-3xl p-6 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="t-lg font-extrabold text-title-custom">Histórico de Protocolos</h3>
+              <p class="t-xs text-sub">Consulte os rascunhos salvos neste navegador</p>
+            </div>
+            <span id="reportsCountBadge" class="px-2.5 py-0.5 rounded-full t-xs font-bold surface-alt text-brand">2 registros</span>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <button onclick="filterReportsList('todas')" data-rfilter="todas" class="rep-filter-btn btn-primary px-3 py-1 rounded-lg t-xs font-bold">Todas</button>
+            <button onclick="filterReportsList('Denúncia Ambiental')" data-rfilter="Denúncia Ambiental" class="rep-filter-btn btn-secondary px-3 py-1 rounded-lg t-xs font-semibold">🌿 Ambiental</button>
+            <button onclick="filterReportsList('Maus-tratos a Animais')" data-rfilter="Maus-tratos a Animais" class="rep-filter-btn btn-secondary px-3 py-1 rounded-lg t-xs font-semibold">🐾 Maus-tratos</button>
+          </div>
+
+          <div id="reportsHistoryList" class="space-y-3">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         ABA 4: COMUNIDADE (MURAL INTERATIVO E SEÇÃO EXPANDIDA DE NOTÍCIAS)
+         ======================================================================== -->
+    <section id="page-comunidade" class="page-view hidden space-y-10">
+
+      <!-- Cabeçalho da Aba Comunidade -->
+      <div class="surface-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-1.5 max-w-2xl">
+          <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#159947] text-white">
+            Participação Comunitária • Cidadania e Conscientização
+          </span>
+          <h1 class="t-2xl font-extrabold text-title-custom">Nossa Comunidade e Saúde em Foco</h1>
+          <p class="t-sm text-sub">
+            Compartilhe iniciativas locais, campanhas de conscientização, mutirões ambientais e acompanhe o portal completo de notícias de saúde pública.
+          </p>
+        </div>
+        <button onclick="scrollToElement('newCommunityPostCard')" class="btn-primary px-5 py-3 rounded-2xl t-sm font-bold shrink-0 shadow-sm">
+          + Criar Nova Publicação
+        </button>
+      </div>
+
+      <!-- Mural Interativo da Comunidade + Formulário de Nova Publicação -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Mural com Filtro por Temas (7 cols) -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="t-lg font-extrabold text-title-custom">Mural da Comunidade</h2>
+            <!-- Filtros: Saúde Pública, Meio Ambiente, Proteção Animal, Ações Locais -->
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="filterCommunityCategory('todas')" data-ccat="todas" class="comm-cat-btn btn-primary px-3 py-1.5 rounded-xl t-xs font-bold">Todos</button>
+              <button onclick="filterCommunityCategory('Saúde Pública')" data-ccat="Saúde Pública" class="comm-cat-btn btn-secondary px-3 py-1.5 rounded-xl t-xs font-semibold">💚 Saúde Pública</button>
+              <button onclick="filterCommunityCategory('Meio Ambiente')" data-ccat="Meio Ambiente" class="comm-cat-btn btn-secondary px-3 py-1.5 rounded-xl t-xs font-semibold">🌱 Meio Ambiente</button>
+              <button onclick="filterCommunityCategory('Proteção Animal')" data-ccat="Proteção Animal" class="comm-cat-btn btn-secondary px-3 py-1.5 rounded-xl t-xs font-semibold">🐾 Proteção Animal</button>
+              <button onclick="filterCommunityCategory('Ações Locais')" data-ccat="Ações Locais" class="comm-cat-btn btn-secondary px-3 py-1.5 rounded-xl t-xs font-semibold">🤝 Ações Locais</button>
+            </div>
+          </div>
+
+          <div id="fullCommunityFeed" class="space-y-4">
+            <!-- Preenchido via JS -->
+          </div>
+        </div>
+
+        <!-- Card para Criar Nova Publicação (5 cols) -->
+        <div id="newCommunityPostCard" class="lg:col-span-5 surface-card rounded-3xl p-6 space-y-4">
+          <div class="border-b border-[var(--border-subtle)] pb-3">
+            <h2 class="t-lg font-extrabold text-title-custom">Publicar na Comunidade</h2>
+            <p class="t-xs text-sub">Divulgue campanhas, avisos úteis ou ações no seu bairro</p>
+          </div>
+
+          <form id="newPostForm" onsubmit="submitCommunityPost(event)" class="space-y-3.5">
+            <div>
+              <label for="postAuthor" class="block t-xs font-bold text-main mb-1">Seu Nome ou Grupo Comunitário *</label>
+              <input type="text" id="postAuthor" required minlength="3" placeholder="Ex: Associação de Moradores Vila Maia" class="input-field w-full rounded-xl px-3.5 py-2.5 t-sm" />
+            </div>
+
+            <div>
+              <label for="postCategory" class="block t-xs font-bold text-main mb-1">Tema da Publicação *</label>
+              <select id="postCategory" class="input-field w-full rounded-xl px-3.5 py-2.5 t-sm">
+                <option value="Saúde Pública">💚 Saúde Pública</option>
+                <option value="Meio Ambiente">🌱 Meio Ambiente</option>
+                <option value="Proteção Animal">🐾 Proteção Animal</option>
+                <option value="Ações Locais">🤝 Ações Locais</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="postTitle" class="block t-xs font-bold text-main mb-1">Título da Iniciativa *</label>
+              <input type="text" id="postTitle" required minlength="5" placeholder="Ex: Mutirão de limpeza e plantio de mudas no sábado" class="input-field w-full rounded-xl px-3.5 py-2.5 t-sm" />
+            </div>
+
+            <div>
+              <label for="postBody" class="block t-xs font-bold text-main mb-1">Descrição, Local e Data *</label>
+              <textarea id="postBody" rows="4" required minlength="10" placeholder="Compartilhe os detalhes, horário e ponto de encontro..." class="input-field w-full rounded-xl px-3.5 py-2.5 t-sm"></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-3 rounded-2xl t-sm font-bold shadow-sm">
+              Publicar no Mural Comunitário
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Seção Expandida de Notícias de Saúde ("Saúde em foco") -->
+      <div id="comunidadeNoticiasSection" class="space-y-4 pt-6 border-t border-[var(--border-subtle)]">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="t-xl font-extrabold text-title-custom">Notícias de Saúde — Saúde em foco</h2>
+            <p class="t-sm text-sub">Campanhas de vacinação, prevenção de doenças, preservação ambiental e ações comunitárias</p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button onclick="filterNewsCategory('todas')" data-ncat="todas" class="news-cat-btn btn-primary px-3.5 py-2 rounded-xl t-xs font-bold">Todas</button>
+            <button onclick="filterNewsCategory('Campanhas de vacinação')" data-ncat="Campanhas de vacinação" class="news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">Vacinação</button>
+            <button onclick="filterNewsCategory('Prevenção de doenças')" data-ncat="Prevenção de doenças" class="news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">Prevenção</button>
+            <button onclick="filterNewsCategory('Preservação ambiental')" data-ncat="Preservação ambiental" class="news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">Meio Ambiente</button>
+            <button onclick="filterNewsCategory('Saúde e qualidade de vida')" data-ncat="Saúde e qualidade de vida" class="news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">Qualidade de Vida</button>
+            <button onclick="filterNewsCategory('Ações comunitárias')" data-ncat="Ações comunitárias" class="news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">Ações Comunitárias</button>
+          </div>
+        </div>
+
+        <div id="fullNewsList" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Preenchido via JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================
+         ABA 5: MAPA INTERATIVO REAL (LEAFLET.JS + OPENSTREETMAP GUARUJÁ - SP)
+         ======================================================================== -->
+    <section id="page-mapa" class="page-view hidden space-y-6">
+      <div class="surface-card rounded-3xl p-5 space-y-3">
+        <div class="flex flex-wrap gap-3"><button id="showServiceMap" class="btn-primary px-4 py-2 rounded-xl t-sm font-bold" onclick="setMapModule('servicos')">Mapa de serviços</button><button id="showTerritoryMap" class="btn-secondary px-4 py-2 rounded-xl t-sm font-bold" onclick="setMapModule('territorio')">Ocorrências do Perequê · TCC</button></div>
+        <p class="t-xs text-sub">O módulo do TCC reúne mapa ambiental, filtros, contas, relatos, comentários e histórico do seu projeto CuidAcao.</p>
+      </div>
+      <div id="territoryModule" class="hidden surface-card rounded-3xl overflow-hidden">
+        <div class="p-4 surface-alt space-y-2"><p id="territoryConnection" role="status" class="t-xs text-sub">Verificando conexão com a API de ocorrências…</p><a id="territoryExternalLink" href="/territorio/index.html" target="_blank" rel="noopener" class="text-brand t-xs font-bold">Abrir módulo em tela inteira ↗</a></div>
+        <iframe id="territoryFrame" title="CuidAção: ocorrências ambientais do Perequê" style="width:100%;height:82vh;min-height:580px;border:0" allow="geolocation"></iframe>
+      </div>
+      <div id="originalServiceMap" class="space-y-6">
+
+
+      <!-- Cabeçalho e Filtros do Mapa -->
+      <div class="surface-card rounded-3xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#159947] text-white mb-1">
+            Localização Integrada • Guarujá - SP
+          </span>
+          <h1 class="t-2xl font-extrabold text-title-custom">Mapa de Serviços cuidAÇÃO</h1>
+          <p class="t-sm text-sub">
+            Explore os pontos da referência. Mapa do TCC no Figma: aguardando o link para integração.
+          </p>
+        </div>
+
+        <!-- Filtros por Categoria: Todos, UBS / Saúde, Ecoponto Ambiental, Proteção Animal -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="filterMapCategory('todos')" data-mfilter="todos" class="map-filter-btn btn-primary px-3.5 py-2 rounded-xl t-xs font-bold">Todos</button>
+          <button onclick="filterMapCategory('saude')" data-mfilter="saude" class="map-filter-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">🏥 UBS / Saúde</button>
+          <button onclick="filterMapCategory('ambiente')" data-mfilter="ambiente" class="map-filter-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">♻️ Ecoponto Ambiental</button>
+          <button onclick="filterMapCategory('animal')" data-mfilter="animal" class="map-filter-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold">🐾 Proteção Animal</button>
+        </div>
+      </div>
+
+      <!-- Mapa Interativo + Painel Lateral Sincronizado -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Coluna do Mapa (7 cols) -->
+        <div class="lg:col-span-7 surface-card rounded-3xl overflow-hidden">
+          <div id="realLeafletMap"></div>
+
+          <!-- Legenda inferior -->
+          <div class="px-5 py-3.5 surface-alt border-t border-[var(--border-subtle)] flex flex-wrap items-center justify-between gap-3 t-xs">
+            <div class="flex flex-wrap items-center gap-4">
+              <span class="inline-flex items-center gap-1.5 font-bold"><span class="w-3 h-3 rounded-full bg-[#159947]"></span> UBS / Saúde</span>
+              <span class="inline-flex items-center gap-1.5 font-bold"><span class="w-3 h-3 rounded-full bg-[#0d9488]"></span> Ecoponto Ambiental</span>
+              <span class="inline-flex items-center gap-1.5 font-bold"><span class="w-3 h-3 rounded-full bg-[#d97706]"></span> Proteção Animal</span>
+            </div>
+            <span class="text-muted-custom font-medium">Clique em um marcador no mapa ou em um local ao lado</span>
+          </div>
+        </div>
+
+        <!-- Coluna Lateral Sincronizada (5 cols) -->
+        <div class="lg:col-span-5 space-y-4">
+          <!-- Detalhes do Ponto Selecionado -->
+          <div id="mapSelectedCard" class="surface-highlight rounded-3xl p-5 space-y-3">
+            <!-- Preenchido via JS -->
+          </div>
+
+          <!-- Lista Sincronizada de Pontos -->
+          <div class="surface-card rounded-3xl p-5 space-y-2.5">
+            <h3 class="t-sm font-extrabold text-title-custom">Pontos Localizados no Guarujá - SP</h3>
+            <div id="mapDirectoryList" class="space-y-2 max-h-64 overflow-y-auto pr-1">
+              <!-- Preenchido via JS -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================
+         ABA 6: CONFIGURAÇÕES (APARÊNCIA, ACESSIBILIDADE E PREFERÊNCIAS)
+         ======================================================================== -->
+    <section id="page-configuracoes" class="page-view hidden space-y-8">
+
+      <div class="surface-card rounded-3xl p-6 sm:p-8">
+        <span class="inline-block px-3 py-0.5 rounded-full text-xs font-bold bg-[#159947] text-white mb-1">
+          Personalização e Acessibilidade
+        </span>
+        <h1 class="t-2xl font-extrabold text-title-custom">Configurações do cuidAÇÃO</h1>
+        <p class="t-sm text-sub">
+          Escolha entre os modos Claro, Escuro ou Automático e ajuste o tamanho das letras em toda a interface.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Coluna Esquerda: Aparência e Preferências -->
+        <div class="lg:col-span-6 space-y-6">
+
+          <!-- Seção Aparência -->
+          <div class="surface-card rounded-3xl p-6 space-y-4">
+            <div>
+              <h2 class="t-xl font-extrabold text-title-custom">Aparência</h2>
+              <p class="t-xs text-sub">Selecione o tema visual de sua preferência</p>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onclick="setThemePreference('light')"
+                class="theme-option-btn rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 border transition text-center"
+                data-theme-opt="light"
+              >
+                <span class="text-2xl">☀️</span>
+                <span class="t-sm font-bold leading-tight">Modo Claro</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="setThemePreference('dark')"
+                class="theme-option-btn rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 border transition text-center"
+                data-theme-opt="dark"
+              >
+                <span class="text-2xl">🌙</span>
+                <span class="t-sm font-bold leading-tight">Modo Escuro</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="setThemePreference('auto')"
+                class="theme-option-btn rounded-2xl p-4 flex flex-col items-center justify-center gap-2.5 border transition text-center"
+                data-theme-opt="auto"
+              >
+                <span class="text-2xl">⚙️</span>
+                <span class="t-sm font-bold leading-tight">Automático</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Seção Preferências -->
+          <div class="surface-card rounded-3xl p-6 space-y-4">
+            <div>
+              <h2 class="t-xl font-extrabold text-title-custom">Preferências</h2>
+              <p class="t-xs text-sub">Configurações de notificações e preferências gerais</p>
+            </div>
+
+            <label class="flex items-center justify-between gap-3 py-1.5 cursor-pointer">
+              <div>
+                <span class="block t-sm font-bold text-main">Alertas de Campanhas de Vacinação</span>
+                <span class="block t-xs text-sub">Avisos sobre mutirões de saúde e horários nas UBS</span>
+              </div>
+              <input type="checkbox" data-preference="vacinacao" checked onchange="safeSetStorage('cuidacao_pref_vacinacao', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+            </label>
+
+            <label class="flex items-center justify-between gap-3 py-1.5 cursor-pointer border-t border-[var(--border-subtle)] pt-3">
+              <div>
+                <span class="block t-sm font-bold text-main">Atualizações de Protocolos de Denúncia</span>
+                <span class="block t-xs text-sub">Notificações sobre vistorias ambientais e resgate animal</span>
+              </div>
+              <input type="checkbox" data-preference="protocolos" checked onchange="safeSetStorage('cuidacao_pref_protocolos', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+            </label>
+
+            <label class="flex items-center justify-between gap-3 py-1.5 cursor-pointer border-t border-[var(--border-subtle)] pt-3">
+              <div>
+                <span class="block t-sm font-bold text-main">Atividades da Comunidade</span>
+                <span class="block t-xs text-sub">Destaques semanais de ações locais do seu bairro</span>
+              </div>
+              <input type="checkbox" data-preference="comunidade" checked onchange="safeSetStorage('cuidacao_pref_comunidade', this.checked ? '1' : '0'); showToast('Preferência salva neste navegador.')" class="w-5 h-5 accent-[#159947] rounded shrink-0" />
+            </label>
+          </div>
+
+        </div>
+
+        <!-- Coluna Direita: Acessibilidade (Tamanho das Letras + Prévia) -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="surface-card rounded-3xl p-6 space-y-5">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <h2 class="t-xl font-extrabold text-title-custom">Acessibilidade</h2>
+                <p class="t-sm font-semibold text-sub mt-0.5">Tamanho das Letras</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  onclick="stepFontSize(-1)"
+                  class="btn-secondary px-3.5 py-2 rounded-xl font-bold t-xs"
+                  title="Diminuir tamanho da fonte"
+                >
+                  A-
+                </button>
+                <button
+                  type="button"
+                  onclick="stepFontSize(1)"
+                  class="btn-secondary px-3.5 py-2 rounded-xl font-extrabold t-sm"
+                  title="Aumentar tamanho da fonte"
+                >
+                  A+
+                </button>
+              </div>
+            </div>
+
+            <!-- Controle Deslizante (Slider) com 3 tamanhos -->
+            <div class="px-1 pt-2">
+              <input
+                type="range"
+                id="pageFontSizeSlider"
+                min="0"
+                max="2"
+                step="1"
+                value="1"
+                oninput="setFontSizeLevel(parseInt(this.value, 10))"
+                class="a11y-slider"
+                aria-label="Ajustar tamanho das letras entre Pequeno, Padrão e Grande"
+              />
+              <div class="flex items-center justify-between mt-3">
+                <button type="button" onclick="setFontSizeLevel(0)" class="font-lbl-0 t-sm text-sub hover:text-main transition">Pequeno</button>
+                <button type="button" onclick="setFontSizeLevel(1)" class="font-lbl-1 t-sm font-extrabold text-main transition">Padrão</button>
+                <button type="button" onclick="setFontSizeLevel(2)" class="font-lbl-2 t-sm text-sub hover:text-main transition">Grande</button>
+              </div>
+            </div>
+
+            <!-- Botão Restaurar padrão -->
+            <button
+              type="button"
+              onclick="setFontSizeLevel(1); showToast('Tamanho padrão restaurado.');"
+              class="w-full py-3 rounded-2xl border border-[var(--border-strong)] t-sm font-bold text-main hover:bg-[var(--bg-surface-alt)] transition"
+            >
+              Restaurar padrão
+            </button>
+
+            <!-- Caixa de Prévia do texto -->
+            <div class="space-y-2 pt-1">
+              <span class="block t-sm font-extrabold text-main">Prévia do texto</span>
+              <div class="surface-alt rounded-2xl p-4 border border-[var(--border-strong)]">
+                <p class="t-base text-main font-medium">
+                  Este é um exemplo de como os textos do aplicativo se adaptam para garantir uma leitura confortável.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="surface-card rounded-3xl p-6 space-y-3">
+        <h2 class="t-xl font-extrabold text-title-custom">Conexão com o projeto do TCC</h2>
+        <p class="t-sm text-sub">Para contas e registros compartilhados, use a URL da aplicação integrada com sua API Node/SQLite. Sem servidor, apenas o mapa estático e as funções locais deste site ficam disponíveis.</p>
+        <label for="territoryServer" class="block t-xs font-bold text-main">URL da aplicação integrada (opcional)</label>
+        <input id="territoryServer" type="url" placeholder="https://seu-servidor.example" class="input-field rounded-xl p-3 w-full">
+        <button class="btn-primary px-4 py-3 rounded-xl t-sm font-bold" onclick="saveTerritoryServer()">Salvar conexão</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       RODAPÉ INSTITUCIONAL
+       ========================================================================== -->
+  <footer class="mt-12 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#159947] text-white flex items-center justify-center shadow-sm shrink-0">
+          <svg class="w-7 h-7" viewBox="0 0 100 100"><use href="#cuidacao-symbol"></use></svg>
+        </div>
+        <div>
+          <div class="flex items-baseline leading-none">
+            <span class="t-md font-medium text-main">cuid</span>
+            <span class="t-md font-extrabold text-brand">AÇÃO</span>
+          </div>
+          <p class="t-xs text-muted-custom mt-0.5">saúde • ambiente • proteção — Plataforma cidadã integrada</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button onclick="switchPage('inicio')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-semibold text-main">Início</button>
+        <button onclick="switchPage('saude')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-semibold text-main">Saúde</button>
+        <button onclick="switchPage('denuncias')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-semibold text-main">Denúncias</button>
+        <button onclick="switchPage('comunidade')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-semibold text-main">Comunidade</button>
+        <button onclick="switchPage('mapa')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-semibold text-main">Mapa</button>
+        <button onclick="switchPage('configuracoes')" class="px-3 py-1.5 rounded-lg surface-alt t-xs font-bold text-brand">Configurações</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       BARRA DE NAVEGAÇÃO INFERIOR FIXA (CELULARES E TABLETS)
+       ========================================================================== -->
+  <nav aria-label="Navegação Mobile" class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-nav)] backdrop-blur-md border-t border-[var(--border-subtle)] px-2 py-1.5">
+    <div class="grid grid-cols-5 gap-1 max-w-md mx-auto">
+      <button onclick="switchPage('inicio')" data-mnav="inicio" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-brand font-extrabold">
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+        </svg>
+        <span class="t-xs leading-tight truncate max-w-full">Início</span>
+      </button>
+
+      <button onclick="switchPage('saude')" data-mnav="saude" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-muted-custom hover:text-main font-medium">
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h2l1-2 2 4 1-2h2"/>
+        </svg>
+        <span class="t-xs leading-tight truncate max-w-full">Saúde</span>
+      </button>
+
+      <button onclick="switchPage('denuncias')" data-mnav="denuncias" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-muted-custom hover:text-main font-medium">
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span class="t-xs leading-tight truncate max-w-full">Denúncias</span>
+      </button>
+
+      <button onclick="switchPage('comunidade')" data-mnav="comunidade" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-muted-custom hover:text-main font-medium">
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="t-xs leading-tight truncate max-w-full">Comunidade</span>
+      </button>
+
+      <button onclick="switchPage('mapa')" data-mnav="mapa" class="mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-muted-custom hover:text-main font-medium">
+        <svg class="w-5 h-5 mb-0.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.1" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="t-xs leading-tight truncate max-w-full">Mapa</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================================================
+       MODAL RÁPIDO DE ACESSIBILIDADE E APARÊNCIA
+       ========================================================================== -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-[var(--bg-page)] border border-[var(--border-strong)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+      <div class="px-5 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <h2 class="t-lg font-extrabold text-title-custom">Aparência e Acessibilidade</h2>
+        <button onclick="closeSettingsModal()" class="w-9 h-9 rounded-xl surface-card flex items-center justify-center text-main hover:opacity-80" aria-label="Fechar">
+          ✕
+        </button>
+      </div>
+
+      <div class="p-5 overflow-y-auto space-y-5">
+        <!-- Aparência -->
+        <div class="surface-card rounded-2xl p-4 space-y-3">
+          <h3 class="t-md font-bold text-main">Aparência</h3>
+          <div class="grid grid-cols-3 gap-2.5">
+            <button type="button" onclick="setThemePreference('light')" data-theme-opt="light" class="theme-option-btn rounded-2xl p-3 flex flex-col items-center justify-center gap-2 border transition text-center">
+              <span class="text-xl">☀️</span>
+              <span class="t-xs font-bold leading-tight">Modo Claro</span>
+            </button>
+
+            <button type="button" onclick="setThemePreference('dark')" data-theme-opt="dark" class="theme-option-btn rounded-2xl p-3 flex flex-col items-center justify-center gap-2 border transition text-center">
+              <span class="text-xl">🌙</span>
+              <span class="t-xs font-bold leading-tight">Modo Escuro</span>
+            </button>
+
+            <button type="button" onclick="setThemePreference('auto')" data-theme-opt="auto" class="theme-option-btn rounded-2xl p-3 flex flex-col items-center justify-center gap-2 border transition text-center">
+              <span class="text-xl">⚙️</span>
+              <span class="t-xs font-bold leading-tight">Automático</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Acessibilidade: Tamanho das Letras -->
+        <div class="surface-card rounded-2xl p-4 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="t-md font-bold text-main">Acessibilidade</h3>
+              <p class="t-xs text-sub">Tamanho das Letras</p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="stepFontSize(-1)" class="btn-secondary w-9 h-9 rounded-xl font-bold text-sm flex items-center justify-center" title="Diminuir fonte">A-</button>
+              <button type="button" onclick="stepFontSize(1)" class="btn-secondary w-9 h-9 rounded-xl font-extrabold text-base flex items-center justify-center" title="Aumentar fonte">A+</button>
+            </div>
+          </div>
+
+          <div class="px-1">
+            <input
+              type="range"
+              id="modalFontSizeSlider"
+              min="0"
+              max="2"
+              step="1"
+              value="1"
+              oninput="setFontSizeLevel(parseInt(this.value, 10))"
+              class="a11y-slider"
+              aria-label="Controle deslizante de tamanho das letras"
+            />
+            <div class="flex items-center justify-between mt-2">
+              <button type="button" onclick="setFontSizeLevel(0)" class="font-lbl-0 t-xs text-sub hover:text-main transition">Pequeno</button>
+              <button type="button" onclick="setFontSizeLevel(1)" class="font-lbl-1 t-xs font-extrabold text-main transition">Padrão</button>
+              <button type="button" onclick="setFontSizeLevel(2)" class="font-lbl-2 t-xs text-sub hover:text-main transition">Grande</button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onclick="setFontSizeLevel(1); showToast('Tamanho padrão restaurado.');"
+            class="w-full py-2.5 rounded-xl border border-[var(--border-strong)] t-sm font-semibold text-main hover:bg-[var(--bg-surface-alt)] transition"
+          >
+            Restaurar padrão
+          </button>
+
+          <div>
+            <span class="block t-xs font-bold text-main mb-1.5">Prévia do texto</span>
+            <div class="surface-alt rounded-2xl p-3.5 border border-[var(--border-strong)]">
+              <p class="t-base text-main font-medium">
+                Este é um exemplo de como os textos do aplicativo se adaptam para garantir uma leitura confortável.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       PAINEL DE NOTIFICAÇÕES & MODAL DE LEITURA DE NOTÍCIA
+       ========================================================================== -->
+  <div id="notificationsModal" class="fixed inset-0 z-50 hidden bg-black/50 flex items-start justify-center pt-20 p-4">
+    <div class="bg-[var(--bg-page)] border border-[var(--border-strong)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <h3 class="t-md font-extrabold text-title-custom">Notificações de exemplo</h3>
+        <button onclick="toggleNotificationsPanel()" class="t-xs font-bold text-brand">Fechar ✕</button>
+      </div>
+      <div class="p-4 space-y-2.5 max-h-80 overflow-y-auto">
+        <div onclick="toggleNotificationsPanel(); switchPage('saude');" class="surface-card surface-card-interactive rounded-2xl p-3.5 flex items-start gap-3 cursor-pointer">
+          <span class="text-xl">💉</span>
+          <div>
+            <p class="t-sm font-bold text-main">Campanha de Multivacinação nas UBS</p>
+            <p class="t-xs text-sub">Atendimento disponível até as 19h. Agende seu horário na aba Saúde.</p>
+            <span class="t-xs text-muted-custom">Há 2 horas</span>
+          </div>
+        </div>
+        <div onclick="toggleNotificationsPanel(); switchPage('denuncias');" class="surface-card surface-card-interactive rounded-2xl p-3.5 flex items-start gap-3 cursor-pointer">
+          <span class="text-xl">🌿</span>
+          <div>
+            <p class="t-sm font-bold text-main">Protocolo Ambiental #CA-2026-841 Atualizado</p>
+            <p class="t-xs text-sub">Exemplo de atualização de protocolo para apresentação do TCC.</p>
+            <span class="t-xs text-muted-custom">Ontem</span>
+          </div>
+        </div>
+        <div onclick="toggleNotificationsPanel(); switchPage('comunidade');" class="surface-card surface-card-interactive rounded-2xl p-3.5 flex items-start gap-3 cursor-pointer">
+          <span class="text-xl">🐾</span>
+          <div>
+            <p class="t-sm font-bold text-main">Feira de Adoção Responsável neste Sábado</p>
+            <p class="t-xs text-sub">Cães e gatos vacinados e castrados. Confira no mural da Comunidade.</p>
+            <span class="t-xs text-muted-custom">Há 2 dias</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Leitura Completa de Notícia -->
+  <div id="newsReaderModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-[var(--bg-page)] border border-[var(--border-strong)] w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <div class="px-6 py-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
+        <span id="modalNewsCategory" class="px-3 py-0.5 rounded-full t-xs font-bold bg-[#159947] text-white">Saúde em foco</span>
+        <button onclick="closeNewsModal()" class="w-8 h-8 rounded-lg surface-card flex items-center justify-center text-main">✕</button>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-3.5">
+        <img id="modalNewsImg" src="" alt="" class="w-full h-56 object-cover rounded-2xl" />
+        <span id="modalNewsDate" class="block t-xs text-muted-custom font-semibold"></span>
+        <h2 id="modalNewsTitle" class="t-xl font-extrabold text-title-custom"></h2>
+        <p id="modalNewsBody" class="t-base text-sub leading-relaxed"></p>
+      </div>
+      <div class="px-6 py-4 border-t border-[var(--border-subtle)] flex flex-wrap justify-between items-center gap-2">
+        <button onclick="closeNewsModal(); switchPage('saude')" class="t-xs font-bold text-brand hover:underline">
+          Ir para Agendamento de Consultas →
+        </button>
+        <button onclick="closeNewsModal()" class="btn-primary px-5 py-2 rounded-xl t-xs font-bold">
+          Fechar Leitura
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de Feedback -->
+  <div role="status" aria-live="polite" id="appToast" class="fixed bottom-24 lg:bottom-8 right-4 sm:right-8 z-50 hidden px-4 py-3.5 rounded-2xl bg-[#0f6e32] text-white shadow-2xl border border-emerald-300/40 flex items-center gap-3 max-w-sm">
+    <span class="w-6 h-6 rounded-full bg-[#22c55e] text-[#052010] flex items-center justify-center font-extrabold text-xs shrink-0">✓</span>
+    <span id="appToastMessage" class="t-xs font-semibold">Ação realizada com sucesso!</span>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT COMPLETO (COMPATÍVEL COM NAVEGADORES E GOOGLE SITES)
+       ========================================================================== -->
+  <script>
+    /* --------------------------------------------------------------------------
+       UTILITÁRIO DE ARMAZENAMENTO SEGURO (COMPATÍVEL COM IFRAME DO GOOGLE SITES)
+       -------------------------------------------------------------------------- */
+    function escapeHTML(value) { return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function safeImage(value) { return /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value || '') ? value : ''; }
+    function localDate(date = new Date()) { return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`; }
+    function safeGetStorage(key, fallback) {
+      try {
+        const val = localStorage.getItem(key);
+        return val !== null ? val : fallback;
+      } catch (err) {
+        return fallback;
+      }
+    }
+
+    function safeSetStorage(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (err) {
+        throw new Error('Não foi possível salvar. O armazenamento pode estar cheio ou bloqueado. Remova anexos e tente novamente.');
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       1. ESTADO GLOBAL E DADOS INICIAIS
+       -------------------------------------------------------------------------- */
+    let currentPage = 'inicio';
+    let themePreference = safeGetStorage('cuidacao_theme', 'light'); // 'light' | 'dark' | 'auto'
+    let fontSizeLevel = parseInt(safeGetStorage('cuidacao_fontsize', '1'), 10); // 0=Pequeno, 1=Padrão, 2=Grande
+    let selectedTimeSlot = '08:30';
+    let selectedReportCategory = 'Denúncia Ambiental';
+    let hasAttachedEvidence = false;
+    let attachedEvidence = null;
+    let activeNewsFilter = 'todas';
+    let activeReportsFilter = 'todas';
+    let activeCommunityFilter = 'todas';
+    let activeMapFilter = 'todos';
+    let selectedMapPinId = 1;
+
+    const fontScaleMap = [0.90, 1.00, 1.18];
+    const fontLabelMap = ['Pequeno', 'Padrão', 'Grande'];
+
+    // Unidades de Saúde Próximas
+    const healthUnitsData = [
+      {
+        id: 1,
+        name: 'Hospital Santo Amaro / UBS Vila Maia (0,8 km)',
+        shortName: 'Hospital Santo Amaro / UBS Vila Maia',
+        distance: '0,8 km',
+        address: 'R. Quinto Bertoldi, 40 — Vila Maia, Guarujá - SP',
+        hours: 'Atendimento 24h / UBS Seg a Sex, 07h às 19h',
+        specialties: 'Clínico Geral, Pediatria, Vacinação, Odontologia'
+      },
+      {
+        id: 2,
+        name: 'UPA Enseada / Unidade de Saúde (2,1 km)',
+        shortName: 'UPA Enseada / Unidade de Saúde',
+        distance: '2,1 km',
+        address: 'R. Leonor da Silva Quadros — Jardim Virgínia / Enseada, Guarujá - SP',
+        hours: 'Atendimento 24h • Vacinação 08h às 17h',
+        specialties: 'Pronto Atendimento, Clínico Geral, Pediatria'
+      },
+      {
+        id: 3,
+        name: 'UBS Jardim Boa Esperança (1,4 km)',
+        shortName: 'UBS Jardim Boa Esperança',
+        distance: '1,4 km',
+        address: 'Av. Adriano Dias dos Santos, s/n — Jardim Boa Esperança, Guarujá - SP',
+        hours: 'Seg a Sex, 07h às 18h',
+        specialties: 'Saúde da Família, Ginecologia, Vacinação, Hiperdia'
+      },
+      {
+        id: 4,
+        name: 'UBS Vicente de Carvalho — Paecara (2,8 km)',
+        shortName: 'UBS Vicente de Carvalho — Paecara',
+        distance: '2,8 km',
+        address: 'R. Brg. Eduardo Gomes — Paecara, Vicente de Carvalho, Guarujá - SP',
+        hours: 'Seg a Sex, 07h às 18h',
+        specialties: 'Campanha de Multivacinação, Clínico Geral, Enfermagem'
+      }
+    ];
+
+    // Notícias ("Saúde em foco")
+    const newsArticles = [
+      {
+        id: 1,
+        category: 'Campanhas de vacinação',
+        title: 'Campanha de Multivacinação tem horário ampliado nas Unidades de Saúde',
+        summary: 'Confira os horários estendidos para imunização infantil e adulta em todas as unidades básicas do município.',
+        fullText: 'As Unidades Básicas de Saúde (UBS) estão funcionando com horário ampliado para atualização da caderneta de vacinação de crianças, adolescentes, adultos e idosos. Pelo cuidAÇÃO, você consulta a unidade mais próxima e agenda seu atendimento sem filas.',
+        date: '26 Out 2026 • Saúde Pública',
+        image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=700&q=80'
+      },
+      {
+        id: 2,
+        category: 'Prevenção de doenças',
+        title: 'Prevenção à Dengue: descarte correto de resíduos evita focos do mosquito',
+        summary: 'A união entre preservação ambiental e vigilância em saúde protege as famílias durante toda a estação.',
+        fullText: 'O descarte correto de materiais recicláveis e volumosos no Ecoponto Guarujá (Paecara) reduz drasticamente os criadouros do Aedes aegypti. Caso identifique terrenos com descarte irregular de lixo, utilize a aba Denúncias.',
+        date: '24 Out 2026 • Vigilância em Saúde',
+        image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=700&q=80'
+      },
+      {
+        id: 3,
+        category: 'Preservação ambiental',
+        title: 'Ecoponto Guarujá e feira de adoção responsável promovem sustentabilidade',
+        summary: 'Descarte corretamente materiais recicláveis e apoie a proteção e o bem-estar de animais resgatados.',
+        fullText: 'O Ecoponto Guarujá (Paecara) conta com coletores específicos para recicláveis, óleo vegetal usado, pilhas e pequenos volumes. Paralelamente, o setor de Bem-Estar e Proteção Animal realiza feiras de adoção responsável.',
+        date: '22 Out 2026 • Meio Ambiente',
+        image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=700&q=80'
+      },
+      {
+        id: 4,
+        category: 'Saúde e qualidade de vida',
+        title: 'Atividades físicas orientadas e grupos de caminhada promovem bem-estar',
+        summary: 'Encontros semanais gratuitos acompanhados por profissionais de saúde estimulam hábitos saudáveis.',
+        fullText: 'A prática regular de caminhadas ao ar livre contribui para o controle da pressão arterial, redução do estresse e fortalecimento imunológico. Para participar, basta procurar sua unidade de saúde de referência.',
+        date: '20 Out 2026 • Qualidade de Vida',
+        image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=700&q=80'
+      },
+      {
+        id: 5,
+        category: 'Ações comunitárias',
+        title: 'Mutirão Comunitário integra vacinação antirrábica, adoção e plantio de mudas',
+        summary: 'Ação conjunta reúne moradores, agentes de saúde e protetores de animais neste sábado.',
+        fullText: 'Integrando saúde pública, preservação ambiental e proteção animal, o mutirão comunitário oferece vacinação antirrábica para cães e gatos, feira de adoção responsável e distribuição gratuita de mudas nativas.',
+        date: '18 Out 2026 • Comunidade',
+        image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=700&q=80'
+      }
+    ];
+
+    // Agendamentos salvos
+    const defaultAppointments = [];
+    let userAppointments = defaultAppointments;
+    try {
+      const savedApt = safeGetStorage('cuidacao_appointments', null);
+      if (savedApt) userAppointments = JSON.parse(savedApt);
+    } catch (e) {}
+
+    // Denúncias salvas
+    const defaultReports = [];
+    let userReports = defaultReports;
+    try {
+      const savedRep = safeGetStorage('cuidacao_reports', null);
+      if (savedRep) userReports = JSON.parse(savedRep);
+    } catch (e) {}
+
+    // Publicações da Comunidade
+    const defaultCommunityPosts = [
+      {
+        id: 301,
+        author: 'Associação de Moradores Vila Maia',
+        category: 'Meio Ambiente',
+        title: 'Mutirão de Limpeza e Plantio de 40 Mudas Nativas',
+        body: 'Convidamos todos os vizinhos neste sábado às 8h30. Teremos luvas, sacos para coleta seletiva e mudas de árvores nativas da Mata Atlântica!',
+        date: 'Há 3 horas',
+        likes: 42,
+        liked: false
+      },
+      {
+        id: 302,
+        author: 'Rede de Proteção Animal Litoral',
+        category: 'Proteção Animal',
+        title: 'Campanha de Castração Gratuita e Adoção Responsável',
+        body: 'Inscrições abertas para castração gratuita de cães e gatos comunitários. No sábado também realizaremos nossa feira de adoção responsável.',
+        date: 'Ontem',
+        likes: 68,
+        liked: true
+      },
+      {
+        id: 303,
+        author: 'Agente Comunitária Helena Souza',
+        category: 'Saúde Pública',
+        title: 'Grupo de Prevenção e Alimentação Saudável na UBS',
+        body: 'Toda quarta-feira às 9h realizamos nossa roda de conversa sobre prevenção do diabetes e cultivo de ervas medicinais.',
+        date: 'Há 2 dias',
+        likes: 31,
+        liked: false
+      },
+      {
+        id: 304,
+        author: 'Coletivo Bairro Solidário',
+        category: 'Ações Locais',
+        title: 'Arrecadação de Ração e Cobertores para Abrigo Comunitário',
+        body: 'Estamos recebendo doações de ração e materiais de limpeza para apoiar os animais resgatados da nossa região.',
+        date: 'Há 3 dias',
+        likes: 54,
+        liked: false
+      }
+    ];
+    let communityPosts = defaultCommunityPosts;
+    try {
+      const savedComm = safeGetStorage('cuidacao_community', null);
+      if (savedComm) communityPosts = JSON.parse(savedComm);
+    } catch (e) {}
+
+    // Pontos Reais do Mapa Interativo (Guarujá - SP)
+    const mapLocations = [
+      {
+        id: 1,
+        type: 'saude',
+        badge: 'UBS / Saúde',
+        name: 'Hospital Santo Amaro / UBS Vila Maia',
+        address: 'R. Quinto Bertoldi, 40 — Vila Maia, Guarujá - SP',
+        hours: 'Atendimento 24h / UBS Seg a Sex, 07h às 19h',
+        services: 'Clínico Geral, Pediatria, Vacinação, Odontologia e Atendimento Hospitalar',
+        coords: [-23.9944, -46.2591],
+        color: '#159947'
+      },
+      {
+        id: 2,
+        type: 'saude',
+        badge: 'UBS / Saúde',
+        name: 'UPA Enseada',
+        address: 'R. Leonor da Silva Quadros — Jardim Virgínia / Enseada, Guarujá - SP',
+        hours: 'Atendimento 24 horas',
+        services: 'Pronto Atendimento, Vacinação, Enfermagem, Exames e Triagem',
+        coords: [-23.9838, -46.2242],
+        color: '#159947'
+      },
+      {
+        id: 3,
+        type: 'ambiente',
+        badge: 'Ecoponto Ambiental',
+        name: 'Ecoponto Guarujá (Paecara)',
+        address: 'R. Brg. Eduardo Gomes, 489 — Paecara, Guarujá - SP',
+        hours: 'Seg a Sáb, 08h às 17h',
+        services: 'Coleta seletiva, óleo de cozinha usado, recicláveis, pilhas e descarte consciente',
+        coords: [-23.9385, -46.2862],
+        color: '#0d9488'
+      },
+      {
+        id: 4,
+        type: 'animal',
+        badge: 'Proteção Animal',
+        name: 'Bem-Estar e Proteção Animal (Zoonoses)',
+        address: 'Av. Presidente Vargas — Guarujá - SP',
+        hours: 'Seg a Sex, 08h às 17h',
+        services: 'Atendimento veterinário público, castração, vacinação antirrábica e adoção responsável',
+        coords: [-23.9765, -46.2450],
+        color: '#d97706'
+      }
+    ];
+
+    let leafletMap = null;
+    let leafletMarkersLayer = null;
+    let markerRefs = {};
+
+    /* --------------------------------------------------------------------------
+       2. MODO CLARO, MODO ESCURO E MODO AUTOMÁTICO
+       -------------------------------------------------------------------------- */
+    const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function applyEffectiveTheme() {
+      let effective = themePreference;
+      if (themePreference === 'auto') {
+        effective = systemDarkQuery.matches ? 'dark' : 'light';
+      }
+
+      if (effective === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+
+      const headerIcon = document.getElementById('headerThemeIcon');
+      const bannerEmoji = document.getElementById('bannerThemeEmoji');
+      const bannerName = document.getElementById('bannerThemeName');
+
+      const themeEmoji = themePreference === 'auto' ? '⚙️' : effective === 'dark' ? '🌙' : '☀️';
+      const themeText = themePreference === 'auto'
+        ? `Automático (${effective === 'dark' ? 'Escuro' : 'Claro'})`
+        : effective === 'dark' ? 'Modo Escuro' : 'Modo Claro';
+
+      if (headerIcon) headerIcon.textContent = themeEmoji;
+      if (bannerEmoji) bannerEmoji.textContent = themeEmoji;
+      if (bannerName) bannerName.textContent = themeText;
+
+      document.querySelectorAll('.theme-option-btn').forEach(btn => {
+        const opt = btn.getAttribute('data-theme-opt');
+        if (opt === themePreference) {
+          btn.className = 'theme-option-btn rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 border-2 border-[#159947] bg-[#0f6e32] text-white shadow-md transition text-center';
+        } else {
+          btn.className = 'theme-option-btn rounded-2xl p-3.5 flex flex-col items-center justify-center gap-2 border border-[var(--border-strong)] surface-alt text-main hover:opacity-90 transition text-center';
+        }
+      });
+    }
+
+    function setThemePreference(mode) {
+      themePreference = mode;
+      safeSetStorage('cuidacao_theme', mode);
+      applyEffectiveTheme();
+      const msg = mode === 'light' ? 'Modo Claro ativado' : mode === 'dark' ? 'Modo Escuro ativado' : 'Modo Automático ativado';
+      showToast(msg);
+    }
+
+    function cycleThemeQuick() {
+      const next = themePreference === 'light' ? 'dark' : themePreference === 'dark' ? 'auto' : 'light';
+      setThemePreference(next);
+    }
+
+    systemDarkQuery.addEventListener('change', () => {
+      if (themePreference === 'auto') applyEffectiveTheme();
+    });
+
+    /* --------------------------------------------------------------------------
+       3. ACESSIBILIDADE: TAMANHO DAS LETRAS (PEQUENO, PADRÃO, GRANDE)
+       -------------------------------------------------------------------------- */
+    function setFontSizeLevel(level) {
+      const clamped = Math.max(0, Math.min(2, level));
+      fontSizeLevel = clamped;
+      safeSetStorage('cuidacao_fontsize', String(clamped));
+
+      const scale = fontScaleMap[clamped];
+      document.documentElement.style.setProperty('--font-scale', String(scale));
+
+      const pageSlider = document.getElementById('pageFontSizeSlider');
+      const modalSlider = document.getElementById('modalFontSizeSlider');
+      if (pageSlider) pageSlider.value = String(clamped);
+      if (modalSlider) modalSlider.value = String(clamped);
+
+      const bannerFontLbl = document.getElementById('bannerFontLabel');
+      if (bannerFontLbl) bannerFontLbl.textContent = fontLabelMap[clamped];
+
+      [0, 1, 2].forEach(idx => {
+        document.querySelectorAll('.font-lbl-' + idx).forEach(lbl => {
+          if (idx === clamped) {
+            lbl.className = `font-lbl-${idx} t-xs font-extrabold text-brand underline transition`;
+          } else {
+            lbl.className = `font-lbl-${idx} t-xs font-medium text-sub hover:text-main transition`;
+          }
+        });
+      });
+
+      const badge = document.getElementById('fontBadgeIndicator');
+      if (badge) {
+        if (clamped === 0) {
+          badge.textContent = 'A-';
+          badge.classList.remove('hidden');
+        } else if (clamped === 2) {
+          badge.textContent = 'A+';
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
+    function stepFontSize(delta) {
+      setFontSizeLevel(fontSizeLevel + delta);
+      showToast(`Tamanho das letras: ${fontLabelMap[fontSizeLevel]}`);
+    }
+
+    /* --------------------------------------------------------------------------
+       4. NAVEGAÇÃO ENTRE AS 5 ÁREAS PRINCIPAIS + CONFIGURAÇÕES
+       -------------------------------------------------------------------------- */
+    function switchPage(pageName) {
+      currentPage = pageName;
+      const pages = ['inicio', 'saude', 'denuncias', 'comunidade', 'mapa', 'configuracoes'];
+
+      pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) {
+          if (p === pageName) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+
+      // Atualiza barra Desktop
+      document.querySelectorAll('.desktop-nav-btn').forEach(btn => {
+        const navKey = btn.getAttribute('data-nav');
+        if (navKey === pageName) {
+          btn.className = 'desktop-nav-btn px-4 py-2 rounded-xl t-sm font-extrabold flex items-center gap-2 transition bg-[#159947] text-white shadow-sm';
+        } else {
+          btn.className = 'desktop-nav-btn px-4 py-2 rounded-xl t-sm font-semibold flex items-center gap-2 transition text-main hover:bg-[var(--bg-surface)]';
+        }
+      });
+
+      // Atualiza ícone de engrenagem
+      const cfgBtn = document.getElementById('headerConfigBtn');
+      if (cfgBtn) {
+        if (pageName === 'configuracoes') {
+          cfgBtn.className = 'w-10 h-10 rounded-xl bg-[#159947] text-white flex items-center justify-center shadow-sm transition';
+        } else {
+          cfgBtn.className = 'w-10 h-10 rounded-xl surface-card flex items-center justify-center text-main hover:border-[var(--border-strong)] transition';
+        }
+      }
+
+      // Atualiza barra inferior Mobile
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        const navKey = btn.getAttribute('data-mnav');
+        if (navKey === pageName) {
+          btn.className = 'mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-brand font-extrabold bg-[var(--brand-soft)]';
+        } else {
+          btn.className = 'mobile-nav-btn flex flex-col items-center justify-center py-1.5 px-1 rounded-xl transition text-muted-custom hover:text-main font-medium';
+        }
+      });
+
+      // Se abriu a aba Mapa, inicializa ou recalcula o tamanho do Leaflet
+      if (pageName === 'mapa') {
+        setTimeout(() => {
+          initLeafletMap();
+          if (leafletMap) leafletMap.invalidateSize();
+        }, 120);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openServiceAction(serviceKey) {
+      if (serviceKey === 'agendamento') {
+        switchPage('saude');
+      } else if (serviceKey === 'denuncia-ambiental') {
+        switchPage('denuncias');
+        selectReportCategory('Denúncia Ambiental');
+      } else if (serviceKey === 'denuncia-animal') {
+        switchPage('denuncias');
+        selectReportCategory('Maus-tratos a Animais');
+      } else if (serviceKey === 'noticias') {
+        switchPage('comunidade');
+        setTimeout(() => scrollToElement('comunidadeNoticiasSection'), 120);
+      } else if (serviceKey === 'comunidade') {
+        switchPage('comunidade');
+      } else if (serviceKey === 'mapa') {
+        switchPage('mapa');
+      }
+    }
+
+    function scrollToElement(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* --------------------------------------------------------------------------
+       5. BUSCA EM TEMPO REAL NA TELA INICIAL
+       -------------------------------------------------------------------------- */
+    function handleGlobalSearch(query) {
+      const q = query.trim().toLowerCase();
+      const clearBtn = document.getElementById('clearSearchBtn');
+      const banner = document.getElementById('searchStatusBanner');
+      const statusText = document.getElementById('searchStatusText');
+
+      if (q.length > 0) {
+        clearBtn.classList.remove('hidden');
+        banner.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+        banner.classList.add('hidden');
+      }
+
+      let visibleServices = 0;
+      document.querySelectorAll('.service-card-item').forEach(card => {
+        const text = (card.textContent + ' ' + (card.getAttribute('data-keywords') || '')).toLowerCase();
+        if (!q || text.includes(q)) {
+          card.classList.remove('hidden');
+          visibleServices++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      renderHomeNews(q);
+      renderHomeCommunity(q);
+
+      if (q) {
+        statusText.textContent = `Exibindo resultados para "${query.trim()}" (${visibleServices} serviço(s) encontrado(s))`;
+      }
+    }
+
+    function clearGlobalSearch() {
+      const input = document.getElementById('globalSearchInput');
+      if (input) input.value = '';
+      handleGlobalSearch('');
+    }
+
+    /* --------------------------------------------------------------------------
+       6. SAÚDE EM FOCO (NOTÍCIAS DE SAÚDE)
+       -------------------------------------------------------------------------- */
+    function createNewsCardHTML(article) {
+      return `
+        <article onclick="openNewsModal(${article.id})" class="surface-card surface-card-interactive rounded-3xl p-3.5 sm:p-4 flex flex-col sm:flex-row gap-4 items-center cursor-pointer">
+          <img
+            src="${article.image}"
+            alt="${article.title}"
+            onerror="this.src='https://placehold.co/300x220/159947/FFFFFF?text=cuidACAO'"
+            class="w-full sm:w-36 h-40 sm:h-28 rounded-2xl object-cover shrink-0 bg-emerald-900/10"
+          />
+          <div class="flex-1 min-w-0 w-full">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-[#159947]/15 text-brand">
+                ${article.category}
+              </span>
+              <span class="t-xs text-muted-custom font-medium">${article.date}</span>
+            </div>
+            <h3 class="t-md font-extrabold text-main leading-snug">${article.title}</h3>
+            <p class="t-xs text-sub mt-1">${article.summary}</p>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderHomeNews(searchQuery = '') {
+      const container = document.getElementById('homeNewsList');
+      if (!container) return;
+      const filtered = newsArticles.filter(n => {
+        if (!searchQuery) return true;
+        return (n.title + ' ' + n.summary + ' ' + n.category).toLowerCase().includes(searchQuery);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="surface-card rounded-2xl p-5 text-center t-sm text-sub">Nenhuma notícia encontrada para "${searchQuery}".</div>`;
+        return;
+      }
+      container.innerHTML = filtered.slice(0, 3).map(createNewsCardHTML).join('');
+    }
+
+    function renderFullNewsList() {
+      const container = document.getElementById('fullNewsList');
+      if (!container) return;
+      const filtered = newsArticles.filter(n => activeNewsFilter === 'todas' || n.category === activeNewsFilter);
+      container.innerHTML = filtered.map(article => `
+        <article onclick="openNewsModal(${article.id})" class="surface-card surface-card-interactive rounded-3xl overflow-hidden flex flex-col cursor-pointer">
+          <img
+            src="${article.image}"
+            alt="${article.title}"
+            onerror="this.src='https://placehold.co/400x240/159947/FFFFFF?text=cuidACAO'"
+            class="w-full h-44 object-cover bg-emerald-900/10"
+          />
+          <div class="p-4 flex flex-col flex-1 justify-between gap-2">
+            <div class="space-y-1.5">
+              <span class="inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-bold bg-[#159947]/15 text-brand">
+                ${article.category}
+              </span>
+              <h3 class="t-md font-extrabold text-main leading-snug">${article.title}</h3>
+              <p class="t-xs text-sub">${article.summary}</p>
+            </div>
+            <span class="t-xs text-muted-custom font-medium pt-2">${article.date}</span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function filterNewsCategory(cat) {
+      activeNewsFilter = cat;
+      document.querySelectorAll('.news-cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-ncat') === cat) {
+          btn.className = 'news-cat-btn btn-primary px-3.5 py-2 rounded-xl t-xs font-bold';
+        } else {
+          btn.className = 'news-cat-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold';
+        }
+      });
+      renderFullNewsList();
+    }
+
+    function openNewsModal(articleId) {
+      const art = newsArticles.find(n => n.id === articleId);
+      if (!art) return;
+      document.getElementById('modalNewsCategory').textContent = art.category;
+      document.getElementById('modalNewsImg').src = art.image;
+      document.getElementById('modalNewsDate').textContent = art.date;
+      document.getElementById('modalNewsTitle').textContent = art.title;
+      document.getElementById('modalNewsBody').textContent = art.fullText;
+      document.getElementById('newsReaderModal').classList.remove('hidden');
+    }
+
+    function closeNewsModal() {
+      document.getElementById('newsReaderModal').classList.add('hidden');
+    }
+
+    /* --------------------------------------------------------------------------
+       7. SAÚDE: UNIDADES PRÓXIMAS E AGENDAMENTO DE CONSULTAS
+       -------------------------------------------------------------------------- */
+    function renderHealthUnitsList(filterText = '') {
+      const container = document.getElementById('healthUnitsList');
+      if (!container) return;
+      const q = filterText.trim().toLowerCase();
+
+      const filtered = healthUnitsData.filter(u => {
+        if (!q) return true;
+        return (u.name + ' ' + u.address + ' ' + u.specialties).toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="t-xs text-sub text-center py-3">Nenhuma unidade encontrada.</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(u => `
+        <div class="surface-alt rounded-2xl p-3.5 space-y-1.5 border border-[var(--border-subtle)]">
+          <div class="flex items-center justify-between gap-2">
+            <h3 class="t-sm font-extrabold text-main">${u.shortName}</h3>
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#159947] text-white">${u.distance}</span>
+          </div>
+          <p class="t-xs text-sub">📍 ${u.address}</p>
+          <p class="t-xs text-muted-custom">🕒 ${u.hours} • ${u.specialties}</p>
+          <div class="pt-1">
+            <button
+              type="button"
+              onclick="selectUnitForAppointment('${u.name}')"
+              class="t-xs font-extrabold text-brand hover:underline"
+            >
+              Selecionar esta unidade para agendar →
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectUnitForAppointment(unitFullName) {
+      const select = document.getElementById('aptUnit');
+      if (select) {
+        select.value = unitFullName;
+        showToast(`Unidade selecionada: ${unitFullName}`);
+        scrollToElement('appointmentForm');
+      }
+    }
+
+    function selectTimeSlot(slot) {
+      selectedTimeSlot = slot;
+      document.querySelectorAll('.slot-btn').forEach(btn => {
+        if (btn.getAttribute('data-slot') === slot) {
+          btn.className = 'slot-btn btn-primary rounded-xl py-2.5 t-xs font-bold text-center';
+        } else {
+          btn.className = 'slot-btn btn-secondary rounded-xl py-2.5 t-xs font-semibold text-center';
+        }
+      });
+    }
+
+    function renderAppointments() {
+      const list = document.getElementById('appointmentsList');
+      const badge = document.getElementById('appointmentsCountBadge');
+      if (!list) return;
+
+      badge.textContent = `${userAppointments.length} ativo(s)`;
+
+      if (userAppointments.length === 0) {
+        list.innerHTML = `<p class="t-sm text-sub text-center py-4">Nenhum agendamento registrado.</p>`;
+        return;
+      }
+
+      list.innerHTML = userAppointments.map(apt => `
+        <div class="surface-alt rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div class="space-y-0.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#159947] text-white">Protocolo #${apt.protocol}</span>
+              <span class="t-xs font-extrabold text-brand">${apt.date.split('-').reverse().join('/')} às ${apt.time}</span>
+            </div>
+            <h4 class="t-sm font-extrabold text-main">${escapeHTML(apt.specialty)}</h4>
+            <p class="t-xs text-sub">${escapeHTML(apt.unit)}</p>
+            <p class="t-xs text-muted-custom">Paciente: ${escapeHTML(apt.patient)} (${apt.susCard || 'Cartão SUS'})</p>
+          </div>
+          <button
+            onclick="cancelAppointment(${apt.id})"
+            class="self-start sm:self-center px-3 py-1.5 rounded-xl border border-red-500/40 text-red-600 dark:text-red-400 t-xs font-bold hover:bg-red-500/10 shrink-0"
+          >
+            Cancelar
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function submitAppointment(e) {
+      e.preventDefault();
+      const unit = document.getElementById('aptUnit').value;
+      const specialty = document.getElementById('aptSpecialty').value;
+      const date = document.getElementById('aptDate').value;
+      const patient = document.getElementById('aptPatient').value.trim();
+      const susCard = 'Dado não armazenado';
+      const notes = document.getElementById('aptNotes').value.trim();
+
+      if (!date || date < localDate()) { showToast('Escolha uma data a partir de hoje.'); return; }
+      const newApt = {
+        id: Date.now(),
+        unit,
+        specialty,
+        date,
+        time: selectedTimeSlot,
+        patient,
+        susCard,
+        notes,
+        protocol: 'TCC-' + crypto.randomUUID().slice(0,8).toUpperCase()
+      };
+
+      userAppointments.unshift(newApt);
+      safeSetStorage('cuidacao_appointments', JSON.stringify(userAppointments));
+      renderAppointments();
+
+      document.getElementById('aptPatient').value = '';
+      document.getElementById('aptSusCard').value = '';
+      document.getElementById('aptNotes').value = '';
+      showToast(`Simulação salva neste navegador. Código #${newApt.protocol}`);
+    }
+
+    function cancelAppointment(id) {
+      userAppointments = userAppointments.filter(a => a.id !== id);
+      safeSetStorage('cuidacao_appointments', JSON.stringify(userAppointments));
+      renderAppointments();
+      showToast('Agendamento cancelado.');
+    }
+
+    /* --------------------------------------------------------------------------
+       8. DENÚNCIAS AMBIENTAIS E DE MAUS-TRATOS A ANIMAIS
+       -------------------------------------------------------------------------- */
+    const reportSubtypes = {
+      'Denúncia Ambiental': [
+        'Descarte irregular de lixo ou entulho',
+        'Queimada urbana ou foco de incêndio em vegetação',
+        'Poluição de córrego, rio, praia ou esgoto a céu aberto',
+        'Corte ilegal de árvores / agressão a área verde',
+        'Poluição sonora ou atmosférica severa'
+      ],
+      'Maus-tratos a Animais': [
+        'Maus-tratos físicos, confinamento ou negligência',
+        'Animal doméstico abandonado precisando de resgate',
+        'Animal silvestre ferido em via pública',
+        'Falta de água, abrigo ou alimentação adequada',
+        'Envenenamento ou risco iminente à vida animal'
+      ]
+    };
+
+    function selectReportCategory(category) {
+      selectedReportCategory = category;
+      const btnAmb = document.getElementById('btnSelectAmbiental');
+      const btnAni = document.getElementById('btnSelectAnimal');
+      const title = document.getElementById('reportFormTitle');
+      const subtypeSelect = document.getElementById('repSubtype');
+
+      if (category === 'Denúncia Ambiental') {
+        btnAmb.className = 'btn-primary rounded-3xl p-5 text-left flex items-center gap-4 shadow-md';
+        btnAni.className = 'btn-secondary rounded-3xl p-5 text-left flex items-center gap-4';
+        if (title) title.textContent = '🌿 Registrar Denúncia Ambiental';
+      } else {
+        btnAni.className = 'btn-primary rounded-3xl p-5 text-left flex items-center gap-4 shadow-md';
+        btnAmb.className = 'btn-secondary rounded-3xl p-5 text-left flex items-center gap-4';
+        if (title) title.textContent = '🐾 Registrar Denúncia de Maus-tratos a Animais';
+      }
+
+      if (subtypeSelect) {
+        subtypeSelect.innerHTML = reportSubtypes[category]
+          .map(item => `<option value="${item}">${item}</option>`)
+          .join('');
+      }
+    }
+
+    function fillSimulatedGPS() {
+      if (!navigator.geolocation) { showToast('GPS indisponível. Digite o endereço.'); return; }
+      showToast('Aguardando sua autorização de localização…');
+      navigator.geolocation.getCurrentPosition(pos => {
+        document.getElementById('repLocation').value = `GPS: ${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)} (precisão ±${Math.round(pos.coords.accuracy)} m)`;
+        showToast('Localização preenchida. Revise antes de salvar.');
+      }, () => showToast('Não foi possível obter o GPS. Digite o endereço.'), {timeout:12000, maximumAge:60000});
+    }
+
+    function toggleEvidenceAttachment() {
+      if (hasAttachedEvidence) { clearEvidence(); return; }
+      document.getElementById('evidenceFile').click();
+    }
+    function clearEvidence() {
+      hasAttachedEvidence = false; attachedEvidence = null;
+      document.getElementById('evidenceFile').value = '';
+      document.getElementById('attachPhotoText').textContent = 'Anexar foto ou evidência (até 2 MB)';
+      document.getElementById('evidencePreview').replaceChildren();
+    }
+    function readEvidence(file) {
+      if (!file) return;
+      if (!['image/jpeg','image/png','image/webp'].includes(file.type) || file.size > 2*1024*1024) { showToast('Selecione JPG, PNG ou WebP de até 2 MB.'); return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        attachedEvidence = {name:file.name, data:reader.result}; hasAttachedEvidence = true;
+        document.getElementById('attachPhotoText').textContent = file.name + ' ✓ (clique para remover)';
+        const img = document.createElement('img'); img.src = reader.result; img.alt = 'Prévia da evidência selecionada'; img.style.cssText = 'max-width:220px;max-height:160px;border-radius:12px;margin-top:8px';
+        document.getElementById('evidencePreview').replaceChildren(img);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function filterReportsList(filterCat) {
+      activeReportsFilter = filterCat;
+      document.querySelectorAll('.rep-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-rfilter') === filterCat) {
+          btn.className = 'rep-filter-btn btn-primary px-3 py-1 rounded-lg t-xs font-bold';
+        } else {
+          btn.className = 'rep-filter-btn btn-secondary px-3 py-1 rounded-lg t-xs font-semibold';
+        }
+      });
+      renderReportsHistory();
+    }
+
+    function renderReportsHistory() {
+      const container = document.getElementById('reportsHistoryList');
+      const badge = document.getElementById('reportsCountBadge');
+      if (!container) return;
+
+      badge.textContent = `${userReports.length} registro(s)`;
+
+      const filtered = userReports.filter(r => activeReportsFilter === 'todas' || r.category === activeReportsFilter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="t-xs text-sub text-center py-4">Nenhuma denúncia encontrada neste filtro.</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(rep => {
+        const isAnimal = rep.category === 'Maus-tratos a Animais';
+        return `
+          <div class="surface-alt rounded-2xl p-4 space-y-1.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[#159947]/15 text-brand">
+                ${isAnimal ? '🐾 Maus-tratos' : '🌿 Ambiental'} • #${rep.protocol}
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                ${rep.status}
+              </span>
+            </div>
+            <h4 class="t-sm font-extrabold text-main">${escapeHTML(rep.subtype)}</h4>
+            <p class="t-xs text-sub">${escapeHTML(rep.description)}</p>
+            ${rep.evidence ? `<img src="${safeImage(rep.evidence.data)}" alt="Evidência anexada" style="max-width:180px;max-height:130px;border-radius:12px">` : ''}
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-1 t-xs text-muted-custom">
+              <span>📍 ${escapeHTML(rep.location)}</span>
+              <span>${rep.date} • Urgência: ${rep.urgency}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function submitReport(e) {
+      e.preventDefault();
+      const subtype = document.getElementById('repSubtype').value;
+      const urgency = document.getElementById('repUrgency').value;
+      const location = document.getElementById('repLocation').value.trim();
+      const description = document.getElementById('repDesc').value.trim();
+
+      const protocol = 'TCC-' + crypto.randomUUID().slice(0,8).toUpperCase();
+      const newRep = {
+        id: Date.now(),
+        protocol,
+        evidence: attachedEvidence,
+        category: selectedReportCategory,
+        subtype,
+        urgency,
+        location,
+        description,
+        status: 'Rascunho local',
+        date: 'Agora mesmo'
+      };
+
+      userReports.unshift(newRep);
+      safeSetStorage('cuidacao_reports', JSON.stringify(userReports));
+      renderReportsHistory();
+
+      document.getElementById('repLocation').value = '';
+      document.getElementById('repDesc').value = '';
+      clearEvidence();
+
+      showToast(`Rascunho local salvo. Código #${protocol}`);
+    }
+
+    /* --------------------------------------------------------------------------
+       9. NOSSA COMUNIDADE
+       -------------------------------------------------------------------------- */
+    function createCommunityCardHTML(post) {
+      return `
+        <article class="surface-card rounded-3xl p-5 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#159947]/15 text-brand">
+              ${escapeHTML(post.category)}
+            </span>
+            <span class="t-xs text-muted-custom font-medium">${post.date}</span>
+          </div>
+          <h3 class="t-md font-extrabold text-main leading-snug">${escapeHTML(post.title)}</h3>
+          <p class="t-sm text-sub">${escapeHTML(post.body)}</p>
+          <div class="pt-2.5 border-t border-[var(--border-subtle)] flex items-center justify-between gap-2">
+            <span class="t-xs font-semibold text-muted-custom truncate">Por ${escapeHTML(post.author)}</span>
+            <button
+              onclick="toggleLikePost(${post.id})"
+              class="${post.liked ? 'btn-primary' : 'btn-secondary'} px-3.5 py-1.5 rounded-xl t-xs font-bold flex items-center gap-1.5 shrink-0"
+            >
+              <span>💚 Apoiar</span>
+              <span>(${post.likes})</span>
+            </button>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderHomeCommunity(searchQuery = '') {
+      const container = document.getElementById('homeCommunityList');
+      if (!container) return;
+      const filtered = communityPosts.filter(p => {
+        if (!searchQuery) return true;
+        return (p.title + ' ' + p.body + ' ' + p.category).toLowerCase().includes(searchQuery);
+      });
+      container.innerHTML = filtered.slice(0, 2).map(createCommunityCardHTML).join('');
+    }
+
+    function filterCommunityCategory(cat) {
+      activeCommunityFilter = cat;
+      document.querySelectorAll('.comm-cat-btn').forEach(btn => {
+        if (btn.getAttribute('data-ccat') === cat) {
+          btn.className = 'comm-cat-btn btn-primary px-3 py-1.5 rounded-xl t-xs font-bold';
+        } else {
+          btn.className = 'comm-cat-btn btn-secondary px-3 py-1.5 rounded-xl t-xs font-semibold';
+        }
+      });
+      renderFullCommunityFeed();
+    }
+
+    function renderFullCommunityFeed() {
+      const container = document.getElementById('fullCommunityFeed');
+      if (!container) return;
+      const filtered = communityPosts.filter(p => activeCommunityFilter === 'todas' || p.category === activeCommunityFilter);
+      container.innerHTML = filtered.map(createCommunityCardHTML).join('');
+    }
+
+    function toggleLikePost(postId) {
+      const post = communityPosts.find(p => p.id === postId);
+      if (!post) return;
+      post.liked = !post.liked;
+      post.likes += post.liked ? 1 : -1;
+      safeSetStorage('cuidacao_community', JSON.stringify(communityPosts));
+      renderHomeCommunity(document.getElementById('globalSearchInput')?.value || '');
+      renderFullCommunityFeed();
+    }
+
+    function submitCommunityPost(e) {
+      e.preventDefault();
+      const author = document.getElementById('postAuthor').value.trim();
+      const category = document.getElementById('postCategory').value;
+      const title = document.getElementById('postTitle').value.trim();
+      const body = document.getElementById('postBody').value.trim();
+
+      communityPosts.unshift({
+        id: Date.now(),
+        author,
+        category,
+        title,
+        body,
+        date: 'Agora mesmo',
+        likes: 1,
+        liked: true
+      });
+
+      safeSetStorage('cuidacao_community', JSON.stringify(communityPosts));
+
+      document.getElementById('postAuthor').value = '';
+      document.getElementById('postTitle').value = '';
+      document.getElementById('postBody').value = '';
+
+      renderHomeCommunity();
+      renderFullCommunityFeed();
+      showToast('Publicação salva no mural deste navegador!');
+    }
+
+    /* --------------------------------------------------------------------------
+       10. MAPA INTERATIVO REAL (LEAFLET.JS + OPENSTREETMAP GUARUJÁ - SP)
+       -------------------------------------------------------------------------- */
+    function initLeafletMap() {
+      if (leafletMap || typeof L === 'undefined') return;
+
+      const mapContainer = document.getElementById('realLeafletMap');
+      if (!mapContainer) return;
+
+      // Centralizado no Guarujá - SP
+      leafletMap = L.map('realLeafletMap').setView([-23.9750, -46.2550], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(leafletMap);
+
+      leafletMarkersLayer = L.layerGroup().addTo(leafletMap);
+      renderMapPinsAndDirectory();
+    }
+
+    function renderMapPinsAndDirectory() {
+      const visibleLocations = mapLocations.filter(loc => activeMapFilter === 'todos' || loc.type === activeMapFilter);
+
+      if (leafletMarkersLayer && typeof L !== 'undefined') {
+        leafletMarkersLayer.clearLayers();
+        markerRefs = {};
+
+        visibleLocations.forEach(loc => {
+          const isSelected = loc.id === selectedMapPinId;
+          const size = isSelected ? 28 : 22;
+          const customIcon = L.divIcon({
+            className: 'cuidacao-leaflet-pin',
+            html: `<div style="background:${loc.color};width:${size}px;height:${size}px;border-radius:50%;border:3px solid #ffffff;box-shadow:0 3px 10px rgba(0,0,0,0.45);transition:all 0.2s ease;"></div>`,
+            iconSize: [size, size],
+            iconAnchor: [size / 2, size / 2]
+          });
+
+          const marker = L.marker(loc.coords, { icon: customIcon })
+            .bindPopup(`
+              <div style="min-width:190px;">
+                <span style="display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700;color:#fff;background:${loc.color};margin-bottom:4px;">${loc.badge}</span>
+                <div style="font-weight:800;font-size:13px;color:#111c15;">${loc.name}</div>
+                <div style="font-size:11px;color:#2d4a38;margin-top:2px;">📍 ${loc.address}</div>
+                <div style="font-size:11px;color:#159947;font-weight:700;margin-top:4px;">🕒 ${loc.hours}</div>
+              </div>
+            `)
+            .on('click', () => {
+              selectedMapPinId = loc.id;
+              renderSelectedMapCard();
+              renderDirectoryButtons(visibleLocations);
+            });
+
+          marker.addTo(leafletMarkersLayer);
+          markerRefs[loc.id] = marker;
+        });
+      }
+
+      renderDirectoryButtons(visibleLocations);
+      renderSelectedMapCard();
+    }
+
+    function renderDirectoryButtons(visibleLocations) {
+      const directory = document.getElementById('mapDirectoryList');
+      if (!directory) return;
+
+      directory.innerHTML = visibleLocations.map(loc => `
+        <button
+          type="button"
+          onclick="selectMapLocation(${loc.id})"
+          class="w-full text-left p-2.5 rounded-xl transition flex items-center justify-between gap-2 ${loc.id === selectedMapPinId ? 'bg-[#159947] text-white font-bold' : 'surface-alt text-main hover:opacity-90'}"
+        >
+          <span class="t-xs truncate">${loc.name}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-black/15 shrink-0">${loc.badge}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectMapLocation(id) {
+      selectedMapPinId = id;
+      const loc = mapLocations.find(l => l.id === id);
+      renderMapPinsAndDirectory();
+
+      if (leafletMap && loc && markerRefs[id]) {
+        leafletMap.setView(loc.coords, 14, { animate: true });
+        markerRefs[id].openPopup();
+      }
+    }
+
+    function filterMapCategory(filterType) {
+      activeMapFilter = filterType;
+      document.querySelectorAll('.map-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-mfilter') === filterType) {
+          btn.className = 'map-filter-btn btn-primary px-3.5 py-2 rounded-xl t-xs font-bold';
+        } else {
+          btn.className = 'map-filter-btn btn-secondary px-3.5 py-2 rounded-xl t-xs font-semibold';
+        }
+      });
+
+      const firstVisible = mapLocations.find(l => filterType === 'todos' || l.type === filterType);
+      if (firstVisible) selectedMapPinId = firstVisible.id;
+      renderMapPinsAndDirectory();
+
+      if (leafletMap && firstVisible) {
+        leafletMap.setView(firstVisible.coords, 13, { animate: true });
+      }
+    }
+
+    function renderSelectedMapCard() {
+      const card = document.getElementById('mapSelectedCard');
+      if (!card) return;
+      const loc = mapLocations.find(l => l.id === selectedMapPinId) || mapLocations[0];
+
+      let actionButtonHTML = '';
+      if (loc.type === 'saude') {
+        actionButtonHTML = `<button onclick="switchPage('saude'); selectUnitForAppointment('${healthUnitsData.find(u => u.id === loc.id)?.name || healthUnitsData[0].name}');" class="btn-primary px-4 py-2.5 rounded-xl t-xs font-bold">Agendar consulta</button>`;
+      } else if (loc.type === 'ambiente') {
+        actionButtonHTML = `<button onclick="switchPage('denuncias'); selectReportCategory('Denúncia Ambiental');" class="btn-primary px-4 py-2.5 rounded-xl t-xs font-bold">Registrar denúncia ambiental</button>`;
+      } else {
+        actionButtonHTML = `<button onclick="switchPage('denuncias'); selectReportCategory('Maus-tratos a Animais');" class="btn-primary px-4 py-2.5 rounded-xl t-xs font-bold">Acionar Proteção Animal</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <span class="px-2.5 py-0.5 rounded-full text-xs font-bold text-white" style="background-color: ${loc.color}">
+            ${loc.badge}
+          </span>
+          <span class="t-xs font-bold text-brand">🕒 ${loc.hours}</span>
+        </div>
+        <div>
+          <h3 class="t-lg font-extrabold text-main">${loc.name}</h3>
+          <p class="t-xs text-sub mt-0.5">📍 ${loc.address}</p>
+        </div>
+        <p class="t-xs text-main surface-alt rounded-xl p-3">
+          <strong>Serviços disponíveis:</strong> ${loc.services}
+        </p>
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          ${actionButtonHTML}
+          <a class="btn-secondary px-3.5 py-2.5 rounded-xl t-xs font-bold" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/dir/?api=1&destination=${loc.coords.join(',')}">Traçar rota ↗</a>
+          <button onclick="selectMapLocation(${loc.id})" class="btn-secondary px-3.5 py-2.5 rounded-xl t-xs font-bold">
+            🧭 Centralizar no Mapa
+          </button>
+        </div>
+      `;
+    }
+
+    /* --------------------------------------------------------------------------
+       11. MODAIS E TOAST DE FEEDBACK
+       -------------------------------------------------------------------------- */
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+    }
+
+    function toggleNotificationsPanel() {
+      const modal = document.getElementById('notificationsModal');
+      const items = modal.querySelectorAll('.surface-card-interactive');
+      ['vacinacao','protocolos','comunidade'].forEach((key, i) => { if(items[i]) items[i].hidden = safeGetStorage('cuidacao_pref_' + key, '1') === '0'; });
+      const badge = document.getElementById('notifUnreadBadge');
+      modal.classList.toggle('hidden');
+      if (badge) badge.classList.add('hidden');
+    }
+
+    let toastTimer = null;
+    function showToast(message) {
+      const toast = document.getElementById('appToast');
+      const msg = document.getElementById('appToastMessage');
+      if (!toast || !msg) return;
+      msg.textContent = message;
+      toast.classList.remove('hidden');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3400);
+    }
+
+    /* --------------------------------------------------------------------------
+       12. INICIALIZAÇÃO DO SISTEMA
+       -------------------------------------------------------------------------- */
+    window.addEventListener('error', e => { if(e.error?.message?.startsWith('Não foi possível salvar')) showToast(e.error.message); });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') { closeSettingsModal(); closeNewsModal(); document.getElementById('notificationsModal').classList.add('hidden'); } });
+
+    function territoryOrigin() { try { const value=safeGetStorage('cuidacao_territory_server',''); return value ? new URL(value).origin : location.origin; } catch { return location.origin; } }
+    function syncTerritoryPreferences() {
+      const frame=document.getElementById('territoryFrame'); if(!frame?.src)return;
+      frame.contentWindow?.postMessage({type:'cuidacao-preferences',theme:document.documentElement.dataset.theme==='dark'?'dark':'light',scale:parseFloat(document.documentElement.style.getPropertyValue('--font-scale'))||1},territoryOrigin());
+    }
+    async function setMapModule(module) {
+      const territory=module==='territorio';
+      document.getElementById('territoryModule').classList.toggle('hidden',!territory);
+      document.getElementById('originalServiceMap').classList.toggle('hidden',territory);
+      ['showServiceMap','showTerritoryMap'].forEach((id,i)=>{const el=document.getElementById(id);el.classList.toggle('btn-primary',territory===Boolean(i));el.classList.toggle('btn-secondary',territory!==Boolean(i));el.setAttribute('aria-pressed',String(territory===Boolean(i)));});
+      if(!territory){if(leafletMap)leafletMap.invalidateSize();return;}
+      const base=territoryOrigin(),url=base+'/territorio/index.html';
+      const frame=document.getElementById('territoryFrame');if(frame.src!==url)frame.src=url;
+      document.getElementById('territoryExternalLink').href=url;
+      const status=document.getElementById('territoryConnection');
+      status.textContent=base===location.origin?'Verificando a API de ocorrências…':'Servidor configurado. A conexão e as contas são gerenciadas pelo módulo do TCC.';
+      if(base===location.origin)try{const res=await fetch('/api/v1/occurrences',{headers:{Accept:'application/json'},signal:AbortSignal.timeout(6000)});const value=await res.json();if(!res.ok||!value.data)throw Error();status.textContent='API conectada. Cadastro, relatos e acompanhamento são gerenciados pelo projeto do TCC.';}catch{status.textContent='API não disponível nesta hospedagem estática. O mapa do TCC pode ser explorado, mas contas e gravações exigem o servidor. Configure a URL em Configurações ou execute o pacote integrado.';}
+      syncTerritoryPreferences();
+    }
+    function saveTerritoryServer(){const input=document.getElementById('territoryServer');const value=input.value.trim();try{if(value){const url=new URL(value);if(url.protocol!=='https:' && !(url.protocol==='http:'&&['127.0.0.1','localhost'].includes(url.hostname)))throw Error();if(url.username||url.password||url.search||url.hash)throw Error();safeSetStorage('cuidacao_territory_server',url.origin);}else safeSetStorage('cuidacao_territory_server','');document.getElementById('territoryFrame').removeAttribute('src');showToast('Conexão salva neste navegador.');}catch{showToast('Informe uma URL HTTPS válida, sem senha ou parâmetros.');}}
+    window.addEventListener('message',event=>{if(event.source===document.getElementById('territoryFrame')?.contentWindow && event.origin===territoryOrigin() && event.data?.type==='cuidacao-ready')syncTerritoryPreferences();});
+
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('territoryServer').value=safeGetStorage('cuidacao_territory_server','');
+      new MutationObserver(syncTerritoryPreferences).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme','style']});
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 2);
+      const aptDateInput = document.getElementById('aptDate');
+      if (aptDateInput) {
+        aptDateInput.min = localDate();
+        aptDateInput.value = localDate(defaultDate);
+      }
+
+      document.querySelectorAll('[data-preference]').forEach(el => el.checked = safeGetStorage('cuidacao_pref_' + el.dataset.preference, '1') === '1');
+      applyEffectiveTheme();
+      setFontSizeLevel(fontSizeLevel);
+      switchPage('inicio');
+
+      renderHomeNews();
+      renderFullNewsList();
+      renderHealthUnitsList();
+      renderAppointments();
+      selectReportCategory('Denúncia Ambiental');
+      renderReportsHistory();
+      renderHomeCommunity();
+      renderFullCommunityFeed();
+      renderMapPinsAndDirectory();
+    });
+  </script>
+</body>
+</html>

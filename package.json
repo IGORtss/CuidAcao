@@ -1,7 +1,7 @@
 {
   "name": "cuidacao",
   "version": "0.1.0",
-  "description": "Protótipo acadêmico CuidAção — monitoramento ambiental do Perequê",
+  "description": "ProtÃ³tipo acadÃªmico CuidAÃ§Ã£o â€” monitoramento ambiental do PerequÃª",
   "scripts": {
     "dev": "CUIDACAO_WEB_ORIGIN=http://127.0.0.1:5173 vite --config configuracao/vite.configuracao.js --host 127.0.0.1 --port 5173",
     "build": "vite build --config configuracao/vite.configuracao.js",
@@ -19,7 +19,8 @@
     "demo:reset": "node servidor/linha-comando/indice.js demo:reset",
     "firebase:emulators": "PATH=$HOME/.local/share/cuidacao-tools/temurin-21/bin:$PATH firebase emulators:start --project cuidacao-13fc8 --only auth,firestore,storage,hosting",
     "firebase:hosting": "npm run build && firebase emulators:start --project cuidacao-13fc8 --only hosting",
-    "firebase:deploy:check": "npm run build && firebase deploy --project cuidacao-13fc8 --only firestore:rules,storage,hosting --dry-run"
+    "firebase:deploy:check": "npm run build && firebase deploy --project cuidacao-13fc8 --only firestore:rules,storage,hosting --dry-run",
+    "integrado:start": "node integrado/servidor.js"
   },
   "keywords": [],
   "author": "",

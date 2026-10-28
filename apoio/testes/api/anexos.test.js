@@ -115,9 +115,9 @@ test('falha do armazenamento e sessão revogada durante decodificação não pub
 
 
 test('armazenamento padrão separa bancos no mesmo diretório e não usa variável ambiente em app injetado',async t=>{
- const directory=mkdtempSync(join(tmpdir(),'cuidacao-storage-isolation-'));t.after(()=>rmSync(directory,{recursive:true,force:true}));
+ const directory=mkdtempSync(join(tmpdir(),'cuidacao-storage-isolation-'));
  const first=openDatabase(join(directory,'first.sqlite')),second=openDatabase(join(directory,'second.sqlite'));migrate(first);migrate(second);
- const appA=createApp({db:first}),appB=createApp({db:second});t.after(async()=>{await appA.close();await appB.close();first.close();second.close();});
+ const appA=createApp({db:first}),appB=createApp({db:second});t.after(async()=>{await appA.close();await appB.close();first.close();second.close();rmSync(directory,{recursive:true,force:true});});
  await appA.ready();const key=randomUUID()+'.png',path=join(directory,'uploads','first.sqlite.files',key);writeFileSync(path,'arquivo sem referência de outra base');const old=new Date(Date.now()-2*86400000);utimesSync(path,old,old);
  await appB.ready();assert.ok(existsSync(path));assert.ok(existsSync(join(directory,'uploads','second.sqlite.files','.staging')));
 });

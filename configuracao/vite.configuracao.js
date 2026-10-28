@@ -14,4 +14,4 @@ export function demoWebOptions(root,port,apiPort){
  return {configFile:fileURLToPath(import.meta.url),server:{host:'127.0.0.1',port,strictPort:true,proxy:{'/api':{target:'http://127.0.0.1:'+apiPort,changeOrigin:false}},fs:{deny:[...privateWebFiles,root+'/**']}}};
 }
 
-export default defineConfig({server:{fs:{deny:privateWebFiles},proxy:{"/api":{target:"http://127.0.0.1:"+apiPort,changeOrigin:false}}}});
+export default defineConfig({base:"/territorio/",server:{fs:{deny:privateWebFiles},proxy:{"/api":{target:"http://127.0.0.1:"+apiPort,changeOrigin:false}}}});

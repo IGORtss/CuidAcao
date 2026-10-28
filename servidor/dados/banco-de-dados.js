@@ -744,6 +744,8 @@ const namePattern = /^[0-9a-f-]{36}\.(?:jpeg|png|webp)$/;
 export function attachmentStorage(directory) {
 	const root = resolve(directory), staging = join(root, ".staging");
 	function directorySync(path) {
+        // Windows cannot open directories for fsync; file data is synced in stage().
+        if (process.platform === 'win32') return;
 		const fd = openSync(path, "r");
 		try {
 			fsyncSync(fd);

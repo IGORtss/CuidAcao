@@ -1669,3 +1669,6 @@ window.addEventListener("hashchange", syncDetails);
 renderList();
 syncDetails();
 syncCentral();
+
+import "../estilos/integracao.css";
+import "./integracao.js";
